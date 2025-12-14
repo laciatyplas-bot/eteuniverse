@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>MAPA ETERNIVERSE — System Operacyjny Rzeczywistości</title>
+<style>
+:root{
+  --bg:#041018; --card:#071626; --text:#E6F6F5;
+  --gold:#D9A441; --teal:#28D3C6; --green:#12C65B; --purple:#9B6BFF; --orange:#FFB14B;
+  --glass: rgba(255,255,255,0.03);
+  --border: rgba(255,255,255,0.06);
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:linear-gradient(180deg,#020812 0%,#05111a 100%);color:var(--text)}
+.wrap{max-width:1200px;margin:0 auto;padding:30px 20px 120px}
+header{border-bottom:1px solid var(--border);padding-bottom:20px;margin-bottom:24px}
+h1{margin:0 0 8px;color:var(--gold);letter-spacing:1px;text-transform:uppercase}
+.intro{font-size:14px;color:#9abfb7;max-width:800px;line-height:1.5}
+.controls{display:flex;gap:10px;flex-wrap:wrap;margin:24px 0;padding:15px;border-radius:12px;border:1px solid var(--border);background:rgba(0,0,0,.25)}
+.search,.select-like,.btn{padding:10px 14px;border-radius:8px;background:var(--card);border:1px solid var(--border);color:var(--text);font-size:13px}
+.btn{cursor:pointer;background:var(--glass)}
+.grid{display:grid;grid-template-columns:1fr;gap:20px}
+@media(min-width:1024px){.grid{grid-template-columns:1fr 1fr}}
+.brama-card{background:#08121c;border:1px solid var(--border);border-radius:16px;overflow:hidden}
+.brama-header{padding:16px;border-left:4px solid var(--teal);background:linear-gradient(90deg,rgba(40,211,198,.12),transparent)}
+.brama-title{margin:0;font-size:18px;font-weight:800;color:var(--teal)}
+.brama-sub{font-size:12px;opacity:.6;text-transform:uppercase}
+.book-list{list-style:none;margin:0;padding:10px;max-height:520px;overflow:auto}
+.book{padding:12px;border-radius:8px;margin-bottom:8px;border:1px solid transparent;cursor:pointer;background:rgba(255,255,255,.03)}
+.book:hover{background:rgba(255,255,255,.06)}
+.book.open{background:rgba(0,0,0,.35);border-color:rgba(255,255,255,.15)}
+.book-title{font-weight:600;font-size:14px}
+.tags{font-size:11px;color:#6b8c87;font-family:monospace;margin-top:6px}
+.desc{display:none;font-size:13px;line-height:1.6;margin-top:10px;padding-top:10px;border-top:1px solid rgba(255,255,255,.08)}
+.book.open .desc{display:block}
+footer{margin-top:40px;padding-top:20px;border-top:1px solid var(--border);text-align:center;font-size:12px;color:#5a7a75}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+<h1>MAPA ETERNIVERSE</h1>
+<div class="intro">Centralny rejestr systemu. Jedna wersja HTML. Jedno źródło prawdy. Stabilna architektura.</div>
+</header>
+<div class="controls">
+<input id="search" class="search" placeholder="Szukaj tytułu / tagu" />
+<button class="btn" id="expandAll">Rozwiń wszystko</button>
+<button class="btn" id="collapseAll">Zwiń</button>
+<button class="btn" id="exportJson" style="color:var(--gold)">Eksport JSON</button>
+</div>
+<section class="grid" id="mapGrid"></section>
+<footer>SYSTEM ETERNIVERSE v3.1 • Stabilna wersja</footer>
+</div>
+<script>
+const MASTER_JSON={
+  map_data:[
+    {id:'brama1',name:'BRAMA 1 — INTERSEEKER',sub:'Psychika · Cień · Trauma',books:[
+      {title:'InterSeeker – Atlas Wewnętrzny',tags:['cień','psyche'],desc:'Podróż w głąb psychiki. Fundament całego systemu.'},
+      {title:'ShadowSeeker – Anatomia Cienia',tags:['cień'],desc:'Integracja tego, co wyparte.'}
+    ]},
+    {id:'brama2',name:'BRAMA 2 — ETERSEEKER',sub:'Wola · Pole · Architektura',books:[
+      {title:'EterSeeker – Architektura Woli',tags:['wola','pole'],desc:'System tworzenia rzeczywistości.'}
+    ]},
+    {id:'brama3',name:'BRAMA 3 — OBFITOSEEKER',sub:'Materia · Obfitość',books:[
+      {title:'ObfitoSeeker – Kod Obfitości',tags:['obfitość'],desc:'Algorytm przepływu.'}
+    ]},
+    {id:'brama4',name:'BRAMA 4 — KNOT',sub:'AI · Kwant · Splątanie',books:[
+      {title:'Protokół Splątania',tags:['kwant','ai'],desc:'Obserwator zmienia wszystko.'}
+    ]}
+  ],
+  meta:{generated:new Date().toISOString()}
+};
+const MAP_DATA=MASTER_JSON.map_data;
+const grid=document.getElementById('mapGrid');
+function render(){
+  grid.innerHTML='';
+  MAP_DATA.forEach(b=>{
+    const a=document.createElement('article');a.className='brama-card';
+    a.innerHTML=`<div class="brama-header"><div class="brama-title">${b.name}</div><div class="brama-sub">${b.sub}</div></div>`;
+    const ul=document.createElement('ul');ul.className='book-list';
+    b.books.forEach(book=>{
+      const li=document.createElement('li');li.className='book';
+      li.innerHTML=`<div class="book-title">${book.title}</div><div class="tags">#${book.tags.join(' #')}</div><div class="desc">${book.desc}</div>`;
+      li.onclick=()=>li.classList.toggle('open');
+      ul.appendChild(li);
+    });
+    a.appendChild(ul);grid.appendChild(a);
+  });
+}
+render();
+document.getElementById('expandAll').onclick=()=>document.querySelectorAll('.book').forEach(b=>b.classList.add('open'));
+document.getElementById('collapseAll').onclick=()=>document.querySelectorAll('.book').forEach(b=>b.classList.remove('open'));
+document.getElementById('exportJson').onclick=()=>{
+  const blob=new Blob([JSON.stringify(MASTER_JSON,null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='eterniverse_master.json';a.click();
+};
+</script>
+</body>
+</html>
