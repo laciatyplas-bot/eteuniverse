@@ -1,77 +1,251 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imperium Woli — Architektura Woli</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>ETERUNIVERSE — Nawigacja Systemowa</title>
     <style>
         :root {
-            --bg: #041018;
+            --bg: #020812;
             --card: #071626;
             --text: #E6F6F5;
+            --muted: #9bb;
             --gold: #D9A441;
-            --teal: #28D3C6;
-            --green: #12C65B;
-            --purple: #9B6BFF;
-            --orange: #FFB14B;
+            --blue: #3a86ff;
+            --purple: #8338ec;
         }
-        body {
+        html, body {
             margin: 0;
             padding: 0;
-            font-family: 'Inter', system-ui, sans-serif;
-            background: linear-gradient(180deg, #020812 0%, #071726 100%);
+            background: radial-gradient(circle at top, #0b1e33 0%, #020812 100%);
             color: var(--text);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 40px;
+        }
+        .wrap {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 40px 20px;
         }
         h1 {
-            font-size: 3.5rem;
             color: var(--gold);
-            letter-spacing: 2px;
-            margin-bottom: 20px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-bottom: 10px;
         }
-        p {
-            font-size: 1.4rem;
-            max-width: 800px;
-            line-height: 1.6;
+        .intro {
+            color: var(--muted);
             margin-bottom: 40px;
-            opacity: 0.9;
+            font-size: 1.1em;
         }
-        a {
-            background: var(--gold);
-            color: #000;
-            padding: 14px 32px;
-            text-decoration: none;
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .brama {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .brama:hover {
+            background: rgba(255, 255, 255, 0.06);
+            border-color: var(--gold);
+            transform: translateY(-5px);
+        }
+        .brama h2 { margin: 0; font-size: 1.2rem; color: var(--text); }
+        .sub { font-size: 0.85rem; color: var(--gold); font-weight: 600; text-transform: uppercase; margin-top: 4px; }
+        .desc { display: none; margin-top: 20px; font-size: 0.95rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px; }
+        .brama.open .desc { display: block; }
+        .tag {
+            align-self: flex-start;
+            font-size: 10px;
             font-weight: bold;
-            border-radius: 8px;
-            font-size: 1.2rem;
-            transition: transform 0.2s;
+            padding: 3px 10px;
+            border-radius: 4px;
+            background: rgba(217, 164, 65, 0.2);
+            color: var(--gold);
+            margin-top: 15px;
         }
-        a:hover {
-            transform: translateY(-4px);
+        .book-list { margin-top: 15px; }
+        .book-item {
+            padding: 6px 8px;
+            background: rgba(255,255,255,0.03);
+            margin-bottom: 4px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            color: #bcd7d2;
+            border-left: 2px solid var(--gold);
         }
         footer {
-            position: absolute;
-            bottom: 20px;
-            font-size: 0.9rem;
-            opacity: 0.6;
+            margin-top: 60px;
+            padding: 20px 0;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            color: #567;
+            font-size: 12px;
+            text-align: center;
         }
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
 </head>
 <body>
-    <h1>IMPERIUM WOLI</h1>
-    <p>
-        Architektura Woli.<br>
-        Cisza. Monolit. Selekcja. Synchronizacja. Emisja.<br><br>
-        Tu zaczyna się Nowy Torus.
-    </p>
-    <a href="https://www.wattpad.com/user/MaciekMaciuszek94" target="_blank">WEJDŹ W BRAMĘ</a>
-    <footer>© Maciej 2025 • System Seekers</footer>
+
+<div class="wrap">
+    <header>
+        <h1>ETERUNIVERSE</h1>
+        <div class="intro">
+            To nie jest opowieść. To jest <b>nawigacja systemowa</b>.<br>
+            Wybierz Bramę, aby zobaczyć przypisane do niej struktury (księgi).
+        </div>
+    </header>
+
+    <main class="grid" id="gatesContainer">
+        <article class="brama" onclick="this.classList.toggle('open')">
+            <h2>BRAMA I — INTERSEEKER</h2>
+            <div class="sub">Psychika · Cień · Pamięć</div>
+            <div class="desc">Schodzisz pod narrację. Spotykasz cień i mechanizmy przetrwania.</div>
+            <span class="tag">CORE / PSYCHE</span>
+        </article>
+
+        <article class="brama" onclick="this.classList.toggle('open')">
+            <h2>BRAMA II — CUSTOS / GENEZA</h2>
+            <div class="sub">Strażnik · Rdzeń · Początek</div>
+            <div class="desc">Analiza błędu pierwotnego i fundamentu Twojej konstrukcji.</div>
+            <span class="tag">CORE / ORIGIN</span>
+        </article>
+
+        <article class="brama" onclick="this.classList.toggle('open')">
+            <h2>BRAMA III — ETERSEEKER</h2>
+            <div class="sub">Wola · Pole · Architektura</div>
+            <div class="desc">Przestajesz być trybem. Zaczynasz rozumieć mechanikę pola.</div>
+            <span class="tag">CORE / FIELD</span>
+        </article>
+
+        <article class="brama" onclick="this.classList.toggle('open')">
+            <h2>BRAMA IV — ARCHETYPY / WOLA</h2>
+            <div class="sub">Konstrukcja · Role · Przeznaczenie</div>
+            <div class="desc">Systemowe ujęcie Twojej roli w strukturze Eteru.</div>
+            <span class="tag">CORE / WILL</span>
+        </article>
+
+        <article class="brama" onclick="this.classList.toggle('open')">
+            <h2>BRAMA V — OBFITOSEEKER</h2>
+            <div class="sub">Materia · Przepływ · Manifestacja</div>
+            <div class="desc">Zejście wibracji w materię. Pieniądz, czas i energia.</div>
+            <span class="tag">EMBODIED / FLOW</span>
+        </article>
+
+        <article class="brama" onclick="this.classList.toggle('open')">
+            <h2>BRAMA VI — BIOSEEKER</h2>
+            <div class="sub">Ciało · Biologia · Regulacja</div>
+            <div class="desc">Ciało jako hardware. Bez regulacji biochemii system się sypie.</div>
+            <span class="tag">EMBODIED / BIO</span>
+        </article>
+
+        <article class="brama" onclick="this.classList.toggle('open')">
+            <h2>BRAMA VII — SPLĄTANIE / AI</h2>
+            <div class="sub">Obserwator · Meta-tożsamość · Technologia</div>
+            <div class="desc">Relacja z AI i polem jako zewnętrznym lustrem świadomości.</div>
+            <span class="tag">META / TECH</span>
+        </article>
+
+        <article class="brama" onclick="this.classList.toggle('open')">
+            <h2>BRAMA VIII — TRAJEKTORIE</h2>
+            <div class="sub">Kod Życia · Linie Czasu · Fizyka Duszy</div>
+            <div class="desc">Analiza matematyczna Twojego losu i potencjalnych dróg.</div>
+            <span class="tag">META / PHYSICS</span>
+        </article>
+
+        <article class="brama" onclick="this.classList.toggle('open')">
+            <h2>BRAMA IX — ETERNIONY / KOLEKTYW</h2>
+            <div class="sub">Węzły Pola · Wspólnota · Misja</div>
+            <div class="desc">Wyjście poza JA. Budowanie struktur zbiorowych.</div>
+            <span class="tag">COLLECTIVE</span>
+        </article>
+
+        <article class="brama" onclick="this.classList.toggle('open')">
+            <h2>BRAMA X — ETERUNIVERSE</h2>
+            <div class="sub">Integracja · Jedność · Architekt</div>
+            <div class="desc">Domykanie systemu. Stan stabilnego Twórcy.</div>
+            <span class="tag">INTEGRATION</span>
+        </article>
+    </main>
+
+    <footer>
+        ETERUNIVERSE v2.5 • System Mapowania Woli • Maciek • Dla Nikodema
+    </footer>
+</div>
+
+<script>
+const TITLES_TO_MAP = [
+  "InterSeeker – Atlas Wewnętrzny", "ShadowSeeker – Anatomia Cienia", "MemorySeeker – Archeologia Wspomnień",
+  "SelfSplit Seeker – Rozszczepienie Tożsamości", "ReligioSeeker – Droga Bez Religii", "BioSeeker – Sekret Biologii Pola",
+  "BólSeeker – Anatomia Rany", "EterSeeker – Architektura Woli", "EterSeeker – Księga Woli", "WolaSeeker – Kwant Woli",
+  "NaukoSeeker – Mechanika Pola", "InterfejsSeeker – Interfejs Świadomości", "SplatanieSeeker – Protokół Obserwatora",
+  "QuantumSeeker – Fizyka Duszy", "ObfitoSeeker – Kod Obfitości", "ObfitoSeeker II – Kod Rozszerzony",
+  "MateriaSeeker – Przewodnik Ciała i Przepływu", "Mutoseeker – Kod Mutacji", "TrajektoriaSeeker – Mapa Linii Życia",
+  "DrogaSeeker – Kod Przemiany Człowieka", "RytmSeeker – Mechanika Ruchu Życia", "ConscienceSeeker – Kartografia Sumienia",
+  "ArchetypSeeker – System Archetypów Eteru", "ZwierzSeeker – Atlas Zwierząt Eterycznych", "PustkaSeeker – Kartografia Ciszy",
+  "CzasSeeker – Fizyka Linii Czasu", "PoleSeeker – Topologia Ludzkiego Pola", "SenSeeker – Mechanika Snów",
+  "FuturSeeker – Przyszłość, która nadchodzi", "OjciecSeeker – Architektura Relacji Ojciec–Dziecko", "Geneza",
+  "EterSeeker – Księga Zakazana (Tom Zero)", "Eteriony – Tom I", "Eteriony – Tom II",
+  "InterSeeker – Atlas Zwierząt", "Protokół Splątania (wersja meta)", "Kronika Woli",
+  "Kronika Obserwatora", "Księga Przepływu", "Ciało jako Interfejs Pola", "Archetypy Eteru — Tom 1",
+  "Archetypy Eteru — Tom 2", "Archetypy Eteru — Tom 3", "Atlas Ludzi Ognia", "Kod Ludzi Przebudzonych",
+  "Mapa Uniwersum Eteru", "Mapa Trajektorii Życia (rozszerzona)", "Esker / Eskiera", "Esker: Cząstka, która patrzy z powrotem",
+  "Shiker / Shikera", "Funkcja, która zmienia świat", "EterWar", "MetaGeneza", "Custos: Kodeks Głębi",
+  "Architekt Eteru — Manifest Twórcy", "NutoSeeker Tom I: Destrukcja (Cień)", "NutoSeeker Tom II: Pasywność (Kalibracja)",
+  "NutoSeeker Tom III: Kreacja (Światło)"
+];
+
+function mapBooksToGates() {
+    const gates = document.querySelectorAll('.brama');
+    
+    gates.forEach(gate => {
+        let listContainer = gate.querySelector('.book-list');
+        if (!listContainer) {
+            listContainer = document.createElement('div');
+            listContainer.className = 'book-list';
+            gate.querySelector('.desc').appendChild(listContainer);
+        }
+    });
+
+    TITLES_TO_MAP.forEach(title => {
+        let targetGateIndex = 0; 
+        const t = title.toLowerCase();
+
+        if (t.includes('shadow') || t.includes('pamięć') || t.includes('rana') || t.includes('pustka') || t.includes('sen') || t.includes('nutoseeker tom i')) targetGateIndex = 0;
+        else if (t.includes('geneza') || t.includes('custos') || t.includes('nutoseeker tom ii')) targetGateIndex = 1;
+        else if (t.includes('pole') || t.includes('architekt e') || t.includes('shikera') || t.includes('zakazana') || t.includes('eterseeker')) targetGateIndex = 2;
+        else if (t.includes('wola') || t.includes('archetyp') || t.includes('kronika w') || t.includes('ludzi ognia') || t.includes('przebudzonych') || t.includes('nutoseeker tom iii')) targetGateIndex = 3;
+        else if (t.includes('obfito') || t.includes('materia') || t.includes('przepływ') || t.includes('funkcja')) targetGateIndex = 4;
+        else if (t.includes('bio') || t.includes('ciało') || t.includes('rytm')) targetGateIndex = 5;
+        else if (t.includes('splątania') || t.includes('obserwator') || t.includes('interfejs') || t.includes('esker')) targetGateIndex = 6;
+        else if (t.includes('trajektoria') || t.includes('czas') || t.includes('quantum') || t.includes('nauko')) targetGateIndex = 7;
+        else if (t.includes('eteriony') || t.includes('ojciecseeker') || t.includes('eterwar')) targetGateIndex = 8;
+        else if (t.includes('mapa uniwersum')) targetGateIndex = 9;
+
+        const bookItem = document.createElement('div');
+        bookItem.className = 'book-item';
+        bookItem.innerText = title;
+        bookItem.onclick = (e) => e.stopPropagation();
+
+        const targetGate = gates[targetGateIndex];
+        if (targetGate) {
+            targetGate.querySelector('.book-list').appendChild(bookItem);
+        }
+    });
+}
+
+document.addEventListener('DOMContentLoaded', mapBooksToGates);
+</script>
+
 </body>
 </html>
