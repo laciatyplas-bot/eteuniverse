@@ -1,77 +1,95 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Imperium Woli — Architektura Woli</title>
-    <style>
-        :root {
-            --bg: #041018;
-            --card: #071626;
-            --text: #E6F6F5;
-            --gold: #D9A441;
-            --teal: #28D3C6;
-            --green: #12C65B;
-            --purple: #9B6BFF;
-            --orange: #FFB14B;
-        }
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Inter', system-ui, sans-serif;
-            background: linear-gradient(180deg, #020812 0%, #071726 100%);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 40px;
-        }
-        h1 {
-            font-size: 3.5rem;
-            color: var(--gold);
-            letter-spacing: 2px;
-            margin-bottom: 20px;
-        }
-        p {
-            font-size: 1.4rem;
-            max-width: 800px;
-            line-height: 1.6;
-            margin-bottom: 40px;
-            opacity: 0.9;
-        }
-        a {
-            background: var(--gold);
-            color: #000;
-            padding: 14px 32px;
-            text-decoration: none;
-            font-weight: bold;
-            border-radius: 8px;
-            font-size: 1.2rem;
-            transition: transform 0.2s;
-        }
-        a:hover {
-            transform: translateY(-4px);
-        }
-        footer {
-            position: absolute;
-            bottom: 20px;
-            font-size: 0.9rem;
-            opacity: 0.6;
-        }
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap" rel="stylesheet">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Przykład Mona Modal</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    background: #050814;
+    color: white;
+    margin: 40px;
+  }
+  .mona-btn {
+    background: #ff4757;
+    color: white;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  .mona-btn:hover {
+    background: #e84118;
+  }
+  .mona-modal {
+    position: fixed;
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a1a2e;
+    padding: 24px;
+    border-radius: 12px;
+    max-width: 400px;
+    z-index: 1000;
+    box-shadow: 0 0 15px rgba(255, 71, 87, 0.7);
+  }
+  .mona-close {
+    float: right;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 1;
+  }
+  /* Ciemne półprzezroczyste tło pod modal */
+  .mona-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 900;
+  }
+</style>
 </head>
 <body>
-    <h1>IMPERIUM WOLI</h1>
-    <p>
-        Architektura Woli.<br>
-        Cisza. Monolit. Selekcja. Synchronizacja. Emisja.<br><br>
-        Tu zaczyna się Nowy Torus.
-    </p>
-    <a href="https://www.wattpad.com/user/MaciekMaciuszek94" target="_blank">WEJDŹ W BRAMĘ</a>
-    <footer>© Maciej 2025 • System Seekers</footer>
+
+<button class="mona-btn" id="openModalBtn">Otwórz Modal</button>
+
+<!-- Modal i tło (ukryte domyślnie) -->
+<div id="modalBackdrop" style="display:none;">
+  <div class="mona-backdrop"></div>
+  <div class="mona-modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <span class="mona-close" id="closeModalBtn" aria-label="Zamknij modal">×</span>
+    <h2 id="modalTitle">Tytuł Modala</h2>
+    <p>To jest przykładowa zawartość modala.</p>
+  </div>
+</div>
+
+<script>
+  const openBtn = document.getElementById('openModalBtn');
+  const modalBackdrop = document.getElementById('modalBackdrop');
+  const closeBtn = document.getElementById('closeModalBtn');
+
+  openBtn.addEventListener('click', () => {
+    modalBackdrop.style.display = 'block';
+  });
+
+  closeBtn.addEventListener('click', () => {
+    modalBackdrop.style.display = 'none';
+  });
+
+  modalBackdrop.addEventListener('click', (e) => {
+    if (e.target === modalBackdrop) {
+      modalBackdrop.style.display = 'none';
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      modalBackdrop.style.display = 'none';
+    }
+  });
+</script>
+
 </body>
 </html>
