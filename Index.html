@@ -1,50 +1,331 @@
-<!doctype html>
-<meta charset="utf-8"/><!doctype html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#D9A441">
-  <meta name="description" content="ETERNIVERSE PRO MASTER — Profesjonalne centrum wydawnicze Architekta Woli. Zarządzanie Bramami, księgami, audiobookami, okładkami, statusami i publikacją.">
-  <meta name="author" content="Maciej Maciuszek">
-  
-  <title>ETERNIVERSE PRO MASTER — Wydawnictwo</title>
-
-  <!-- Favicon (do dodania później) -->
-  <!-- <link rel="icon" href="favicon.ico"> -->
-
-  <!-- Style – zewnętrzny plik (lepsza organizacja, cache) -->
-  <link rel="stylesheet" href="style.css">
-
-  <!-- Future-proof: defer dla JS -->
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Eterniverse - Asystent Redagowania i Eksportu</title>
+<style>
+  body {
+    background: #121212;
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh;
+  }
+  header {
+    background: #1e1e1e;
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  #console, #editor {
+    width: 90%;
+    margin: 1rem auto;
+    background: #222;
+    color: #eee;
+    border: none;
+    border-radius: 5px;
+    padding: 10px;
+    font-size: 1rem;
+    resize: vertical;
+    min-height: 100px;
+  }
+  #output, #suggestions {
+    width: 90%;
+    margin: 0 auto 1rem auto;
+    background: #1a1a1a;
+    padding: 10px;
+    border-radius: 5px;
+    min-height: 60px;
+    overflow-y: auto;
+  }
+  button {
+    margin: 0.5rem 0.3rem;
+    padding: 0.5rem 1rem;
+    background: #3a3a3a;
+    border: none;
+    border-radius: 4px;
+    color: #eee;
+    cursor: pointer;
+  }
+  button:hover {
+    background: #555;
+  }
+  .suggestion {
+    background: #333;
+    padding: 5px;
+    margin: 3px 0;
+    border-radius: 3px;
+  }
+  .suggestion button {
+    margin-left: 1rem;
+    font-size: 0.9rem;
+  }
+</style>
 </head>
-
 <body>
-  <!-- Główny kontener aplikacji -->
-  <div id="app" class="app-container" aria-live="polite">
-    <!-- Wszystko będzie wstrzykiwane tutaj przez app.js -->
-    <div class="loading-screen">
-      <div class="loading-spinner"></div>
-      <p>Ładowanie ETERNIVERSE PRO MASTER...</p>
-    </div>
-  </div>
+<header>Eterniverse - Asystent Redagowania i Eksportu</header>
 
-  <!-- Modal główny (ukryty domyślnie) -->
-  <div id="modalBackdrop" class="modal-backdrop" aria-hidden="true">
-    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
-      <header class="modal-header">
-        <h2 id="modalTitle">Nowa księga</h2>
-      </header>
-      <div class="modal-content" id="modalContent">
-        <!-- Treść modala wstrzykiwana dynamicznie -->
-      </div>
-    </div>
-  </div>
+<textarea id="console" placeholder="Wpisz polecenie lub tekst do redagowania..."></textarea>
+<div style="text-align:center;">
+  <button id="startRecBtn">🎙️ Rozpocznij dyktowanie</button>
+  <button id="stopRecBtn" disabled>⏹️ Zatrzymaj dyktowanie</button>
+  <button id="executeBtn">Wykonaj polecenie / Sprawdź tekst</button>
+  <button id="exportBtn">Eksportuj do Word (.docx)</button>
+</div>
 
-  <!-- Toast notifications -->
-  <div id="toastContainer" aria-live="assertive" class="toast-container"></div>
+<h3 style="text-align:center;">Edytowany tekst:</h3>
+<textarea id="editor" placeholder="Tutaj pojawi się i będzie można edytować tekst..."></textarea>
 
-  <!-- Główny skrypt – defer dla lepszego ładowania -->
-  <script defer src="app.js" type="module"></script>
+<h3 style="text-align:center;">Sugestie i podpowiedzi:</h3>
+<div id="suggestions"></div>
+
+<div id="output"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/docx@7.3.0/build/index.min.js"></script>
+<script>
+(async () => {
+  const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
+
+  // Prosty model do przechowywania tekstów i historii poprawek w localStorage
+  const STORAGE_KEY = 'eterniverse_assistant_data';
+  let data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+  if (!data.acceptedSuggestions) data.acceptedSuggestions = [];
+
+  const consoleEl = document.getElementById('console');
+  const editorEl = document.getElementById('editor');
+  const suggestionsEl = document.getElementById('suggestions');
+  const outputEl = document.getElementById('output');
+
+  // Rozpoznawanie mowy
+  let recognition;
+  let recognizing = false;
+  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'pl-PL';
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript.trim();
+      console.log('Rozpoznano:', transcript);
+      consoleEl.value += (consoleEl.value ? ' ' : '') + transcript;
+      speakText(`Rozpoznano: ${transcript}`);
+    };
+
+    recognition.onstart = () => {
+      recognizing = true;
+      startRecBtn.disabled = true;
+      stopRecBtn.disabled = false;
+      speakText('Rozpoczęto dyktowanie');
+    };
+
+    recognition.onend = () => {
+      recognizing = false;
+      startRecBtn.disabled = false;
+      stopRecBtn.disabled = true;
+      speakText('Zatrzymano dyktowanie');
+    };
+
+    recognition.onerror = (event) => {
+      console.error('Recognition error:', event.error);
+      speakText('Wystąpił błąd rozpoznawania mowy: ' + event.error);
+    };
+  } else {
+    alert('Twoja przeglądarka nie wspiera rozpoznawania mowy.');
+  }
+
+  document.getElementById('startRecBtn').onclick = () => {
+    if (!recognizing) recognition.start();
+  };
+  document.getElementById('stopRecBtn').onclick = () => {
+    if (recognizing) recognition.stop();
+  };
+
+  // Synteza mowy
+  function speakText(text) {
+    if (!window.speechSynthesis) return;
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'pl-PL';
+    window.speechSynthesis.cancel(); // przerwij poprzednie
+    window.speechSynthesis.speak(utterance);
+  }
+
+  // Prosty parser poleceń i redaktor tekstu
+  // Polecenia:
+  // DODAJ ŚWIAT <nazwa>
+  // DODAJ KSIĄŻKĘ <świat> <nazwa>
+  // DODAJ ROZDZIAŁ <świat> <książka> <nazwa>
+  // REDAGUJ TEKST (przyjmuje tekst z konsoli do edytora)
+  // PODPOWIEDŹ (generuje sugestie)
+  // EKSPORTUJ (eksportuje tekst w edytorze do Worda)
+  // Możesz rozszerzać
+
+  // Do redagowania tekstów pod Amazon:
+  // prosty algorytm wykrywający powtórzenia, długie zdania, frazy marketingowe
+
+  function simpleRedactor(text) {
+    const suggestions = [];
+
+    // Sprawdź powtórzenia słów (proste)
+    const words = text.toLowerCase().match(/\b\w+\b/g) || [];
+    const wordCounts = {};
+    words.forEach(w => wordCounts[w] = (wordCounts[w] || 0) + 1);
+    Object.entries(wordCounts).forEach(([word, count]) => {
+      if (count > 5) {
+        suggestions.push(`Słowo "word"powtarzasię{word}" powtarza sięword"powtarzasię{count} razy - rozważ użycie synonimów.`);
+      }
+    });
+
+    // Sprawdź długie zdania (> 25 słów)
+    const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [];
+    sentences.forEach((s, i) => {
+      const len = s.trim().split(/\s+/).length;
+      if (len > 25) {
+        suggestions.push(`Zdanie nr i+1jestbardzodługie({i+1} jest bardzo długie (i+1jestbardzodługie({len} słów) - rozważ podział na krótsze.`);
+      }
+    });
+
+    // Marketingowe frazy (przykładowe)
+    const marketingPhrases = [
+      'najlepszy',
+      'idealny',
+      'unikalny',
+      'niezwykły',
+      'doskonały',
+      'rewolucyjny',
+      'ekskluzywny',
+      'najwyższej jakości',
+    ];
+    marketingPhrases.forEach(phrase => {
+      const reg = new RegExp(`\\b${phrase}\\b`, 'i');
+      if (reg.test(text)) {
+        suggestions.push(`Użyto frazy marketingowej: "${phrase}". Upewnij się, że jest adekwatna.`);
+      }
+    });
+
+    // Uczenie się na podstawie zaakceptowanych sugestii
+    // (tu prosto filtrujemy, by nie powtarzać tych zaakceptowanych)
+    const filtered = suggestions.filter(sug => !data.acceptedSuggestions.includes(sug));
+
+    return filtered;
+  }
+
+  function addAcceptedSuggestion(sug) {
+    if (!data.acceptedSuggestions.includes(sug)) {
+      data.acceptedSuggestions.push(sug);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
+  }
+
+  // Przetwarzanie polecenia lub tekstu z konsoli
+  function processConsoleText(input) {
+    const cmd = input.trim();
+
+    if (!cmd) return;
+
+    // Obsługa prostych poleceń
+    const parts = cmd.split(/\s+/);
+    const cmdUpper = parts[0].toUpperCase();
+
+    if (cmdUpper === 'REDAGUJ' || cmdUpper === 'REDAGUJ TEKST') {
+      // Przenieś tekst z konsoli do edytora do redagowania
+      editorEl.value = consoleEl.value;
+      suggestionsEl.innerHTML = '';
+      outputEl.textContent = 'Tekst przeniesiony do edytora. Kliknij "Sprawdź tekst", aby zobaczyć sugestie.';
+      speakText('Tekst przeniesiony do edytora. Możesz teraz sprawdzić sugestie.');
+      return;
+    }
+
+    if (cmdUpper === 'PODPOWIEDŹ') {
+      const text = editorEl.value.trim();
+      if (!text) {
+        outputEl.textContent = 'Edytor jest pusty. Wpisz tekst do redagowania.';
+        speakText('Edytor jest pusty. Wpisz tekst do redagowania.');
+        return;
+      }
+      const sug = simpleRedactor(text);
+      suggestionsEl.innerHTML = '';
+      if (sug.length === 0) {
+        suggestionsEl.textContent = 'Brak nowych sugestii.';
+        speakText('Brak nowych sugestii.');
+      } else {
+        sug.forEach(str => {
+          const div = document.createElement('div');
+          div.classList.add('suggestion');
+          div.textContent = str;
+          const acceptBtn = document.createElement('button');
+          acceptBtn.textContent = 'Akceptuj';
+          acceptBtn.onclick = () => {
+            addAcceptedSuggestion(str);
+            div.style.opacity = '0.5';
+            speakText('Sugestia zaakceptowana.');
+          };
+          div.appendChild(acceptBtn);
+          suggestionsEl.appendChild(div);
+        });
+        speakText(`Znaleziono ${sug.length} sugestii.`);
+      }
+      return;
+    }
+
+    if (cmdUpper === 'EKSPORTUJ') {
+      if (!editorEl.value.trim()) {
+        outputEl.textContent = 'Edytor jest pusty. Nie można eksportować.';
+        speakText('Edytor jest pusty. Nie można eksportować.');
+        return;
+      }
+      exportToWord('Opis_Amazon', editorEl.value.trim());
+      return;
+    }
+
+    // Jeśli to nie polecenie, traktuj jako tekst do edycji
+    editorEl.value = input;
+    suggestionsEl.innerHTML = '';
+    outputEl.textContent = 'Tekst załadowany do edytora.';
+    speakText('Tekst załadowany do edytora.');
+  }
+
+  document.getElementById('executeBtn').onclick = () => {
+    processConsoleText(consoleEl.value);
+  };
+
+  document.getElementById('exportBtn').onclick = () => {
+    if (!editorEl.value.trim()) {
+      outputEl.textContent = 'Edytor jest pusty. Nie można eksportować.';
+      speakText('Edytor jest pusty. Nie można eksportować.');
+      return;
+    }
+    exportToWord('Opis_Amazon', editorEl.value.trim());
+  };
+
+  async function exportToWord(title, text) {
+    const doc = new Document({
+      sections: [{
+        children: [
+          new Paragraph({
+            text: title,
+            heading: HeadingLevel.HEADING_1,
+            thematicBreak: true,
+          }),
+          new Paragraph(text),
+        ],
+      }],
+    });
+    const blob = await Packer.toBlob(doc);
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `${title.replace(/\s+/g, '_')}.docx`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    outputEl.textContent = `Eksportowano plik ${a.download}`;
+    speakText('Plik został wyeksportowany.');
+  }
+})();
+</script>
 </body>
 </html>
