@@ -544,3 +544,8 @@ const Eterniverse = (() => {
 document.addEventListener("DOMContentLoaded", () => {
   Eterniverse.init();
 });
+document.addEventListener("DOMContentLoaded", () => {
+  if (typeof Eterniverse !== "undefined" && Eterniverse.init) {
+    Eterniverse.init();
+  }
+});
