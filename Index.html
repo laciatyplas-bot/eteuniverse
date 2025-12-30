@@ -1,341 +1,149 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>System Ochrony Literatury - AUTHOR MODE</title>
-<style>
-  body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
-  h1, h2, h3 { color: #2c3e50; }
-  label { display: block; margin-top: 10px; font-weight: bold; }
-  input[type=text], select, textarea {
-    width: 100%; padding: 8px; box-sizing: border-box; margin-top: 4px;
-    border: 1px solid #ccc; border-radius: 4px;
-  }
-  textarea { resize: vertical; min-height: 60px; }
-  button {
-    margin-top: 15px; padding: 10px 15px; background: #2980b9; color: white;
-    border: none; border-radius: 4px; cursor: pointer;
-  }
-  button:hover { background: #3498db; }
-  .container { background: white; padding: 20px; border-radius: 6px; box-shadow: 0 0 8px rgba(0,0,0,0.1); max-width: 900px; margin: auto; }
-  .element-block { border: 1px solid #ddd; padding: 15px; margin-top: 15px; border-radius: 4px; background: #fafafa; }
-  .warning { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-top: 15px; }
-  .readonly { background: #e9ecef; }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Eterniverse - Asystent Redagowania AUTHOR MODE</title>
+  <!-- Podłącz zewnętrzny CSS -->
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-<div class="container">
-  <h1>System Ochrony Literatury - AUTHOR MODE</h1>
-  <div class="warning">
-    <strong>Tryb pracy:</strong> AUTHOR MODE<br>
-    <strong>Generowanie fabuły:</strong> WYŁĄCZONE (system nie generuje ani nie modyfikuje treści autora)<br>
-    System jedynie porządkuje, chroni i archiwizuje tekst autora.
-  </div>
+  <header>
+    Eterniverse - Bella Asystent Redakcyjny<br />
+    <small>AUTHOR MODE - Chronimy literaturę stworzoną przez autora</small>
+  </header>
+  <main>
+    <section>
+      <label for="fabularSwitch"><strong>FABULAR GENERATION</strong></label>
+      <select id="fabularSwitch" aria-describedby="fabularDesc" disabled>
+        <option value="off" selected>OFF (PERMANENT)</option>
+      </select>
+      <p id="fabularDesc" class="note">System nie generuje fabuły, tylko chroni Twój tekst.</p>
+    </section>
 
-  <h2>Dodaj element uniwersum</h2>
-  <form id="elementForm">
-    <label for="elementType">Typ elementu:</label>
-    <select id="elementType" required>
-      <option value="universe">Uniwersum</option>
-      <option value="world">Świat</option>
-      <option value="volume">Tom</option>
-      <option value="chapter">Rozdział</option>
-      <option value="fragment">Fragment / Podrozdział</option>
-    </select>
+    <section>
+      <h2>Struktura Wszechświata</h2>
 
-    <label for="parentSelect">Rodzic (opcjonalny):</label>
-    <select id="parentSelect">
-      <option value="">Brak (dodaj jako korzeń)</option>
-    </select>
+      <div id="universeBlock" aria-label="Uniwersum">
+        <h3>Uniwersum</h3>
+        <label for="universeTitle">Tytuł Uniwersum</label>
+        <input type="text" id="universeTitle" placeholder="Wpisz tytuł uniwersum" />
 
-    <label for="title">Tytuł:</label>
-    <input type="text" id="title" required />
+        <label for="universeDate">Data utworzenia</label>
+        <input type="date" id="universeDate" />
 
-    <label for="version">Wersja (np. v1):</label>
-    <input type="text" id="version" value="v1" required />
+        <label for="universeVersion">Wersja</label>
+        <input type="text" id="universeVersion" placeholder="np. v1" />
 
-    <label for="language">Język:</label>
-    <select id="language" required>
-      <option value="PL">Polski</option>
-      <option value="EN">Angielski</option>
-      <option value="DE">Niemiecki</option>
-      <option value="FR">Francuski</option>
-      <option value="ES">Hiszpański</option>
-      <option value="OTHER">Inny</option>
-    </select>
+        <label for="universeLanguage">Język</label>
+        <select id="universeLanguage">
+          <option value="pl" selected>Polski</option>
+          <option value="en">Angielski</option>
+          <option value="other">Inny</option>
+        </select>
+      </div>
 
-    <label for="authorNotes">Notatki autora (niewidoczne dla czytelnika):</label>
-    <textarea id="authorNotes" placeholder="Zapisz emocje, kontekst, powody powstania tekstu..."></textarea>
+      <div id="worldBlock" aria-label="Świat">
+        <h3>Świat (np. ETERSEEKER / INTERSEEKER / OBFITOSEEKER)</h3>
+        <label for="worldTitle">Tytuł Świata</label>
+        <input type="text" id="worldTitle" placeholder="Wpisz tytuł świata" />
 
-    <label for="textContent" id="textContentLabel" style="display:none;">Treść (tylko dla fragmentów):</label>
-    <textarea id="textContent" style="display:none;" placeholder="Wpisz tekst autora"></textarea>
+        <label for="worldDate">Data utworzenia</label>
+        <input type="date" id="worldDate" />
 
-    <button type="submit">Dodaj element</button>
-  </form>
+        <label for="worldVersion">Wersja</label>
+        <input type="text" id="worldVersion" placeholder="np. v1" />
 
-  <h2>Struktura Uniwersum</h2>
-  <div id="universeTree">
-    <em>Brak dodanych elementów.</em>
-  </div>
+        <label for="worldLanguage">Język</label>
+        <select id="worldLanguage">
+          <option value="pl" selected>Polski</option>
+          <option value="en">Angielski</option>
+          <option value="other">Inny</option>
+        </select>
+      </div>
 
-  <h2>Eksport</h2>
-  <button id="exportBtn">Eksportuj całość do pliku TXT</button>
+      <div id="volumeBlock" aria-label="Tom">
+        <h3>Tom</h3>
+        <label for="volumeTitle">Tytuł Tomu</label>
+        <input type="text" id="volumeTitle" placeholder="Wpisz tytuł tomu" />
 
-  <h2>Tryb Wydawniczy (Pasywny)</h2>
-  <label for="publishMode">Wybierz tryb:</label>
-  <select id="publishMode">
-    <option value="none">Brak</option>
-    <option value="amazon">Amazon Mode</option>
-    <option value="wattpad">Wattpad Mode</option>
-  </select>
-  <div id="publishWarnings" style="margin-top:10px; color:#c0392b;"></div>
-</div>
+        <label for="volumeDate">Data utworzenia</label>
+        <input type="date" id="volumeDate" />
 
-<script>
-  // Data model
-  const universeData = [];
+        <label for="volumeVersion">Wersja</label>
+        <input type="text" id="volumeVersion" placeholder="np. v1" />
 
-  // Utility to generate unique IDs
-  function generateId() {
-    return 'id-' + Math.random().toString(36).substr(2, 9);
-  }
+        <label for="volumeLanguage">Język</label>
+        <select id="volumeLanguage">
+          <option value="pl" selected>Polski</option>
+          <option value="en">Angielski</option>
+          <option value="other">Inny</option>
+        </select>
+      </div>
 
-  // Find element by ID recursively
-  function findElementById(elements, id) {
-    for (const el of elements) {
-      if (el.id === id) return el;
-      if (el.children) {
-        const found = findElementById(el.children, id);
-        if (found) return found;
-      }
-    }
-    return null;
-  }
+      <div id="chapterBlock" aria-label="Rozdział">
+        <h3>Rozdział</h3>
+        <label for="chapterTitle">Tytuł Rozdziału</label>
+        <input type="text" id="chapterTitle" placeholder="Wpisz tytuł rozdziału" />
 
-  // Add element to the hierarchy
-  function addElement(type, title, version, language, authorNotes, textContent, parentId) {
-    const element = {
-      id: generateId(),
-      type,
-      title,
-      creationDate: new Date().toISOString(),
-      version,
-      language,
-      authorNotes,
-      textContent: type === 'fragment' ? textContent : '',
-      children: []
-    };
-    if (!parentId) {
-      universeData.push(element);
-    } else {
-      const parent = findElementById(universeData, parentId);
-      if (parent) {
-        parent.children.push(element);
-      } else {
-        alert('Nie znaleziono elementu rodzica');
-        return null;
-      }
-    }
-    return element;
-  }
+        <label for="chapterDate">Data utworzenia</label>
+        <input type="date" id="chapterDate" />
 
-  // Render the hierarchy as nested lists
-  function renderTree(elements, container) {
-    container.innerHTML = '';
-    if (elements.length === 0) {
-      container.innerHTML = '<em>Brak dodanych elementów.</em>';
-      return;
-    }
-    const ul = document.createElement('ul');
-    elements.forEach(el => {
-      const li = document.createElement('li');
-      li.innerHTML = `<strong>el.type.toUpperCase()</strong>:{el.type.toUpperCase()}</strong>:el.type.toUpperCase()</strong>:{el.title} (vel.version,{el.version},el.version,{el.language}, utworzono: ${new Date(el.creationDate).toLocaleString()})`;
-      if(el.authorNotes) {
-        const notes = document.createElement('div');
-        notes.style.fontStyle = 'italic';
-        notes.style.color = '#7f8c8d';
-        notes.textContent = "Notatki autora: " + el.authorNotes;
-        li.appendChild(notes);
-      }
-      if(el.textContent) {
-        const text = document.createElement('div');
-        text.style.marginTop = '6px';
-        text.style.whiteSpace = 'pre-wrap';
-        text.style.background = '#ecf0f1';
-        text.style.padding = '8px';
-        text.style.borderRadius = '4px';
-        text.textContent = el.textContent;
-        li.appendChild(text);
-      }
-      if (el.children.length > 0) {
-        renderTree(el.children, li);
-      }
-      ul.appendChild(li);
-    });
-    container.appendChild(ul);
-  }
+        <label for="chapterVersion">Wersja</label>
+        <input type="text" id="chapterVersion" placeholder="np. v1" />
 
-  // Update parent select options
-  function updateParentOptions() {
-    const parentSelect = document.getElementById('parentSelect');
-    const typeSelect = document.getElementById('elementType');
-    const selectedType = typeSelect.value;
+        <label for="chapterLanguage">Język</label>
+        <select id="chapterLanguage">
+          <option value="pl" selected>Polski</option>
+          <option value="en">Angielski</option>
+          <option value="other">Inny</option>
+        </select>
+      </div>
 
-    // Clear current options except first
-    while (parentSelect.options.length > 1) {
-      parentSelect.remove(1);
-    }
+      <div id="fragmentBlock" aria-label="Podrozdział lub Fragment">
+        <h3>Podrozdział / Fragment</h3>
+        <label for="fragmentTitle">Tytuł Podrozdziału / Fragmentu</label>
+        <input type="text" id="fragmentTitle" placeholder="Wpisz tytuł podrozdziału lub fragmentu" />
 
-    // Allowed parent types for each element type
-    const allowedParents = {
-      'universe': [],
-      'world': ['universe'],
-      'volume': ['world'],
-      'chapter': ['volume'],
-      'fragment': ['chapter']
-    };
+        <label for="fragmentDate">Data utworzenia</label>
+        <input type="date" id="fragmentDate" />
 
-    function addOptions(elements, depth = 0) {
-      elements.forEach(el => {
-        if (allowedParents[selectedType].includes(el.type)) {
-          const option = document.createElement('option');
-          option.value = el.id;
-          option.text = '—'.repeat(depth) + ' ' + el.type.toUpperCase() + ': ' + el.title;
-          parentSelect.appendChild(option);
-        }
-        if(el.children.length > 0) {
-          addOptions(el.children, depth +1);
-        }
-      });
-    }
+        <label for="fragmentVersion">Wersja</label>
+        <input type="text" id="fragmentVersion" placeholder="np. v1" />
 
-    addOptions(universeData);
-  }
+        <label for="fragmentLanguage">Język</label>
+        <select id="fragmentLanguage">
+          <option value="pl" selected>Polski</option>
+          <option value="en">Angielski</option>
+          <option value="other">Inny</option>
+        </select>
 
-  // Show/hide textContent field based on element type
-  function toggleTextContentField() {
-    const typeSelect = document.getElementById('elementType');
-    const textContentLabel = document.getElementById('textContentLabel');
-    const textContent = document.getElementById('textContent');
-    if (typeSelect.value === 'fragment') {
-      textContentLabel.style.display = 'block';
-      textContent.style.display = 'block';
-      textContent.required = true;
-    } else {
-      textContentLabel.style.display = 'none';
-      textContent.style.display = 'none';
-      textContent.required = false;
-    }
-  }
+        <label for="fragmentText">Tekst Podrozdziału / Fragmentu</label>
+        <textarea id="fragmentText" placeholder="Wpisz tekst fragmentu..."></textarea>
+      </div>
+    </section>
 
-  // Handle form submission
-  document.getElementById('elementForm').addEventListener('submit', e => {
-    e.preventDefault();
+    <section>
+      <h2>Notatki Autora (niewidoczne dla czytelnika)</h2>
+      <textarea id="authorNotes" placeholder="Zapisz emocje, kontekst życiowy, powody powstania tekstu..."></textarea>
+    </section>
 
-    if(!AUTHOR_MODE) {
-      alert('System jest w trybie generowania fabuły - dodawanie własnych tekstów zablokowane.');
-      return;
-    }
+    <section>
+      <h2>Archiwum Praw Autorskich</h2>
+      <p class="note">Każdy zapis automatycznie zapisuje timestamp, lokalną kopię i oznacza autora jako właściciela praw.</p>
+      <button id="saveBtn">Zapisz Projekt</button>
+      <button id="exportDocxBtn">Eksportuj .docx</button>
+      <button id="exportPdfBtn">Eksportuj .pdf</button>
+      <button id="exportTxtBtn">Eksportuj .txt</button>
+    </section>
 
-    const type = document.getElementById('elementType').value;
-    const parentId = document.getElementById('parentSelect').value || null;
-    const title = document.getElementById('title').value.trim();
-    const version = document.getElementById('version').value.trim();
-    const language = document.getElementById('language').value;
-    const authorNotes = document.getElementById('authorNotes').value.trim();
-    const textContent = type === 'fragment' ? document.getElementById('textContent').value.trim() : '';
+    <section>
+      <h2>Informacje zwrotne</h2>
+      <div id="output" aria-live="polite" aria-atomic="true"></div>
+    </section>
+  </main>
 
-    // Validate parent-child relation
-    const validParents = {
-      'universe': [],
-      'world': ['universe'],
-      'volume': ['world'],
-      'chapter': ['volume'],
-      'fragment': ['chapter']
-    };
-    if (parentId) {
-      const parentElement = findElementById(universeData, parentId);
-      if (!parentElement || !validParents[type].includes(parentElement.type)) {
-        alert('Nieprawidłowy rodzic dla wybranego typu elementu.');
-        return;
-      }
-    } else if (validParents[type].length > 0) {
-      alert('Ten typ elementu wymaga podania rodzica.');
-      return;
-    }
-
-    const newElement = addElement(type, title, version, language, authorNotes, textContent, parentId);
-    if (newElement) {
-      renderTree(universeData, document.getElementById('universeTree'));
-      updateParentOptions();
-      e.target.reset();
-      toggleTextContentField();
-      alert('Element dodany i zapisany. Prawa autorskie przypisane autorowi.');
-    }
-  });
-
-  // On element type change update parents and fields
-  document.getElementById('elementType').addEventListener('change', () => {
-    updateParentOptions();
-    toggleTextContentField();
-  });
-
-  // Initial setup
-  const AUTHOR_MODE = true; // system-wide flag
-  updateParentOptions();
-  toggleTextContentField();
-
-  // Export to TXT file
-  document.getElementById('exportBtn').addEventListener('click', () => {
-    if(!AUTHOR_MODE) {
-      alert('Eksport zablokowany poza trybem autora.');
-      return;
-    }
-
-    function serialize(elements, indent = '') {
-      let text = '';
-      elements.forEach(el => {
-        text += `indent{indent}indent{el.type.toUpperCase()}: el.title(v{el.title} (vel.title(v{el.version}, el.language,utworzono:{el.language}, utworzono:el.language,utworzono:{new Date(el.creationDate).toLocaleString()})\n`;
-        if(el.authorNotes) {
-          text += `indent[Notatkiautora]:{indent}  [Notatki autora]:indent[Notatkiautora]:{el.authorNotes.replace(/\n/g, '\n' + indent + '    ')}\n`;
-        }
-        if(el.textContent) {
-          text += `indent[Tresˊcˊ]:\n{indent}  [Treść]:\nindent[Tresˊcˊ]:\n{indent}    ${el.textContent.replace(/\n/g, '\n' + indent + '    ')}\n`;
-        }
-        if(el.children.length > 0) {
-          text += serialize(el.children, indent + '    ');
-        }
-      });
-      return text;
-    }
-
-    const content = serialize(universeData);
-    if (!content) {
-      alert('Brak danych do eksportu.');
-      return;
-    }
-
-    const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'literature_export_' + new Date().toISOString().slice(0,19).replace(/:/g, '-') + '.txt';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-  });
-
-  // Publishing mode warnings
-  document.getElementById('publishMode').addEventListener('change', e => {
-    const val = e.target.value;
-    const warnDiv = document.getElementById('publishWarnings');
-    if(val === 'amazon' || val === 'wattpad') {
-      warnDiv.innerHTML = `<strong>Tryb ${val.toUpperCase()} aktywny.</strong> <br>System nie sugeruje fabuły, stylu ani narracji. <br>Formatowanie i podział na rozdziały są obsługiwane.`;
-    } else {
-      warnDiv.innerHTML = '';
-    }
-  });
-</script>
+  <!-- Podłącz zewnętrzny skrypt JS -->
+  <script src="script.js"></script>
 </body>
 </html>
