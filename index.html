@@ -1,86 +1,65 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>EterUniverse — Biblioteka Autora</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      background: #0f1220;
-      color: #eaeaf0;
-    }
-    header {
-      padding: 24px;
-      text-align: center;
-      background: #151a33;
-      border-bottom: 1px solid #242a52;
-    }
-    h1 {
-      margin: 0;
-      font-size: 28px;
-    }
-    main {
-      max-width: 900px;
-      margin: 40px auto;
-      padding: 0 16px;
-    }
-    .card {
-      background: #171c3d;
-      border: 1px solid #242a52;
-      border-radius: 8px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-    .btn {
-      display: inline-block;
-      padding: 10px 16px;
-      border-radius: 6px;
-      background: #3b82f6;
-      color: #fff;
-      text-decoration: none;
-      border: none;
-      cursor: pointer;
-      font-weight: 600;
-    }
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: #9aa0c7;
-      font-size: 14px;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>Eterniverse – Author Mode</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header>
-  <h1>EterUniverse</h1>
-  <p>Autorska biblioteka • tryb offline • bez systemów • bez modali</p>
-</header>
+<input type="hidden" id="fabularSwitch" value="off">
+
+<h1>Eterniverse – AUTHOR MODE</h1>
+
+<section>
+  <h2>Uniwersum</h2>
+  <input id="universeTitle" placeholder="Tytuł uniwersum">
+  <input id="universeDate" type="date">
+  <input id="universeVersion" placeholder="Wersja">
+  <select id="universeLanguage">
+    <option value="pl">PL</option>
+    <option value="en">EN</option>
+  </select>
+</section>
+
+<section>
+  <h2>Świat</h2>
+  <input id="worldTitle">
+  <input id="worldDate" type="date">
+  <input id="worldVersion">
+  <select id="worldLanguage">
+    <option value="pl">PL</option>
+    <option value="en">EN</option>
+  </select>
+</section>
+
+<section>
+  <h2>Tom</h2>
+  <input id="volumeTitle">
+  <input id="volumeDate" type="date">
+  <input id="volumeVersion">
+  <select id="volumeLanguage">
+    <option value="pl">PL</option>
+    <option value="en">EN</option>
+  </select>
+</section>
 
 <main>
-  <div class="card">
-    <h2>Status</h2>
-    <p>Strona działa poprawnie. To jest czysty HTML uruchomiony na GitHub Pages.</p>
-    <p>Nie ma JS. Nie ma modali. Nie ma błędów.</p>
-  </div>
-
-  <div class="card">
-    <h2>Następny krok (opcjonalny)</h2>
-    <p>Jeśli kiedyś będziesz chciał:</p>
-    <ul>
-      <li>dodać JS → robimy <code>script.js</code></li>
-      <li>dodać CSS → robimy <code>style.css</code></li>
-      <li>zrobić edytor → dokładamy krok po kroku</li>
-    </ul>
-    <button class="btn" onclick="alert('Działa. I tyle.')">Test</button>
-  </div>
+  <section id="dynamicContent"></section>
 </main>
 
-<footer>
-  © EterUniverse • Autor Mode • GitHub Pages
-</footer>
+<section>
+  <h2>Notatki autora</h2>
+  <textarea id="authorNotes"></textarea>
+</section>
 
+<button id="saveBtn">Zapisz</button>
+<button id="exportTxtBtn">TXT</button>
+<button id="exportDocxBtn">DOCX</button>
+<button id="exportPdfBtn">PDF</button>
+
+<div id="output"></div>
+
+<script src="app.js"></script>
 </body>
 </html>
