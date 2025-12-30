@@ -3,147 +3,383 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Eterniverse - Asystent Redagowania AUTHOR MODE</title>
-  <!-- Podłącz zewnętrzny CSS -->
-  <link rel="stylesheet" href="styles.css" />
+  <title>Eterniverse PRO Master — Demo</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    /* Wklej tutaj dokładnie cały CSS z poprzedniej wiadomości (style.css) */
+    /* ...z powodów długości pomijam tutaj, ale w praktyce umieść cały CSS z poprzedniej odpowiedzi */
+  </style>
 </head>
 <body>
-  <header>
-    Eterniverse - Bella Asystent Redakcyjny<br />
-    <small>AUTHOR MODE - Chronimy literaturę stworzoną przez autora</small>
-  </header>
-  <main>
-    <section>
-      <label for="fabularSwitch"><strong>FABULAR GENERATION</strong></label>
-      <select id="fabularSwitch" aria-describedby="fabularDesc" disabled>
-        <option value="off" selected>OFF (PERMANENT)</option>
-      </select>
-      <p id="fabularDesc" class="note">System nie generuje fabuły, tylko chroni Twój tekst.</p>
-    </section>
+  <div class="app-container">
+    <header class="dashboard-header">
+      <h1>Eterniverse PRO Master — Demo</h1>
+    </header>
 
-    <section>
-      <h2>Struktura Wszechświata</h2>
+    <main id="mainContent">
+      <form id="projectForm" novalidate>
+        <section>
+          <h2>Uniwersum</h2>
+          <div class="form-group">
+            <label for="universeName">Nazwa uniwesrum</label>
+            <input type="text" id="universeName" name="universeName" required />
+          </div>
+          <div class="form-group">
+            <label for="universeDescription">Opis uniwesrum</label>
+            <textarea id="universeDescription" name="universeDescription" rows="3" required></textarea>
+          </div>
+        </section>
 
-      <div id="universeBlock" aria-label="Uniwersum">
-        <h3>Uniwersum</h3>
-        <label for="universeTitle">Tytuł Uniwersum</label>
-        <input type="text" id="universeTitle" placeholder="Wpisz tytuł uniwersum" />
+        <section>
+          <h2>Świat</h2>
+          <div class="form-group">
+            <label for="worldName">Nazwa świata</label>
+            <input type="text" id="worldName" name="worldName" required />
+          </div>
+          <div class="form-group">
+            <label for="worldDescription">Opis świata</label>
+            <textarea id="worldDescription" name="worldDescription" rows="3" required></textarea>
+          </div>
+        </section>
 
-        <label for="universeDate">Data utworzenia</label>
-        <input type="date" id="universeDate" />
+        <section>
+          <h2>Tom</h2>
+          <div class="form-group">
+            <label for="volumeTitle">Tytuł tomu</label>
+            <input type="text" id="volumeTitle" name="volumeTitle" required />
+          </div>
+          <div class="form-group">
+            <label for="volumeDescription">Opis tomu</label>
+            <textarea id="volumeDescription" name="volumeDescription" rows="3" required></textarea>
+          </div>
+        </section>
 
-        <label for="universeVersion">Wersja</label>
-        <input type="text" id="universeVersion" placeholder="np. v1" />
+        <section>
+          <h2>Rozdziały</h2>
+          <div id="chaptersContainer"></div>
+          <button type="button" id="addChapterBtn">Dodaj Rozdział</button>
+        </section>
 
-        <label for="universeLanguage">Język</label>
-        <select id="universeLanguage">
-          <option value="pl" selected>Polski</option>
-          <option value="en">Angielski</option>
-          <option value="other">Inny</option>
-        </select>
-      </div>
+        <section>
+          <h2>Notatki autora</h2>
+          <div class="form-group">
+            <textarea id="authorNotes" name="authorNotes" rows="4" placeholder="Notatki autora..."></textarea>
+          </div>
+        </section>
 
-      <div id="worldBlock" aria-label="Świat">
-        <h3>Świat (np. ETERSEEKER / INTERSEEKER / OBFITOSEEKER)</h3>
-        <label for="worldTitle">Tytuł Świata</label>
-        <input type="text" id="worldTitle" placeholder="Wpisz tytuł świata" />
+        <section>
+          <button type="button" id="exportTxtBtn">Eksportuj do TXT</button>
+          <div id="output" aria-live="polite"></div>
+        </section>
+      </form>
+    </main>
+  </div>
 
-        <label for="worldDate">Data utworzenia</label>
-        <input type="date" id="worldDate" />
+  <script>
+    (function() {
+      const chaptersContainer = document.getElementById("chaptersContainer");
+      const addChapterBtn = document.getElementById("addChapterBtn");
+      const exportTxtBtn = document.getElementById("exportTxtBtn");
+      const output = document.getElementById("output");
 
-        <label for="worldVersion">Wersja</label>
-        <input type="text" id="worldVersion" placeholder="np. v1" />
+      function createFragmentElement(chapterIndex, fragmentIndex) {
+        const fragmentDiv = document.createElement("fieldset");
+        fragmentDiv.classList.add("fragment-block");
 
-        <label for="worldLanguage">Język</label>
-        <select id="worldLanguage">
-          <option value="pl" selected>Polski</option>
-          <option value="en">Angielski</option>
-          <option value="other">Inny</option>
-        </select>
-      </div>
+        const legend = document.createElement("legend");
+        legend.textContent = `Fragment ${fragmentIndex + 1}`;
+        fragmentDiv.appendChild(legend);
 
-      <div id="volumeBlock" aria-label="Tom">
-        <h3>Tom</h3>
-        <label for="volumeTitle">Tytuł Tomu</label>
-        <input type="text" id="volumeTitle" placeholder="Wpisz tytuł tomu" />
+        // Fragment title
+        const titleGroup = document.createElement("div");
+        titleGroup.className = "form-group";
+        const titleLabel = document.createElement("label");
+        titleLabel.textContent = "Tytuł fragmentu";
+        titleLabel.setAttribute("for", `chapterchapterIndexfragmentTitle{chapterIndex}_fragmentTitlechapterIndexf​ragmentTitle{fragmentIndex}`);
+        const titleInput = document.createElement("input");
+        titleInput.type = "text";
+        titleInput.id = `chapterchapterIndexfragmentTitle{chapterIndex}_fragmentTitlechapterIndexf​ragmentTitle{fragmentIndex}`;
+        titleInput.name = `chapterchapterIndexfragmentTitle{chapterIndex}_fragmentTitlechapterIndexf​ragmentTitle{fragmentIndex}`;
+        titleInput.required = true;
+        titleGroup.appendChild(titleLabel);
+        titleGroup.appendChild(titleInput);
+        fragmentDiv.appendChild(titleGroup);
 
-        <label for="volumeDate">Data utworzenia</label>
-        <input type="date" id="volumeDate" />
+        // Fragment text
+        const textGroup = document.createElement("div");
+        textGroup.className = "form-group";
+        const textLabel = document.createElement("label");
+        textLabel.textContent = "Tekst fragmentu";
+        textLabel.setAttribute("for", `chapterchapterIndexfragmentText{chapterIndex}_fragmentTextchapterIndexf​ragmentText{fragmentIndex}`);
+        const textArea = document.createElement("textarea");
+        textArea.id = `chapterchapterIndexfragmentText{chapterIndex}_fragmentTextchapterIndexf​ragmentText{fragmentIndex}`;
+        textArea.name = `chapterchapterIndexfragmentText{chapterIndex}_fragmentTextchapterIndexf​ragmentText{fragmentIndex}`;
+        textArea.rows = 5;
+        textArea.required = true;
+        textGroup.appendChild(textLabel);
+        textGroup.appendChild(textArea);
+        fragmentDiv.appendChild(textGroup);
 
-        <label for="volumeVersion">Wersja</label>
-        <input type="text" id="volumeVersion" placeholder="np. v1" />
+        // Usuń fragment button
+        const removeFragmentBtn = document.createElement("button");
+        removeFragmentBtn.type = "button";
+        removeFragmentBtn.textContent = "Usuń fragment";
+        removeFragmentBtn.addEventListener("click", () => {
+          fragmentDiv.remove();
+          updateFragmentLegends(chapterIndex);
+        });
+        fragmentDiv.appendChild(removeFragmentBtn);
 
-        <label for="volumeLanguage">Język</label>
-        <select id="volumeLanguage">
-          <option value="pl" selected>Polski</option>
-          <option value="en">Angielski</option>
-          <option value="other">Inny</option>
-        </select>
-      </div>
+        return fragmentDiv;
+      }
 
-      <div id="chapterBlock" aria-label="Rozdział">
-        <h3>Rozdział</h3>
-        <label for="chapterTitle">Tytuł Rozdziału</label>
-        <input type="text" id="chapterTitle" placeholder="Wpisz tytuł rozdziału" />
+      function updateFragmentLegends(chapterIndex) {
+        const chapterDiv = document.querySelector(`#chapter${chapterIndex}`);
+        if (!chapterDiv) return;
+        const fragments = chapterDiv.querySelectorAll(".fragment-block");
+        fragments.forEach((frag, idx) => {
+          const legend = frag.querySelector("legend");
+          if (legend) legend.textContent = `Fragment ${idx + 1}`;
+        });
+      }
 
-        <label for="chapterDate">Data utworzenia</label>
-        <input type="date" id="chapterDate" />
+      function createChapterElement(index) {
+        const chapterDiv = document.createElement("section");
+        chapterDiv.classList.add("chapter-block");
+        chapterDiv.id = `chapter${index}`;
 
-        <label for="chapterVersion">Wersja</label>
-        <input type="text" id="chapterVersion" placeholder="np. v1" />
+        const h3 = document.createElement("h3");
+        h3.textContent = `Rozdział ${index + 1}`;
+        chapterDiv.appendChild(h3);
 
-        <label for="chapterLanguage">Język</label>
-        <select id="chapterLanguage">
-          <option value="pl" selected>Polski</option>
-          <option value="en">Angielski</option>
-          <option value="other">Inny</option>
-        </select>
-      </div>
+        // Rozdział - tytuł
+        const titleGroup = document.createElement("div");
+        titleGroup.className = "form-group";
+        const titleLabel = document.createElement("label");
+        titleLabel.textContent = "Tytuł rozdziału";
+        titleLabel.setAttribute("for", `chapterTitle${index}`);
+        const titleInput = document.createElement("input");
+        titleInput.type = "text";
+        titleInput.id = `chapterTitle${index}`;
+        titleInput.name = `chapterTitle${index}`;
+        titleInput.required = true;
+        titleGroup.appendChild(titleLabel);
+        titleGroup.appendChild(titleInput);
+        chapterDiv.appendChild(titleGroup);
 
-      <div id="fragmentBlock" aria-label="Podrozdział lub Fragment">
-        <h3>Podrozdział / Fragment</h3>
-        <label for="fragmentTitle">Tytuł Podrozdziału / Fragmentu</label>
-        <input type="text" id="fragmentTitle" placeholder="Wpisz tytuł podrozdziału lub fragmentu" />
+        // Rozdział - opis
+        const descGroup = document.createElement("div");
+        descGroup.className = "form-group";
+        const descLabel = document.createElement("label");
+        descLabel.textContent = "Opis rozdziału";
+        descLabel.setAttribute("for", `chapterDescription${index}`);
+        const descTextarea = document.createElement("textarea");
+        descTextarea.id = `chapterDescription${index}`;
+        descTextarea.name = `chapterDescription${index}`;
+        descTextarea.rows = 3;
+        descTextarea.required = true;
+        descGroup.appendChild(descLabel);
+        descGroup.appendChild(descTextarea);
+        chapterDiv.appendChild(descGroup);
 
-        <label for="fragmentDate">Data utworzenia</label>
-        <input type="date" id="fragmentDate" />
+        // Kontener fragmentów
+        const fragmentsContainer = document.createElement("div");
+        fragmentsContainer.className = "fragments-container";
+        chapterDiv.appendChild(fragmentsContainer);
 
-        <label for="fragmentVersion">Wersja</label>
-        <input type="text" id="fragmentVersion" placeholder="np. v1" />
+        // Dodaj pierwszy fragment automatycznie
+        fragmentsContainer.appendChild(createFragmentElement(index, 0));
 
-        <label for="fragmentLanguage">Język</label>
-        <select id="fragmentLanguage">
-          <option value="pl" selected>Polski</option>
-          <option value="en">Angielski</option>
-          <option value="other">Inny</option>
-        </select>
+        // Przycisk dodaj fragment
+        const addFragmentBtn = document.createElement("button");
+        addFragmentBtn.type = "button";
+        addFragmentBtn.textContent = "Dodaj fragment";
+        addFragmentBtn.addEventListener("click", () => {
+          const currentFragments = fragmentsContainer.querySelectorAll(".fragment-block").length;
+          fragmentsContainer.appendChild(createFragmentElement(index, currentFragments));
+        });
+        chapterDiv.appendChild(addFragmentBtn);
 
-        <label for="fragmentText">Tekst Podrozdziału / Fragmentu</label>
-        <textarea id="fragmentText" placeholder="Wpisz tekst fragmentu..."></textarea>
-      </div>
-    </section>
+        // Przycisk usuń rozdział
+        const removeChapterBtn = document.createElement("button");
+        removeChapterBtn.type = "button";
+        removeChapterBtn.textContent = "Usuń rozdział";
+        removeChapterBtn.addEventListener("click", () => {
+          chapterDiv.remove();
+          updateChapterHeaders();
+        });
+        chapterDiv.appendChild(removeChapterBtn);
 
-    <section>
-      <h2>Notatki Autora (niewidoczne dla czytelnika)</h2>
-      <textarea id="authorNotes" placeholder="Zapisz emocje, kontekst życiowy, powody powstania tekstu..."></textarea>
-    </section>
+        return chapterDiv;
+      }
 
-    <section>
-      <h2>Archiwum Praw Autorskich</h2>
-      <p class="note">Każdy zapis automatycznie zapisuje timestamp, lokalną kopię i oznacza autora jako właściciela praw.</p>
-      <button id="saveBtn">Zapisz Projekt</button>
-      <button id="exportDocxBtn">Eksportuj .docx</button>
-      <button id="exportPdfBtn">Eksportuj .pdf</button>
-      <button id="exportTxtBtn">Eksportuj .txt</button>
-    </section>
+      function updateChapterHeaders() {
+        const chapters = chaptersContainer.querySelectorAll(".chapter-block");
+        chapters.forEach((chapter, idx) => {
+          chapter.id = `chapter${idx}`;
+          const h3 = chapter.querySelector("h3");
+          if (h3) h3.textContent = `Rozdział ${idx + 1}`;
 
-    <section>
-      <h2>Informacje zwrotne</h2>
-      <div id="output" aria-live="polite" aria-atomic="true"></div>
-    </section>
-  </main>
+          // Aktualizacja atrybutów inputów i label
+          const titleInput = chapter.querySelector(`input[name^="chapterTitle"]`);
+          const descTextarea = chapter.querySelector(`textarea[name^="chapterDescription"]`);
+          if (titleInput) {
+            titleInput.id = `chapterTitle${idx}`;
+            titleInput.name = `chapterTitle${idx}`;
+          }
+          if (descTextarea) {
+            descTextarea.id = `chapterDescription${idx}`;
+            descTextarea.name = `chapterDescription${idx}`;
+          }
 
-  <!-- Podłącz zewnętrzny skrypt JS -->
-  <script src="script.js"></script>
+          // Aktualizacja fragmentów
+          const fragments = chapter.querySelectorAll(".fragment-block");
+          fragments.forEach((frag, fIdx) => {
+            const legend = frag.querySelector("legend");
+            if (legend) legend.textContent = `Fragment ${fIdx + 1}`;
+
+            const fragTitle = frag.querySelector(`input[type="text"]`);
+            const fragText = frag.querySelector("textarea");
+            if (fragTitle) {
+              fragTitle.id = `chapteridxfragmentTitle{idx}_fragmentTitleidxf​ragmentTitle{fIdx}`;
+              fragTitle.name = `chapteridxfragmentTitle{idx}_fragmentTitleidxf​ragmentTitle{fIdx}`;
+              const label = fragTitle.previousElementSibling;
+              if (label) label.setAttribute("for", fragTitle.id);
+            }
+            if (fragText) {
+              fragText.id = `chapteridxfragmentText{idx}_fragmentTextidxf​ragmentText{fIdx}`;
+              fragText.name = `chapteridxfragmentText{idx}_fragmentTextidxf​ragmentText{fIdx}`;
+              const label = fragText.previousElementSibling;
+              if (label) label.setAttribute("for", fragText.id);
+            }
+          });
+        });
+      }
+
+      function collectData() {
+        const data = {
+          universe: {
+            name: document.getElementById("universeName").value.trim(),
+            description: document.getElementById("universeDescription").value.trim()
+          },
+          world: {
+            name: document.getElementById("worldName").value.trim(),
+            description: document.getElementById("worldDescription").value.trim()
+          },
+          volume: {
+            title: document.getElementById("volumeTitle").value.trim(),
+            description: document.getElementById("volumeDescription").value.trim()
+          },
+          chapters: [],
+          authorNotes: document.getElementById("authorNotes").value.trim()
+        };
+
+        const chapters = chaptersContainer.querySelectorAll(".chapter-block");
+        chapters.forEach((chapter) => {
+          const chapterTitle = chapter.querySelector(`input[name^="chapterTitle"]`).value.trim();
+          const chapterDesc = chapter.querySelector(`textarea[name^="chapterDescription"]`).value.trim();
+
+          const fragmentsArr = [];
+          const fragments = chapter.querySelectorAll(".fragment-block");
+          fragments.forEach((frag) => {
+            const fragTitle = frag.querySelector(`input[type="text"]`).value.trim();
+            const fragText = frag.querySelector("textarea").value.trim();
+            fragmentsArr.push({
+              title: fragTitle,
+              text: fragText
+            });
+          });
+
+          data.chapters.push({
+            title: chapterTitle,
+            description: chapterDesc,
+            fragments: fragmentsArr
+          });
+        });
+
+        return data;
+      }
+
+      function validateData(data) {
+        // Prosta walidacja - wszystkie pola wymagane
+        if (!data.universe.name || !data.universe.description) return false;
+        if (!data.world.name || !data.world.description) return false;
+        if (!data.volume.title || !data.volume.description) return false;
+        if (data.chapters.length === 0) return false;
+
+        for (const ch of data.chapters) {
+          if (!ch.title || !ch.description) return false;
+          if (ch.fragments.length === 0) return false;
+          for (const f of ch.fragments) {
+            if (!f.title || !f.text) return false;
+          }
+        }
+        return true;
+      }
+
+      function showMessage(msg, type = "info") {
+        output.textContent = msg;
+        output.className = type;
+      }
+
+      function exportTxt() {
+        const data = collectData();
+        if (!validateData(data)) {
+          showMessage("Proszę wypełnić wszystkie wymagane pola!", "error");
+          return;
+        }
+
+        let txt = "ETERNIVERSE PROJECT EXPORT\n\n";
+
+        txt += "UNIWERSUM:\n";
+        txt += `Nazwa: ${data.universe.name}\n`;
+        txt += `Opis: ${data.universe.description}\n\n`;
+
+        txt += "ŚWIAT:\n";
+        txt += `Nazwa: ${data.world.name}\n`;
+        txt += `Opis: ${data.world.description}\n\n`;
+
+        txt += "TOM:\n";
+        txt += `Tytuł: ${data.volume.title}\n`;
+        txt += `Opis: ${data.volume.description}\n\n`;
+
+        txt += "ROZDZIAŁY:\n";
+        data.chapters.forEach((ch, i) => {
+          txt += `Rozdział i+1:{i + 1}:i+1:{ch.title}\n`;
+          txt += `Opis: ${ch.description}\n`;
+          ch.fragments.forEach((f, j) => {
+            txt += `  Fragment j+1:{j + 1}:j+1:{f.title}\n`;
+            txt += `  Tekst: ${f.text}\n`;
+          });
+          txt += "\n";
+        });
+
+        txt += `NOTATKI AUTORA:\n${data.authorNotes}\n`;
+
+        const blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "eterniverse_project.txt";
+        a.click();
+
+        URL.revokeObjectURL(url);
+        showMessage("Eksport zakończony pomyślnie!", "success");
+      }
+
+      addChapterBtn.addEventListener("click", () => {
+        const chapterCount = chaptersContainer.querySelectorAll(".chapter-block").length;
+        chaptersContainer.appendChild(createChapterElement(chapterCount));
+      });
+
+      exportTxtBtn.addEventListener("click", exportTxt);
+
+      // Dodaj pierwszy rozdział domyślnie przy załadowaniu
+      document.addEventListener("DOMContentLoaded", () => {
+        addChapterBtn.click();
+      });
+    })();
+  </script>
 </body>
 </html>
