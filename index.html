@@ -1,65 +1,81 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <title>Eterniverse – Author Mode</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eterniverse – AUTHOR MODE</title>
+
+  <!-- CSS – TWÓJ ISTNIEJĄCY -->
+  <link rel="stylesheet" href="style.css" />
 </head>
+
 <body>
+  <div class="app-container">
+    <h1>Eterniverse – AUTHOR MODE</h1>
 
-<input type="hidden" id="fabularSwitch" value="off">
+    <main>
+      <!-- UNIWERSUM -->
+      <section>
+        <h2>Uniwersum</h2>
+        <input id="universeTitle" type="text" placeholder="Tytuł uniwersum" />
+        <input id="universeDate" type="date" />
+        <input id="universeVersion" type="text" placeholder="Wersja" />
+        <select id="universeLanguage">
+          <option value="pl">PL</option>
+          <option value="en">EN</option>
+        </select>
+      </section>
 
-<h1>Eterniverse – AUTHOR MODE</h1>
+      <!-- ŚWIAT -->
+      <section>
+        <h2>Świat</h2>
+        <input id="worldTitle" type="text" placeholder="Tytuł świata" />
+        <input id="worldDate" type="date" />
+        <input id="worldVersion" type="text" placeholder="Wersja" />
+        <select id="worldLanguage">
+          <option value="pl">PL</option>
+          <option value="en">EN</option>
+        </select>
+      </section>
 
-<section>
-  <h2>Uniwersum</h2>
-  <input id="universeTitle" placeholder="Tytuł uniwersum">
-  <input id="universeDate" type="date">
-  <input id="universeVersion" placeholder="Wersja">
-  <select id="universeLanguage">
-    <option value="pl">PL</option>
-    <option value="en">EN</option>
-  </select>
-</section>
+      <!-- TOM -->
+      <section>
+        <h2>Tom</h2>
+        <input id="volumeTitle" type="text" placeholder="Tytuł tomu" />
+        <input id="volumeDate" type="date" />
+        <input id="volumeVersion" type="text" placeholder="Wersja" />
+        <select id="volumeLanguage">
+          <option value="pl">PL</option>
+          <option value="en">EN</option>
+        </select>
+      </section>
 
-<section>
-  <h2>Świat</h2>
-  <input id="worldTitle">
-  <input id="worldDate" type="date">
-  <input id="worldVersion">
-  <select id="worldLanguage">
-    <option value="pl">PL</option>
-    <option value="en">EN</option>
-  </select>
-</section>
+      <!-- FABULAR SWITCH (ZABLOKOWANY) -->
+      <input type="hidden" id="fabularSwitch" value="off" />
 
-<section>
-  <h2>Tom</h2>
-  <input id="volumeTitle">
-  <input id="volumeDate" type="date">
-  <input id="volumeVersion">
-  <select id="volumeLanguage">
-    <option value="pl">PL</option>
-    <option value="en">EN</option>
-  </select>
-</section>
+      <!-- TU JS DODA ROZDZIAŁY -->
+      <section id="dynamicContent"></section>
 
-<main>
-  <section id="dynamicContent"></section>
-</main>
+      <!-- NOTATKI -->
+      <section>
+        <h2>Notatki autora</h2>
+        <textarea id="authorNotes"></textarea>
+      </section>
 
-<section>
-  <h2>Notatki autora</h2>
-  <textarea id="authorNotes"></textarea>
-</section>
+      <!-- PRZYCISKI -->
+      <section>
+        <button id="saveBtn" type="button">Zapisz</button>
+        <button id="exportTxtBtn" type="button">TXT</button>
+        <button id="exportDocxBtn" type="button">DOCX</button>
+        <button id="exportPdfBtn" type="button">PDF</button>
+      </section>
 
-<button id="saveBtn">Zapisz</button>
-<button id="exportTxtBtn">TXT</button>
-<button id="exportDocxBtn">DOCX</button>
-<button id="exportPdfBtn">PDF</button>
+      <!-- KOMUNIKATY -->
+      <div id="output"></div>
+    </main>
+  </div>
 
-<div id="output"></div>
-
-<script src="app.js"></script>
+  <!-- JS – TWÓJ ISTNIEJĄCY -->
+  <script src="app.js"></script>
 </body>
 </html>
