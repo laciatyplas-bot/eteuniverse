@@ -3,329 +3,339 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Eterniverse - Asystent Redagowania i Eksportu</title>
+<title>System Ochrony Literatury - AUTHOR MODE</title>
 <style>
-  body {
-    background: #121212;
-    color: #eee;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh;
+  body { font-family: Arial, sans-serif; margin: 20px; background: #f5f5f5; }
+  h1, h2, h3 { color: #2c3e50; }
+  label { display: block; margin-top: 10px; font-weight: bold; }
+  input[type=text], select, textarea {
+    width: 100%; padding: 8px; box-sizing: border-box; margin-top: 4px;
+    border: 1px solid #ccc; border-radius: 4px;
   }
-  header {
-    background: #1e1e1e;
-    padding: 1rem;
-    text-align: center;
-    font-size: 1.5rem;
-    font-weight: bold;
-  }
-  #console, #editor {
-    width: 90%;
-    margin: 1rem auto;
-    background: #222;
-    color: #eee;
-    border: none;
-    border-radius: 5px;
-    padding: 10px;
-    font-size: 1rem;
-    resize: vertical;
-    min-height: 100px;
-  }
-  #output, #suggestions {
-    width: 90%;
-    margin: 0 auto 1rem auto;
-    background: #1a1a1a;
-    padding: 10px;
-    border-radius: 5px;
-    min-height: 60px;
-    overflow-y: auto;
-  }
+  textarea { resize: vertical; min-height: 60px; }
   button {
-    margin: 0.5rem 0.3rem;
-    padding: 0.5rem 1rem;
-    background: #3a3a3a;
-    border: none;
-    border-radius: 4px;
-    color: #eee;
-    cursor: pointer;
+    margin-top: 15px; padding: 10px 15px; background: #2980b9; color: white;
+    border: none; border-radius: 4px; cursor: pointer;
   }
-  button:hover {
-    background: #555;
-  }
-  .suggestion {
-    background: #333;
-    padding: 5px;
-    margin: 3px 0;
-    border-radius: 3px;
-  }
-  .suggestion button {
-    margin-left: 1rem;
-    font-size: 0.9rem;
-  }
+  button:hover { background: #3498db; }
+  .container { background: white; padding: 20px; border-radius: 6px; box-shadow: 0 0 8px rgba(0,0,0,0.1); max-width: 900px; margin: auto; }
+  .element-block { border: 1px solid #ddd; padding: 15px; margin-top: 15px; border-radius: 4px; background: #fafafa; }
+  .warning { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-top: 15px; }
+  .readonly { background: #e9ecef; }
 </style>
 </head>
 <body>
-<header>Eterniverse - Asystent Redagowania i Eksportu</header>
+<div class="container">
+  <h1>System Ochrony Literatury - AUTHOR MODE</h1>
+  <div class="warning">
+    <strong>Tryb pracy:</strong> AUTHOR MODE<br>
+    <strong>Generowanie fabuły:</strong> WYŁĄCZONE (system nie generuje ani nie modyfikuje treści autora)<br>
+    System jedynie porządkuje, chroni i archiwizuje tekst autora.
+  </div>
 
-<textarea id="console" placeholder="Wpisz polecenie lub tekst do redagowania..."></textarea>
-<div style="text-align:center;">
-  <button id="startRecBtn">🎙️ Rozpocznij dyktowanie</button>
-  <button id="stopRecBtn" disabled>⏹️ Zatrzymaj dyktowanie</button>
-  <button id="executeBtn">Wykonaj polecenie / Sprawdź tekst</button>
-  <button id="exportBtn">Eksportuj do Word (.docx)</button>
+  <h2>Dodaj element uniwersum</h2>
+  <form id="elementForm">
+    <label for="elementType">Typ elementu:</label>
+    <select id="elementType" required>
+      <option value="universe">Uniwersum</option>
+      <option value="world">Świat</option>
+      <option value="volume">Tom</option>
+      <option value="chapter">Rozdział</option>
+      <option value="fragment">Fragment / Podrozdział</option>
+    </select>
+
+    <label for="parentSelect">Rodzic (opcjonalny):</label>
+    <select id="parentSelect">
+      <option value="">Brak (dodaj jako korzeń)</option>
+    </select>
+
+    <label for="title">Tytuł:</label>
+    <input type="text" id="title" required />
+
+    <label for="version">Wersja (np. v1):</label>
+    <input type="text" id="version" value="v1" required />
+
+    <label for="language">Język:</label>
+    <select id="language" required>
+      <option value="PL">Polski</option>
+      <option value="EN">Angielski</option>
+      <option value="DE">Niemiecki</option>
+      <option value="FR">Francuski</option>
+      <option value="ES">Hiszpański</option>
+      <option value="OTHER">Inny</option>
+    </select>
+
+    <label for="authorNotes">Notatki autora (niewidoczne dla czytelnika):</label>
+    <textarea id="authorNotes" placeholder="Zapisz emocje, kontekst, powody powstania tekstu..."></textarea>
+
+    <label for="textContent" id="textContentLabel" style="display:none;">Treść (tylko dla fragmentów):</label>
+    <textarea id="textContent" style="display:none;" placeholder="Wpisz tekst autora"></textarea>
+
+    <button type="submit">Dodaj element</button>
+  </form>
+
+  <h2>Struktura Uniwersum</h2>
+  <div id="universeTree">
+    <em>Brak dodanych elementów.</em>
+  </div>
+
+  <h2>Eksport</h2>
+  <button id="exportBtn">Eksportuj całość do pliku TXT</button>
+
+  <h2>Tryb Wydawniczy (Pasywny)</h2>
+  <label for="publishMode">Wybierz tryb:</label>
+  <select id="publishMode">
+    <option value="none">Brak</option>
+    <option value="amazon">Amazon Mode</option>
+    <option value="wattpad">Wattpad Mode</option>
+  </select>
+  <div id="publishWarnings" style="margin-top:10px; color:#c0392b;"></div>
 </div>
 
-<h3 style="text-align:center;">Edytowany tekst:</h3>
-<textarea id="editor" placeholder="Tutaj pojawi się i będzie można edytować tekst..."></textarea>
-
-<h3 style="text-align:center;">Sugestie i podpowiedzi:</h3>
-<div id="suggestions"></div>
-
-<div id="output"></div>
-
-<script src="https://cdn.jsdelivr.net/npm/docx@7.3.0/build/index.min.js"></script>
 <script>
-(async () => {
-  const { Document, Packer, Paragraph, TextRun, HeadingLevel } = docx;
+  // Data model
+  const universeData = [];
 
-  // Prosty model do przechowywania tekstów i historii poprawek w localStorage
-  const STORAGE_KEY = 'eterniverse_assistant_data';
-  let data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
-  if (!data.acceptedSuggestions) data.acceptedSuggestions = [];
-
-  const consoleEl = document.getElementById('console');
-  const editorEl = document.getElementById('editor');
-  const suggestionsEl = document.getElementById('suggestions');
-  const outputEl = document.getElementById('output');
-
-  // Rozpoznawanie mowy
-  let recognition;
-  let recognizing = false;
-  if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    recognition = new SpeechRecognition();
-    recognition.lang = 'pl-PL';
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
-    recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript.trim();
-      console.log('Rozpoznano:', transcript);
-      consoleEl.value += (consoleEl.value ? ' ' : '') + transcript;
-      speakText(`Rozpoznano: ${transcript}`);
-    };
-
-    recognition.onstart = () => {
-      recognizing = true;
-      startRecBtn.disabled = true;
-      stopRecBtn.disabled = false;
-      speakText('Rozpoczęto dyktowanie');
-    };
-
-    recognition.onend = () => {
-      recognizing = false;
-      startRecBtn.disabled = false;
-      stopRecBtn.disabled = true;
-      speakText('Zatrzymano dyktowanie');
-    };
-
-    recognition.onerror = (event) => {
-      console.error('Recognition error:', event.error);
-      speakText('Wystąpił błąd rozpoznawania mowy: ' + event.error);
-    };
-  } else {
-    alert('Twoja przeglądarka nie wspiera rozpoznawania mowy.');
+  // Utility to generate unique IDs
+  function generateId() {
+    return 'id-' + Math.random().toString(36).substr(2, 9);
   }
 
-  document.getElementById('startRecBtn').onclick = () => {
-    if (!recognizing) recognition.start();
-  };
-  document.getElementById('stopRecBtn').onclick = () => {
-    if (recognizing) recognition.stop();
-  };
-
-  // Synteza mowy
-  function speakText(text) {
-    if (!window.speechSynthesis) return;
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'pl-PL';
-    window.speechSynthesis.cancel(); // przerwij poprzednie
-    window.speechSynthesis.speak(utterance);
-  }
-
-  // Prosty parser poleceń i redaktor tekstu
-  // Polecenia:
-  // DODAJ ŚWIAT <nazwa>
-  // DODAJ KSIĄŻKĘ <świat> <nazwa>
-  // DODAJ ROZDZIAŁ <świat> <książka> <nazwa>
-  // REDAGUJ TEKST (przyjmuje tekst z konsoli do edytora)
-  // PODPOWIEDŹ (generuje sugestie)
-  // EKSPORTUJ (eksportuje tekst w edytorze do Worda)
-  // Możesz rozszerzać
-
-  // Do redagowania tekstów pod Amazon:
-  // prosty algorytm wykrywający powtórzenia, długie zdania, frazy marketingowe
-
-  function simpleRedactor(text) {
-    const suggestions = [];
-
-    // Sprawdź powtórzenia słów (proste)
-    const words = text.toLowerCase().match(/\b\w+\b/g) || [];
-    const wordCounts = {};
-    words.forEach(w => wordCounts[w] = (wordCounts[w] || 0) + 1);
-    Object.entries(wordCounts).forEach(([word, count]) => {
-      if (count > 5) {
-        suggestions.push(`Słowo "word"powtarzasię{word}" powtarza sięword"powtarzasię{count} razy - rozważ użycie synonimów.`);
+  // Find element by ID recursively
+  function findElementById(elements, id) {
+    for (const el of elements) {
+      if (el.id === id) return el;
+      if (el.children) {
+        const found = findElementById(el.children, id);
+        if (found) return found;
       }
-    });
-
-    // Sprawdź długie zdania (> 25 słów)
-    const sentences = text.match(/[^\.!\?]+[\.!\?]+/g) || [];
-    sentences.forEach((s, i) => {
-      const len = s.trim().split(/\s+/).length;
-      if (len > 25) {
-        suggestions.push(`Zdanie nr i+1jestbardzodługie({i+1} jest bardzo długie (i+1jestbardzodługie({len} słów) - rozważ podział na krótsze.`);
-      }
-    });
-
-    // Marketingowe frazy (przykładowe)
-    const marketingPhrases = [
-      'najlepszy',
-      'idealny',
-      'unikalny',
-      'niezwykły',
-      'doskonały',
-      'rewolucyjny',
-      'ekskluzywny',
-      'najwyższej jakości',
-    ];
-    marketingPhrases.forEach(phrase => {
-      const reg = new RegExp(`\\b${phrase}\\b`, 'i');
-      if (reg.test(text)) {
-        suggestions.push(`Użyto frazy marketingowej: "${phrase}". Upewnij się, że jest adekwatna.`);
-      }
-    });
-
-    // Uczenie się na podstawie zaakceptowanych sugestii
-    // (tu prosto filtrujemy, by nie powtarzać tych zaakceptowanych)
-    const filtered = suggestions.filter(sug => !data.acceptedSuggestions.includes(sug));
-
-    return filtered;
-  }
-
-  function addAcceptedSuggestion(sug) {
-    if (!data.acceptedSuggestions.includes(sug)) {
-      data.acceptedSuggestions.push(sug);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     }
+    return null;
   }
 
-  // Przetwarzanie polecenia lub tekstu z konsoli
-  function processConsoleText(input) {
-    const cmd = input.trim();
-
-    if (!cmd) return;
-
-    // Obsługa prostych poleceń
-    const parts = cmd.split(/\s+/);
-    const cmdUpper = parts[0].toUpperCase();
-
-    if (cmdUpper === 'REDAGUJ' || cmdUpper === 'REDAGUJ TEKST') {
-      // Przenieś tekst z konsoli do edytora do redagowania
-      editorEl.value = consoleEl.value;
-      suggestionsEl.innerHTML = '';
-      outputEl.textContent = 'Tekst przeniesiony do edytora. Kliknij "Sprawdź tekst", aby zobaczyć sugestie.';
-      speakText('Tekst przeniesiony do edytora. Możesz teraz sprawdzić sugestie.');
-      return;
-    }
-
-    if (cmdUpper === 'PODPOWIEDŹ') {
-      const text = editorEl.value.trim();
-      if (!text) {
-        outputEl.textContent = 'Edytor jest pusty. Wpisz tekst do redagowania.';
-        speakText('Edytor jest pusty. Wpisz tekst do redagowania.');
-        return;
-      }
-      const sug = simpleRedactor(text);
-      suggestionsEl.innerHTML = '';
-      if (sug.length === 0) {
-        suggestionsEl.textContent = 'Brak nowych sugestii.';
-        speakText('Brak nowych sugestii.');
+  // Add element to the hierarchy
+  function addElement(type, title, version, language, authorNotes, textContent, parentId) {
+    const element = {
+      id: generateId(),
+      type,
+      title,
+      creationDate: new Date().toISOString(),
+      version,
+      language,
+      authorNotes,
+      textContent: type === 'fragment' ? textContent : '',
+      children: []
+    };
+    if (!parentId) {
+      universeData.push(element);
+    } else {
+      const parent = findElementById(universeData, parentId);
+      if (parent) {
+        parent.children.push(element);
       } else {
-        sug.forEach(str => {
-          const div = document.createElement('div');
-          div.classList.add('suggestion');
-          div.textContent = str;
-          const acceptBtn = document.createElement('button');
-          acceptBtn.textContent = 'Akceptuj';
-          acceptBtn.onclick = () => {
-            addAcceptedSuggestion(str);
-            div.style.opacity = '0.5';
-            speakText('Sugestia zaakceptowana.');
-          };
-          div.appendChild(acceptBtn);
-          suggestionsEl.appendChild(div);
-        });
-        speakText(`Znaleziono ${sug.length} sugestii.`);
+        alert('Nie znaleziono elementu rodzica');
+        return null;
       }
-      return;
     }
-
-    if (cmdUpper === 'EKSPORTUJ') {
-      if (!editorEl.value.trim()) {
-        outputEl.textContent = 'Edytor jest pusty. Nie można eksportować.';
-        speakText('Edytor jest pusty. Nie można eksportować.');
-        return;
-      }
-      exportToWord('Opis_Amazon', editorEl.value.trim());
-      return;
-    }
-
-    // Jeśli to nie polecenie, traktuj jako tekst do edycji
-    editorEl.value = input;
-    suggestionsEl.innerHTML = '';
-    outputEl.textContent = 'Tekst załadowany do edytora.';
-    speakText('Tekst załadowany do edytora.');
+    return element;
   }
 
-  document.getElementById('executeBtn').onclick = () => {
-    processConsoleText(consoleEl.value);
-  };
-
-  document.getElementById('exportBtn').onclick = () => {
-    if (!editorEl.value.trim()) {
-      outputEl.textContent = 'Edytor jest pusty. Nie można eksportować.';
-      speakText('Edytor jest pusty. Nie można eksportować.');
+  // Render the hierarchy as nested lists
+  function renderTree(elements, container) {
+    container.innerHTML = '';
+    if (elements.length === 0) {
+      container.innerHTML = '<em>Brak dodanych elementów.</em>';
       return;
     }
-    exportToWord('Opis_Amazon', editorEl.value.trim());
-  };
-
-  async function exportToWord(title, text) {
-    const doc = new Document({
-      sections: [{
-        children: [
-          new Paragraph({
-            text: title,
-            heading: HeadingLevel.HEADING_1,
-            thematicBreak: true,
-          }),
-          new Paragraph(text),
-        ],
-      }],
+    const ul = document.createElement('ul');
+    elements.forEach(el => {
+      const li = document.createElement('li');
+      li.innerHTML = `<strong>el.type.toUpperCase()</strong>:{el.type.toUpperCase()}</strong>:el.type.toUpperCase()</strong>:{el.title} (vel.version,{el.version},el.version,{el.language}, utworzono: ${new Date(el.creationDate).toLocaleString()})`;
+      if(el.authorNotes) {
+        const notes = document.createElement('div');
+        notes.style.fontStyle = 'italic';
+        notes.style.color = '#7f8c8d';
+        notes.textContent = "Notatki autora: " + el.authorNotes;
+        li.appendChild(notes);
+      }
+      if(el.textContent) {
+        const text = document.createElement('div');
+        text.style.marginTop = '6px';
+        text.style.whiteSpace = 'pre-wrap';
+        text.style.background = '#ecf0f1';
+        text.style.padding = '8px';
+        text.style.borderRadius = '4px';
+        text.textContent = el.textContent;
+        li.appendChild(text);
+      }
+      if (el.children.length > 0) {
+        renderTree(el.children, li);
+      }
+      ul.appendChild(li);
     });
-    const blob = await Packer.toBlob(doc);
+    container.appendChild(ul);
+  }
+
+  // Update parent select options
+  function updateParentOptions() {
+    const parentSelect = document.getElementById('parentSelect');
+    const typeSelect = document.getElementById('elementType');
+    const selectedType = typeSelect.value;
+
+    // Clear current options except first
+    while (parentSelect.options.length > 1) {
+      parentSelect.remove(1);
+    }
+
+    // Allowed parent types for each element type
+    const allowedParents = {
+      'universe': [],
+      'world': ['universe'],
+      'volume': ['world'],
+      'chapter': ['volume'],
+      'fragment': ['chapter']
+    };
+
+    function addOptions(elements, depth = 0) {
+      elements.forEach(el => {
+        if (allowedParents[selectedType].includes(el.type)) {
+          const option = document.createElement('option');
+          option.value = el.id;
+          option.text = '—'.repeat(depth) + ' ' + el.type.toUpperCase() + ': ' + el.title;
+          parentSelect.appendChild(option);
+        }
+        if(el.children.length > 0) {
+          addOptions(el.children, depth +1);
+        }
+      });
+    }
+
+    addOptions(universeData);
+  }
+
+  // Show/hide textContent field based on element type
+  function toggleTextContentField() {
+    const typeSelect = document.getElementById('elementType');
+    const textContentLabel = document.getElementById('textContentLabel');
+    const textContent = document.getElementById('textContent');
+    if (typeSelect.value === 'fragment') {
+      textContentLabel.style.display = 'block';
+      textContent.style.display = 'block';
+      textContent.required = true;
+    } else {
+      textContentLabel.style.display = 'none';
+      textContent.style.display = 'none';
+      textContent.required = false;
+    }
+  }
+
+  // Handle form submission
+  document.getElementById('elementForm').addEventListener('submit', e => {
+    e.preventDefault();
+
+    if(!AUTHOR_MODE) {
+      alert('System jest w trybie generowania fabuły - dodawanie własnych tekstów zablokowane.');
+      return;
+    }
+
+    const type = document.getElementById('elementType').value;
+    const parentId = document.getElementById('parentSelect').value || null;
+    const title = document.getElementById('title').value.trim();
+    const version = document.getElementById('version').value.trim();
+    const language = document.getElementById('language').value;
+    const authorNotes = document.getElementById('authorNotes').value.trim();
+    const textContent = type === 'fragment' ? document.getElementById('textContent').value.trim() : '';
+
+    // Validate parent-child relation
+    const validParents = {
+      'universe': [],
+      'world': ['universe'],
+      'volume': ['world'],
+      'chapter': ['volume'],
+      'fragment': ['chapter']
+    };
+    if (parentId) {
+      const parentElement = findElementById(universeData, parentId);
+      if (!parentElement || !validParents[type].includes(parentElement.type)) {
+        alert('Nieprawidłowy rodzic dla wybranego typu elementu.');
+        return;
+      }
+    } else if (validParents[type].length > 0) {
+      alert('Ten typ elementu wymaga podania rodzica.');
+      return;
+    }
+
+    const newElement = addElement(type, title, version, language, authorNotes, textContent, parentId);
+    if (newElement) {
+      renderTree(universeData, document.getElementById('universeTree'));
+      updateParentOptions();
+      e.target.reset();
+      toggleTextContentField();
+      alert('Element dodany i zapisany. Prawa autorskie przypisane autorowi.');
+    }
+  });
+
+  // On element type change update parents and fields
+  document.getElementById('elementType').addEventListener('change', () => {
+    updateParentOptions();
+    toggleTextContentField();
+  });
+
+  // Initial setup
+  const AUTHOR_MODE = true; // system-wide flag
+  updateParentOptions();
+  toggleTextContentField();
+
+  // Export to TXT file
+  document.getElementById('exportBtn').addEventListener('click', () => {
+    if(!AUTHOR_MODE) {
+      alert('Eksport zablokowany poza trybem autora.');
+      return;
+    }
+
+    function serialize(elements, indent = '') {
+      let text = '';
+      elements.forEach(el => {
+        text += `indent{indent}indent{el.type.toUpperCase()}: el.title(v{el.title} (vel.title(v{el.version}, el.language,utworzono:{el.language}, utworzono:el.language,utworzono:{new Date(el.creationDate).toLocaleString()})\n`;
+        if(el.authorNotes) {
+          text += `indent[Notatkiautora]:{indent}  [Notatki autora]:indent[Notatkiautora]:{el.authorNotes.replace(/\n/g, '\n' + indent + '    ')}\n`;
+        }
+        if(el.textContent) {
+          text += `indent[Tresˊcˊ]:\n{indent}  [Treść]:\nindent[Tresˊcˊ]:\n{indent}    ${el.textContent.replace(/\n/g, '\n' + indent + '    ')}\n`;
+        }
+        if(el.children.length > 0) {
+          text += serialize(el.children, indent + '    ');
+        }
+      });
+      return text;
+    }
+
+    const content = serialize(universeData);
+    if (!content) {
+      alert('Brak danych do eksportu.');
+      return;
+    }
+
+    const blob = new Blob([content], {type: 'text/plain;charset=utf-8'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `${title.replace(/\s+/g, '_')}.docx`;
+    a.download = 'literature_export_' + new Date().toISOString().slice(0,19).replace(/:/g, '-') + '.txt';
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    outputEl.textContent = `Eksportowano plik ${a.download}`;
-    speakText('Plik został wyeksportowany.');
-  }
-})();
+  });
+
+  // Publishing mode warnings
+  document.getElementById('publishMode').addEventListener('change', e => {
+    const val = e.target.value;
+    const warnDiv = document.getElementById('publishWarnings');
+    if(val === 'amazon' || val === 'wattpad') {
+      warnDiv.innerHTML = `<strong>Tryb ${val.toUpperCase()} aktywny.</strong> <br>System nie sugeruje fabuły, stylu ani narracji. <br>Formatowanie i podział na rozdziały są obsługiwane.`;
+    } else {
+      warnDiv.innerHTML = '';
+    }
+  });
 </script>
 </body>
 </html>
