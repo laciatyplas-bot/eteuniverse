@@ -2,15 +2,85 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
-  <title>EteUniverse</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>EterUniverse — Biblioteka Autora</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: #0f1220;
+      color: #eaeaf0;
+    }
+    header {
+      padding: 24px;
+      text-align: center;
+      background: #151a33;
+      border-bottom: 1px solid #242a52;
+    }
+    h1 {
+      margin: 0;
+      font-size: 28px;
+    }
+    main {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 16px;
+    }
+    .card {
+      background: #171c3d;
+      border: 1px solid #242a52;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .btn {
+      display: inline-block;
+      padding: 10px 16px;
+      border-radius: 6px;
+      background: #3b82f6;
+      color: #fff;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #9aa0c7;
+      font-size: 14px;
+    }
+  </style>
 </head>
 <body>
 
-<h1>EteUniverse działa</h1>
+<header>
+  <h1>EterUniverse</h1>
+  <p>Autorska biblioteka • tryb offline • bez systemów • bez modali</p>
+</header>
 
-<div id="app"></div>
+<main>
+  <div class="card">
+    <h2>Status</h2>
+    <p>Strona działa poprawnie. To jest czysty HTML uruchomiony na GitHub Pages.</p>
+    <p>Nie ma JS. Nie ma modali. Nie ma błędów.</p>
+  </div>
 
-<script src="script.js" defer></script>
+  <div class="card">
+    <h2>Następny krok (opcjonalny)</h2>
+    <p>Jeśli kiedyś będziesz chciał:</p>
+    <ul>
+      <li>dodać JS → robimy <code>script.js</code></li>
+      <li>dodać CSS → robimy <code>style.css</code></li>
+      <li>zrobić edytor → dokładamy krok po kroku</li>
+    </ul>
+    <button class="btn" onclick="alert('Działa. I tyle.')">Test</button>
+  </div>
+</main>
+
+<footer>
+  © EterUniverse • Autor Mode • GitHub Pages
+</footer>
+
 </body>
 </html>
