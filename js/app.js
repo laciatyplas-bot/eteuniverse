@@ -1,118 +1,104 @@
-// js/app.js — ETERNIVERSE CORE ENGINE
-// Wersja stabilna pod GitHub Pages
+// js/app.js — ETERNIVERSE CORE + EDITOR
 
 (() => {
   const App = {
     data: null,
     currentWorld: null,
+    currentGate: null,
 
     async init() {
-      console.log('ETERNIVERSE старт');
-
       try {
         const res = await fetch('data/mapa.json?t=' + Date.now());
         if (!res.ok) throw new Error('Nie można załadować mapa.json');
         this.data = await res.json();
-      } catch (err) {
-        this.showError(err.message);
+      } catch (e) {
+        alert(e.message);
         return;
       }
 
-      if (!this.data.worlds || this.data.worlds.length === 0) {
-        this.showError('Brak światów w mapa.json');
-        return;
-      }
+      // Local override
+      const local = localStorage.getItem('ETERNIVERSE_DATA');
+      if (local) this.data = JSON.parse(local);
 
-      this.renderWorldList();
+      this.renderWorlds();
+      this.bindEditor();
       this.openWorld(this.data.worlds[0]);
     },
 
-    renderWorldList() {
-      const container = document.getElementById('worldList');
-      if (!container) return;
+    saveLocal() {
+      localStorage.setItem('ETERNIVERSE_DATA', JSON.stringify(this.data, null, 2));
+    },
 
-      container.innerHTML = '<h2>Światy Eteru</h2>';
+    renderWorlds() {
+      const list = document.getElementById('worldList');
+      list.innerHTML = '<h2>Światy</h2>';
 
-      this.data.worlds.forEach(world => {
-        const btn = document.createElement('button');
-        btn.textContent = world.name;
-        btn.className = 'world-btn';
-        btn.onclick = () => this.openWorld(world);
-        container.appendChild(btn);
+      this.data.worlds.forEach(w => {
+        const b = document.createElement('button');
+        b.textContent = w.name;
+        b.onclick = () => this.openWorld(w);
+        list.appendChild(b);
       });
     },
 
     openWorld(world) {
       this.currentWorld = world;
+      const c = document.getElementById('gatesContainer');
+      c.innerHTML = `<h2>${world.name}</h2><p>${world.description}</p>`;
 
-      const gatesContainer = document.getElementById('gatesContainer');
-      if (!gatesContainer) return;
+      world.gates.forEach(g => {
+        const d = document.createElement('div');
+        d.className = 'gate';
+        d.innerHTML = `<h3>${g.name}</h3>`;
+        d.onclick = () => {
+          this.currentGate = g;
+          document.getElementById('editor-info').textContent =
+            `Edytujesz: ${world.name} → ${g.name}`;
+        };
 
-      gatesContainer.innerHTML = `
-        <h2>${world.name}</h2>
-        <p>${world.description || ''}</p>
-      `;
+        if (!g.books) g.books = [];
 
-      if (!world.gates || world.gates.length === 0) {
-        gatesContainer.innerHTML += '<p>Brak bram w tym świecie.</p>';
-        return;
-      }
+        g.books.forEach(book => {
+          const p = document.createElement('p');
+          p.textContent = '📘 ' + book.title;
+          d.appendChild(p);
+        });
 
-      world.gates.forEach(gate => {
-        const gateEl = document.createElement('div');
-        gateEl.className = 'gate';
-        gateEl.style.borderLeft = '6px solid #444';
-
-        gateEl.innerHTML = `
-          <h3>${gate.name}</h3>
-        `;
-
-        if (!gate.books || gate.books.length === 0) {
-          gateEl.innerHTML += '<p>Pusta brama…</p>';
-        } else {
-          gate.books.forEach(book => {
-            const bookEl = document.createElement('div');
-            bookEl.className = 'book';
-
-            bookEl.innerHTML = `
-              <h4>${book.title}</h4>
-              <p>${book.content || ''}</p>
-            `;
-
-            // Linki (Amazon, Wattpad itd.)
-            if (book.links) {
-              const linksDiv = document.createElement('div');
-              linksDiv.className = 'book-links';
-
-              Object.entries(book.links).forEach(([name, url]) => {
-                const a = document.createElement('a');
-                a.href = url;
-                a.target = '_blank';
-                a.rel = 'noopener';
-                a.textContent = name.toUpperCase();
-                linksDiv.appendChild(a);
-              });
-
-              bookEl.appendChild(linksDiv);
-            }
-
-            gateEl.appendChild(bookEl);
-          });
-        }
-
-        gatesContainer.appendChild(gateEl);
+        c.appendChild(d);
       });
     },
 
-    showError(msg) {
-      document.body.innerHTML = `
-        <div style="padding:40px;color:#ff6666">
-          <h1>Błąd ETERNIVERSE</h1>
-          <p>${msg}</p>
-          <p>Sprawdź konsolę (F12).</p>
-        </div>
-      `;
-      console.error(msg);
+    bindEditor() {
+      document.getElementById('saveBookBtn').onclick = () => {
+        if (!this.currentGate) {
+          alert('Najpierw wybierz bramę');
+          return;
+        }
+
+        const title = document.getElementById('editor-title').value.trim();
+        if (!title) {
+          alert('Brak tytułu');
+          return;
+        }
+
+        const book = {
+          title,
+          content: document.getElementById('editor-content').value,
+          links: {
+            amazon: document.getElementById('editor-amazon').value,
+            wattpad: document.getElementById('editor-wattpad').value
+          }
+        };
+
+        this.currentGate.books.push(book);
+        this.saveLocal();
+        this.openWorld(this.currentWorld);
+
+        document.getElementById('editor-title').value = '';
+        document.getElementById('editor-content').value = '';
+        document.getElementById('editor-amazon').value = '';
+        document.getElementById('editor-wattpad').value = '';
+      };
     }
   };
 
