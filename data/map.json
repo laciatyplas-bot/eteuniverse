@@ -1,18 +1,3 @@
-const selectors = {
-  worldList: '#worldList',
-  contentArea: '#contentArea',
-  log: '#log'
-};
-
-const elements = {
-  worldList: document.querySelector(selectors.worldList),
-  contentArea: document.querySelector(selectors.contentArea),
-  log: document.querySelector(selectors.log)
-};
-
-// Dane ETERUNIVERSE wbudowane bezpośrednio (bez zmiennej DATA = null i bez fetch)
-const DATA = {
-  "worlds": [
     {
       "id": 1,
       "name": "ETERUNIVERSE",
