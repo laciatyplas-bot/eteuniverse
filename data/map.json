@@ -1,4 +1,22 @@
+// -*- coding: utf-8 -*-
+// Wzbogacony Kod Obfitości – ETERNIVERSE Mapa Światów (pełne 10 Bram)
+// Dane wbudowane, styl inline premium (kosmiczny eter theme), interaktywność rozszerzona
 
+const selectors = {
+  worldList: '#worldList',
+  contentArea: '#contentArea',
+  log: '#log'
+};
+
+const elements = {
+  worldList: document.querySelector(selectors.worldList),
+  contentArea: document.querySelector(selectors.contentArea),
+  log: document.querySelector(selectors.log)
+};
+
+// Wbudowana baza danych ETERNIVERSE – Pełne 10 Bram (kanoniczne)
+const DATA = {
+  "worlds": [
     {
       "id": 1,
       "name": "ETERUNIVERSE",
