@@ -11,7 +11,7 @@ class DataStore {
       return;
     }
 
-    console.log('🌀 Ładowanie pamięci ETERNIVERSE z data/mapa.json...');
+    const response = await fetch('data/mapa.json?t=' + Date.now());
 
     try {
       // DOSTOSOWANE DO TWOJEGO PLIKU: mapa.json
