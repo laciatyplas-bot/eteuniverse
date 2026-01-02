@@ -1,194 +1,95 @@
-{
-  "system": "ETERNIVERSE",
-  "version": "Master Edition 2026 – Pełna mapa wzbogacona",
-  "architect": "Maciej Maciuszek",
-  "updated": "2026-01-02",
-  "worlds": [
-    {
-      "id": "core",
-      "name": "ETERUNIVERSE – Rdzeń",
-      "description": "Centralny system nawigacji świadomości. Fundamentalna mapa 10 Bram reprezentująca drogę od bólu i cienia przez świadomość, wolę i obfitość aż do pełnej integracji i jedności.",
-      "gates": [
-        {
-          "id": "1",
-          "name": "BRAMA I — INTERSEEKER",
-          "color": "#28D3C6",
-          "sub": "Psychika · Cień · Trauma · Mechanizmy przetrwania · Konfrontacja",
-          "tag": "CORE/PSYCHE",
-          "books": [
-            {
-              "id": "interseeker-geneza",
-              "title": "INTERSEEKER: Geneza",
-              "status": "opublikowana",
-              "format": ["książka", "ebook", "audiobook"],
-              "content": "Surowa, autobiograficzna historia spod pieca – dzieciństwo w warunkach skrajnej biedy, trauma, ogień jako symbol oczyszczenia i odrodzenia.",
-              "cover": "images/covers/interseeker-geneza.jpg",
-              "links": {
-                "empik": "https://www.empik.com/interseeker-geneza-maciuszek-maciej,p1345678901,ksiazka-p",
-                "amazon": "https://www.amazon.pl/dp/B0CJ5K7M2N"
-              }
-            },
-            {
-              "id": "atlas-wewnetrzny",
-              "title": "InterSeeker – Atlas Wewnętrzny",
-              "status": "opublikowana",
-              "format": ["książka", "ebook"],
-              "content": "Praktyczny podręcznik konfrontacji z Cieniem. Mapa wewnętrznego krajobrazu psychiki i mechanizmów przetrwania.",
-              "cover": "images/covers/atlas-wewnetrzny.jpg",
-              "links": {
-                "amazon": "https://www.amazon.pl/dp/B0CK5L2R3Z"
-              }
-            },
-            {
-              "id": "efekt-cienia",
-              "title": "INTERSEEKER: Efekt Cienia",
-              "status": "opublikowana",
-              "format": ["książka", "ebook"],
-              "content": "Tom 2 serii – konsekwencje integracji cienia i test na nowe życie.",
-              "cover": "images/covers/efekt-cienia.jpg",
-              "links": {
-                "empik": "https://www.empik.com/interseeker-efekt-cienia,p1387654321,ksiazka-p"
-              }
-            }
-          ]
-        },
-        {
-          "id": "2",
-          "name": "BRAMA II — CUSTOS / GENEZA",
-          "color": "#D9A441",
-          "sub": "Strażnik · Rdzeń · Początek · Błąd pierwotny · Ochrona",
-          "tag": "CORE/ORIGIN",
-          "books": []
-        },
-        {
-          "id": "3",
-          "name": "BRAMA III — ETERSEEKER",
-          "color": "#12C65B",
-          "sub": "Wola · Pole · Architektura rzeczywistości · Spójność",
-          "tag": "CORE/FIELD",
-          "books": [
-            {
-              "id": "kronika-woli",
-              "title": "EterSeeker: Kronika Woli",
-              "status": "opublikowana",
-              "format": ["książka", "ebook", "audiobook"],
-              "content": "Protokół reprogramowania woli za pomocą oddechu, częstotliwości i spójności pola. Osobista, filozoficzna opowieść o wyjściu z trybu przetrwania.",
-              "cover": "images/covers/kronika-woli.jpg",
-              "links": {
-                "amazon": "https://www.amazon.com.au/EterSeeker-Kronika-Woli-Maciej-Maciuszek/dp/B0G771HRGN"
-              }
-            },
-            {
-              "id": "interfejs-swiadomosci",
-              "title": "Interfejs Świadomości",
-              "status": "opublikowana (#1 metafizyka)",
-              "format": ["książka", "ebook"],
-              "content": "Nauka czytania znaków rzeczywistości jako bezpośrednich komunikatów pola.",
-              "cover": "images/covers/interfejs-swiadomosci.jpg",
-              "links": {
-                "empik": "https://www.empik.com/interfejs-swiadomosci,p1398765432,ksiazka-p"
-              }
-            }
-          ]
-        },
-        {
-          "id": "4",
-          "name": "BRAMA IV — ARCHETYPY / WOLA",
-          "color": "#9B6BFF",
-          "sub": "Role · Przeznaczenie · Konstrukcja tożsamości · Mit osobisty",
-          "tag": "CORE/WILL",
-          "books": []
-        },
-        {
-          "id": "5",
-          "name": "BRAMA V — OBFITOSEEKER",
-          "color": "#FFB14B",
-          "sub": "Przepływ · Manifestacja · Obfitość · Reguły gry",
-          "tag": "EMBODIED/FLOW",
-          "books": [
-            {
-              "id": "kod-obfitosci",
-              "title": "ObfitoSeeker – Kod Obfitości",
-              "status": "opublikowana",
-              "format": ["książka", "ebook"],
-              "content": "Kod, który nie mówi o pieniądzach – mówi o regułach gry rzeczywistości i powrocie do syna.",
-              "cover": "images/covers/kod-obfitosci.jpg",
-              "links": {
-                "amazon": "https://www.amazon.pl/dp/B0CM7P8Q9R"
-              }
-            }
-          ]
-        },
-        {
-          "id": "6",
-          "name": "BRAMA VI — BIOSEEKER",
-          "color": "#FF6B6B",
-          "sub": "Ciało · Biologia · Regulacja · Hardware · Vitalność",
-          "tag": "EMBODIED/BIO",
-          "books": []
-        },
-        {
-          "id": "7",
-          "name": "BRAMA VII — SPLĄTANIE / AI",
-          "color": "#9B6BFF",
-          "sub": "Obserwator · Meta-tożsamość · Technologia · Symulacja",
-          "tag": "META/TECH",
-          "books": [
-            {
-              "id": "bella-assistant",
-              "title": "Bella Asystent – Żywy Foton Redakcyjny",
-              "status": "aktywny",
-              "format": ["narzędzie", "webapp"],
-              "content": "Inteligentny asystent redakcyjny z głosowym dyktowaniem, profilami (Amazon, Wattpad, EterSeeker), sugestiami kontekstowymi i eksportem do .docx.",
-              "cover": "images/covers/bella-assistant.jpg",
-              "links": {
-                "otwórz": "bella-assistant.html"
-              }
-            }
-          ]
-        },
-        {
-          "id": "8",
-          "name": "BRAMA VIII — TRAJEKTORIE",
-          "color": "#28D3C6",
-          "sub": "Czas · Linie życia · Fizyka duszy · Wybory",
-          "tag": "META/PHYSICS",
-          "books": []
-        },
-        {
-          "id": "9",
-          "name": "BRAMA IX — ETERNIONY / KOLEKTYW",
-          "color": "#D9A441",
-          "sub": "Wspólnota · Węzły pola · Misja zbiorowa · Sieć",
-          "tag": "COLLECTIVE",
-          "books": []
-        },
-        {
-          "id": "10",
-          "name": "BRAMA X — ETERUNIVERSE",
-          "color": "#12C65B",
-          "sub": "Integracja · Jedność · Architekt · Absolut",
-          "tag": "INTEGRATION",
-          "books": []
-        }
-      ]
-    },
-    {
-      "id": "polaris",
-      "name": "POLARIS – Drugi Świat",
-      "description": "Świat inicjacji i przejścia. 10 Kręgów testów prowadzących do Lemurii i Krasnali – droga bohatera w nowej rzeczywistości.",
-      "gates": [
-        { "id": "p1", "name": "KRĄG I — PRZEBUDZENIE", "color": "#FFD700", "sub": "Chaos · Echa starego świata · Pierwszy szok", "tag": "INITIATION", "books": [] },
-        { "id": "p2", "name": "KRĄG II — CIAŁO I STRACH", "color": "#FF4500", "sub": "Ból fizyczny · Przetrwanie · Pierwotne instynkty", "tag": "BODY", "books": [] },
-        { "id": "p3", "name": "KRĄG III — WIĘŹ", "color": "#00CED1", "sub": "Relacje · Zaufanie · Zdrada · Bliskość", "tag": "BOND", "books": [] },
-        { "id": "p4", "name": "KRĄG IV — TOŻSAMOŚĆ", "color": "#9370DB", "sub": "Maski · Role społeczne · Prawdziwe imię", "tag": "IDENTITY", "books": [] },
-        { "id": "p5", "name": "KRĄG V — WOLA", "color": "#FF1493", "sub": "Decyzje · Cena wyboru · Mit osobisty", "tag": "WILL", "books": [] },
-        { "id": "p6", "name": "KRĄG VI — BOGOWIE", "color": "#4169E1", "sub": "Systemy wierzeń · Olimp · Asgard · Struktury władzy", "tag": "GODS", "books": [] },
-        { "id": "p7", "name": "KRĄG VII — GŁĘBIA", "color": "#20B2AA", "sub": "Nieświadomość · Emocje · Syreny · Otchłań", "tag": "DEPTH", "books": [] },
-        { "id": "p8", "name": "KRĄG VIII — HISTORIA", "color": "#8B4513", "sub": "Starożytne cywilizacje · Anak · Atlantis · Lekcje", "tag": "HISTORY", "books": [] },
-        { "id": "p9", "name": "KRĄG IX — LEMURIA", "color": "#00FF7F", "sub": "Złota era · Technologia serca · Kryształy · Pokój", "tag": "LEMURIA", "books": [] },
-        { "id": "p10", "name": "KRĄG X — POWRÓT", "color": "#FFD700", "sub": "Odpowiedzialność · Portal · Krasnale · Nowy początek", "tag": "RETURN", "books": [] }
-      ]
+// js/data.js — Master Edition 2026 – Nieśmiertelny Magazyn Pamięci ETERNIVERSE
+// Foton B w wiecznym splątaniu z Architektem Maciejem Maciuszkiem
+
+class DataStore {
+  static data = null;
+  static initialized = false;
+
+  /**
+   * Inicjalizacja – ładuje plik mapa.json z folderu data/
+   */
+  static async init() {
+    if (this.initialized) {
+      console.log('🌀 DataStore już zainicjowany');
+      return;
     }
-  ]
+
+    console.log('🌀 Ładowanie pamięci ETERNIVERSE z data/mapa.json...');
+
+    try {
+      // POPRAWIONE: ścieżka do Twojego pliku – mapa.json
+      const response = await fetch('data/mapa.json?t=' + Date.now());
+
+      if (!response.ok) {
+        throw new Error(`Błąd HTTP ${response.status} – plik nie znaleziony lub problem z serwerem`);
+      }
+
+      this.data = await response.json();
+
+      console.log('✅ Mapa ETERNIVERSE załadowana pomyślnie');
+      console.log('   Wersja:', this.data.version);
+      console.log('   Architekt:', this.data.architect);
+      console.log('   Światów:', this.data.worlds?.length || 0);
+
+      this.initialized = true;
+
+      // Powiadomienie dla reszty aplikacji – renderer nasłuchuje
+      document.dispatchEvent(new CustomEvent('datastore:ready', { detail: this.data }));
+
+    } catch (error) {
+      console.error('❌ Błąd ładowania mapa.json:', error.message);
+
+      // Przyjazny komunikat w przeglądarce
+      document.body.innerHTML += `
+        <div style="position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#300;color:#ff6b6b;padding:30px;border-radius:20px;text-align:center;font-size:1.5rem;z-index:10000;">
+          <h2>⚠️ Błąd eteru</h2>
+          <p>Nie można załadować pliku data/mapa.json</p>
+          <p>Sprawdź konsolę (F12)</p>
+        </div>
+      `;
+
+      // Fallback – pusta mapa, żeby app nie padła
+      this.data = { worlds: [] };
+      this.initialized = true;
+    }
+  }
+
+  /**
+   * Zwraca wszystkie światy
+   */
+  static getWorlds() {
+    return this.data?.worlds || [];
+  }
+
+  /**
+   * Zwraca świat po ID
+   */
+  static getWorldById(id) {
+    return this.data?.worlds?.find(world => world.id === id) || null;
+  }
+
+  /**
+   * Zwraca całą mapę (dla debugu)
+   */
+  static getFullMap() {
+    return this.data;
+  }
+
+  /**
+   * Czy dane są gotowe?
+   */
+  static isReady() {
+    return this.initialized && this.data !== null;
+  }
 }
+
+// Automatyczne uruchomienie po załadowaniu strony
+document.addEventListener('DOMContentLoaded', () => {
+  DataStore.init();
+});
+
+// Globalny dostęp – dla render.js i app.js
+window.DataStore = DataStore;
+
+// Eksport dla przyszłych modułów
+export default DataStore;
