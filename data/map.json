@@ -1,0 +1,28 @@
+{
+  "worlds": [
+    {
+      "id": 1,
+      "name": "Świat 1",
+      "gates": [
+        {
+          "id": 1,
+          "name": "Brama 1",
+          "books": [
+            {
+              "id": 1,
+              "title": "Księga 1",
+              "chapters": [
+                {
+                  "id": 1,
+                  "title": "Rozdział 1",
+                  "text": "",
+                  "audio": ""
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
