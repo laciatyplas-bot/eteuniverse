@@ -1,27 +1,49 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ETERNIVERSE — interaktywna mapa universum książek EterSeeker</title>
-  <link rel="stylesheet" href="./styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ETERNIVERSE — Panel Redakcyjny</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <header>
-    <h1>ETERNIVERSE — interaktywna mapa universum książek EterSeeker</h1>
-    <h2>ETERNIVERSE — Mapa Światów</h2>
-    <!-- przycisk trybu ciemnego itp. -->
-  </header>
 
-  <main>
+<header>
+  <h1>ETERNIVERSE</h1>
+  <h2>Mapa Światów · Panel Redakcyjny</h2>
+</header>
+
+<main style="display:flex; gap:20px;">
+
+  <!-- LEWA STRONA: MAPA -->
+  <section style="flex:2;">
     <div id="worldList"></div>
     <div id="gatesContainer"></div>
-    <!-- inne elementy -->
-  </main>
+  </section>
 
-  <!-- TU DODAJ SKRYPTY -->
-  <script src="js/data.js"></script>
-  <script src="js/render.js"></script>
-  <script src="js/app.js"></script> <!-- jeśli istnieje -->
+  <!-- PRAWA STRONA: EDYTOR -->
+  <aside style="flex:1; border-left:2px solid #333; padding-left:16px;">
+    <h2>Edytor książki</h2>
+
+    <label>Tytuł książki</label>
+    <input id="editor-title" type="text" placeholder="Tytuł książki"/>
+
+    <label>Opis / treść</label>
+    <textarea id="editor-content" rows="6" placeholder="Opis książki"></textarea>
+
+    <label>Link Amazon</label>
+    <input id="editor-amazon" type="text" placeholder="https://amazon..."/>
+
+    <label>Link Wattpad</label>
+    <input id="editor-wattpad" type="text" placeholder="https://wattpad..."/>
+
+    <button id="saveBookBtn">Zapisz książkę</button>
+
+    <p id="editor-info" style="opacity:0.7; font-size:0.9em;"></p>
+  </aside>
+
+</main>
+
+<script src="js/app.js"></script>
 </body>
 </html>
