@@ -3,21 +3,30 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="ETERNIVERSE — interaktywna mapa universum książek EterSeeker Macieja Maciuszka. Master Edition 2026.">
+  <meta name="author" content="Maciej Maciuszek">
   <title>ETERNIVERSE — Master Edition 2026</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- Opcjonalnie: favicon -->
+  <!-- <link rel="icon" href="images/favicon.ico"> -->
 </head>
 <body>
   <header>
     <h1 id="mainTitle">ETERNIVERSE</h1>
     <h2 id="worldTitle">Mapa Światów</h2>
-    <p id="worldDescription"></p>
+    <p id="worldDescription" class="description"></p>
   </header>
 
   <main>
-    <aside id="worldList"></aside>
-    <section id="gatesContainer"></section>
+    <aside id="worldList" aria-label="Lista światów">
+      <!-- Tu pojawią się przyciski światów -->
+    </aside>
+    <section id="gatesContainer" aria-label="Brama i księgi">
+      <!-- Tu pojawią się bramy i książki -->
+    </section>
   </main>
 
+  <!-- Skrypty na końcu body – dobra praktyka -->
   <script src="js/data.js"></script>
   <script src="js/render.js"></script>
   <script src="js/app.js"></script>
