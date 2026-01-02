@@ -1,106 +1,149 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <title>ETERNIVERSE — Master Library</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ETERNIVERSE — Master System</title>
 
-  <!-- STYLE -->
-  <link rel="stylesheet" href="css/style.css" />
+<style>
+/* ===== RESET ===== */
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family: Inter, system-ui, sans-serif;
+  background:#041018;
+  color:#E6F6F5;
+}
 
+/* ===== LAYOUT ===== */
+header{
+  padding:20px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+header h1{
+  color:#D9A441;
+  letter-spacing:1px;
+}
+
+#worlds{
+  padding:20px;
+  display:grid;
+  gap:30px;
+}
+
+/* ===== WORLD ===== */
+.world{
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;
+  overflow:hidden;
+  background:#071626;
+}
+.world-header{
+  padding:16px;
+  background:rgba(255,255,255,.03);
+}
+.world-header h2{
+  color:#28D3C6;
+}
+.world-header p{
+  font-size:13px;
+  opacity:.7;
+}
+
+/* ===== GATES ===== */
+.gates{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:14px;
+  padding:16px;
+}
+.gate{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:10px;
+  padding:12px;
+  cursor:pointer;
+  transition:.2s;
+}
+.gate:hover{
+  background:rgba(255,255,255,.08);
+}
+.gate h4{
+  font-size:14px;
+  color:#FFB14B;
+}
+
+/* ===== BOOK PLACEHOLDER ===== */
+.book{
+  font-size:12px;
+  opacity:.6;
+  margin-top:6px;
+}
+
+/* ===== FOOTER ===== */
+footer{
+  padding:20px;
+  text-align:center;
+  font-size:12px;
+  opacity:.5;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+</style>
 </head>
+
 <body>
 
-  <!-- =========================
-       HEADER
-       ========================= -->
-  <header class="topbar">
-    <h1>ETERNIVERSE</h1>
-    <span class="version">Master Library</span>
-  </header>
+<header>
+  <h1>ETERNIVERSE — MASTER SYSTEM</h1>
+</header>
 
-  <!-- =========================
-       MAIN LAYOUT
-       ========================= -->
-  <div class="layout">
+<main id="worlds"></main>
 
-    <!-- WORLDS LIST -->
-    <aside class="sidebar" id="worldList">
-      <!-- render.js wypełnia -->
-    </aside>
+<footer>
+  Eterniverse v1.0 • Architekt: Maciej
+</footer>
 
-    <!-- CONTENT -->
-    <main class="content">
+<script>
+/* ===== DANE MASTER (MOŻESZ ROZBUDOWYWAĆ) ===== */
+const DATA = [
+  {id:"W1",name:"InterSeeker",desc:"Psychika, cień, trauma"},
+  {id:"W2",name:"EterSeeker",desc:"Wola, struktura, architektura"},
+  {id:"W3",name:"ObfitoSeeker",desc:"Materia, zasoby, energia"},
+  {id:"W4",name:"ChronoSeeker",desc:"Czas i linie"},
+  {id:"W5",name:"NeuroSeeker",desc:"Umysł i biologia"},
+  {id:"W6",name:"MythoSeeker",desc:"Archetypy i mity"},
+  {id:"W7",name:"TechnoSeeker",desc:"AI i systemy"},
+  {id:"W8",name:"NutoSeeker",desc:"Dźwięk i rezonans"}
+];
 
-      <!-- WORLD TITLE -->
-      <section class="world-header">
-        <h2 id="worldTitle">Wybierz Świat</h2>
-        <p id="worldDescription"></p>
-      </section>
+/* ===== RENDER ===== */
+const worldsEl = document.getElementById("worlds");
 
-      <!-- GATES -->
-      <section class="gates" id="gatesContainer">
-        <!-- render.js wypełnia -->
-      </section>
+DATA.forEach(world=>{
+  const w = document.createElement("section");
+  w.className="world";
 
-    </main>
-  </div>
+  const header = document.createElement("div");
+  header.className="world-header";
+  header.innerHTML = `<h2>${world.name}</h2><p>${world.desc}</p>`;
 
-  <!-- =========================
-       MODAL: BOOK EDITOR
-       ========================= -->
-  <div class="modal hidden" id="bookEditorModal">
-    <div class="modal-content">
+  const gates = document.createElement("div");
+  gates.className="gates";
 
-      <h3>Edytor książki</h3>
+  for(let i=1;i<=10;i++){
+    const g = document.createElement("div");
+    g.className="gate";
+    g.innerHTML = `
+      <h4>Brama ${i}</h4>
+      <div class="book">miejsce na książki / audiobooki</div>
+    `;
+    gates.appendChild(g);
+  }
 
-      <label>
-        Tytuł
-        <input type="text" id="bookTitle" />
-      </label>
-
-      <label>
-        Opis
-        <textarea id="bookDescription"></textarea>
-      </label>
-
-      <label>
-        Status
-        <select id="bookStatus">
-          <option value="draft">Draft</option>
-          <option value="wattpad">Wattpad</option>
-          <option value="kdp">Amazon KDP</option>
-          <option value="published">Opublikowana</option>
-        </select>
-      </label>
-
-      <label>
-        Audiobook (URL / plik)
-        <input type="text" id="bookAudiobook" />
-      </label>
-
-      <div class="modal-actions">
-        <button id="saveBookBtn">Zapisz</button>
-        <button id="closeBookBtn">Zamknij</button>
-      </div>
-
-    </div>
-  </div>
-
-  <!-- =========================
-       SCRIPTS — KOLEJNOŚĆ MA ZNACZENIE
-       ========================= -->
-  <script src="js/data.js"></script>
-  <script src="js/render.js"></script>
-  <script src="js/editor.js"></script>
-
-  <script>
-    // BOOTSTRAP — NIE DOTYKASZ
-    (async () => {
-      await EterniverseData.loadData();
-      EterniverseRender.init();
-    })();
-  </script>
+  w.appendChild(header);
+  w.appendChild(gates);
+  worldsEl.appendChild(w);
+});
+</script>
 
 </body>
 </html>
