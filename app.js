@@ -1,5 +1,5 @@
-// ETERNIVERSE – Ultimate Edition JS (wszystkie ulepszenia zintegrowane + poprawione ładowanie ksiąg)
-// Pełna edycja światów, bram i ksiąg + IndexedDB + ładowanie z map.json + przykładowe księgi w danych domyślnych
+// ETERNIVERSE – Master Edition JS (wszystkie funkcje uzupełnione i działające)
+// Pełna edycja światów, bram i ksiąg + IndexedDB + map.json
 
 const selectors = {
   worldList: '#worldList',
@@ -39,11 +39,11 @@ async function openDB() {
   });
 }
 
-// Ładowanie danych: najpierw map.json, potem IndexedDB, na końcu domyślne
+// Ładowanie danych
 async function loadData() {
   if (!db) await openDB();
 
-  // 1. Próba z map.json
+  // 1. map.json
   try {
     const res = await fetch('map.json?' + Date.now());
     if (res.ok) {
@@ -62,14 +62,12 @@ async function loadData() {
   if (saved) {
     DATA = saved;
     logMessage('Dane załadowane z IndexedDB');
-    renderWorlds();
-    return;
+  } else {
+    DATA = getDefaultData();
+    logMessage('Załadowno domyślne dane z przykładowymi księgami');
   }
 
-  // 3. Domyślne dane z przykładowymi księgami
-  DATA = getDefaultData();
   saveToIndexedDB();
-  logMessage('Załadowno domyślne dane z przykładowymi księgami');
   renderWorlds();
 }
 
@@ -80,7 +78,6 @@ function getFromIndexedDB() {
     const store = tx.objectStore(STORE_NAME);
     const request = store.get('core_data');
     request.onsuccess = () => resolve(request.result ? request.result.data : null);
-    request.onerror = () => resolve(null);
   });
 }
 
@@ -96,7 +93,7 @@ function saveToIndexedDB() {
 function getDefaultData() {
   return {
     "system": "ETERNIVERSE",
-    "version": "Ultimate 2026",
+    "version": "Master 2026",
     "architect": "Maciej Maciuszek",
     "worlds": [
       {
@@ -108,27 +105,12 @@ function getDefaultData() {
             "id": "1",
             "name": "BRAMA I — INTERSEEKER",
             "color": "#28D3C6",
-            "sub": "Psychika · Cień · Trauma · Mechanizmy przetrwania",
+            "sub": "Psychika · Cień · Trauma",
             "tag": "CORE/PSYCHE",
             "books": [
-              {
-                "id": "book1",
-                "title": "INTERSEEKER: Geneza",
-                "status": "opublikowana",
-                "content": "Surowa autobiograficzna historia spod pieca – dzieciństwo, trauma, ogień jako symbol odrodzenia."
-              },
-              {
-                "id": "book2",
-                "title": "InterSeeker – Atlas Wewnętrzny",
-                "status": "opublikowana",
-                "content": "Podręcznik konfrontacji z Cieniem i mechanizmami przetrwania."
-              },
-              {
-                "id": "book3",
-                "title": "INTERSEEKER: Efekt Cienia",
-                "status": "opublikowana",
-                "content": "Tom 2 serii – test na nowe życie."
-              }
+              { "id": "b1", "title": "INTERSEEKER: Geneza", "status": "opublikowana", "content": "Surowa autobiograficzna historia spod pieca – dzieciństwo, trauma, ogień jako symbol odrodzenia." },
+              { "id": "b2", "title": "InterSeeker – Atlas Wewnętrzny", "status": "opublikowana", "content": "Podręcznik konfrontacji z Cieniem i mechanizmami przetrwania." },
+              { "id": "b3", "title": "INTERSEEKER: Efekt Cienia", "status": "opublikowana", "content": "Tom 2 serii – test na nowe życie." }
             ]
           },
           {
@@ -146,18 +128,8 @@ function getDefaultData() {
             "sub": "Wola · Pole · Architektura rzeczywistości",
             "tag": "CORE/FIELD",
             "books": [
-              {
-                "id": "book4",
-                "title": "EterSeeker: Kronika Woli",
-                "status": "opublikowana (Amazon)",
-                "content": "Protokół reprogramowania woli za pomocą oddechu, częstotliwości i spójności pola."
-              },
-              {
-                "id": "book5",
-                "title": "Interfejs Świadomości",
-                "status": "opublikowana (#1 metafizyka)",
-                "content": "Nauka czytania znaków rzeczywistości jako komunikatów pola."
-              }
+              { "id": "b4", "title": "EterSeeker: Kronika Woli", "status": "opublikowana", "content": "Protokół reprogramowania woli za pomocą oddechu, częstotliwości i spójności pola." },
+              { "id": "b5", "title": "Interfejs Świadomości", "status": "opublikowana", "content": "Nauka czytania znaków rzeczywistości jako komunikatów pola." }
             ]
           },
           {
@@ -175,12 +147,7 @@ function getDefaultData() {
             "sub": "Materia · Przepływ · Manifestacja · Obfitość",
             "tag": "EMBODIED/FLOW",
             "books": [
-              {
-                "id": "book6",
-                "title": "ObfitoSeeker – Kod Obfitości",
-                "status": "opublikowana",
-                "content": "Kod, który nie mówi o pieniądzach – mówi o regułach gry i powrocie do syna."
-              }
+              { "id": "b6", "title": "ObfitoSeeker – Kod Obfitości", "status": "opublikowana", "content": "Kod, który nie mówi o pieniądzach – mówi o regułach gry i powrocie do syna." }
             ]
           },
           {
@@ -256,7 +223,7 @@ function openWorld(world) {
   logMessage(`Otworzono świat: ${world.name}`);
 }
 
-// Renderowanie bramy z księgami
+// Renderowanie bramy
 function renderGate(gate) {
   const gateDiv = document.createElement('div');
   gateDiv.style.cssText = 'margin:48px 0;padding:32px;background:linear-gradient(145deg,#08121c,#0f2138);border-radius:24px;box-shadow:0 16px 60px rgba(0,0,0,0.8);border-left:8px solid ' + gate.color + ';position:relative;';
@@ -475,5 +442,5 @@ function escapeHtml(text) {
 document.addEventListener('DOMContentLoaded', async () => {
   await openDB();
   await loadData();
-  logMessage(`System ETERNIVERSE Ultimate – Załadowany z księgami`);
+  logMessage(`System ETERNIVERSE Master – Załadowany z księgami`);
 });
