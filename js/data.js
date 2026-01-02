@@ -12,11 +12,11 @@ class DataStore {
   static unsavedChanges = false;
   static listeners = new Set(); // Dla powiadomień o zmianach
 
-  // Inicjalizacja – ładuje z priorytetami: remote → IndexedDB → localStorage → default
+  // Inicjacja – ładuje z priorytetami: remote → IndexedDB → localStorage → default
   static async init() {
     console.log('🌀 Inicjacja Nieśmiertelnego Magazynu Pamięci...');
 
-    // 1. Próba z remote (mapa.json)
+    // 1. Próba z remote (map.json)
     try {
       await this.loadFromRemote();
       this.notify('Mapa załadowana z eteru centralnego');
@@ -50,7 +50,7 @@ class DataStore {
   }
 
   static async loadFromRemote() {
-    const res = await fetch('data/mapa.json?t=' + Date.now()); // cache busting
+    const res = await fetch('data/map.json?t=' + Date.now()); // cache busting
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     this.data = await res.json();
     await this.saveToIndexedDB(); // Aktualizacja głębokiej pamięci
@@ -219,9 +219,3 @@ class DataStore {
 document.addEventListener('DOMContentLoaded', () => {
   DataStore.init();
 });
-
-// Eksport dla innych modułów (jeśli używasz modułów ES)
-export default DataStore;
-
-// Dla starszych skryptów – global
-window.DataStore = DataStore;
