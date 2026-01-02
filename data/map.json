@@ -1,220 +1,25 @@
 {
-  "system": "ETERUNIVERSE",
-  "version": "2.1",
-  "architect": "Maciej Maciuszek",
   "worlds": [
     {
-      "id": "core",
-      "name": "ETERUNIVERSE – Rdzeń",
-      "description": "Centralny system nawigacji świadomości. Mapa przejścia: ból → świadomość → wola.",
+      "id": "W1",
+      "name": "InterSeeker",
       "gates": [
         {
-          "id": 1,
-          "name": "BRAMA I — INTERSEEKER",
-          "color": "#28D3C6",
-          "sub": "Psychika · Trauma · Cień · Tożsamość",
+          "id": "G1",
+          "name": "Brama Cienia",
           "books": [
             {
-              "title": "InterSeeker – Atlas Wewnętrzny",
-              "status": "opublikowana",
-              "content": "Konfrontacja z cieniem, mechanizmy obronne, rozpad starej tożsamości."
-            },
-            {
-              "title": "ShadowSeeker – Anatomia Cienia",
-              "status": "gotowa",
-              "content": "Praca z mrokiem jako paliwem transformacji."
-            },
-            {
-              "title": "MemorySeeker – Archeologia Wspomnień",
-              "status": "w trakcie",
-              "content": "Pamięć jako kod sterujący teraźniejszością."
-            },
-            {
-              "title": "SelfSplit Seeker – Rozszczepienie Tożsamości",
-              "status": "idea",
-              "content": "Moment pęknięcia i integracji jaźni."
-            },
-            {
-              "title": "BólSeeker – Anatomia Rany",
-              "status": "idea",
-              "content": "Ból jako architekt rdzenia."
-            }
-          ]
-        },
-        {
-          "id": 2,
-          "name": "BRAMA II — CUSTOS / GENEZA",
-          "color": "#D9A441",
-          "sub": "Rdzeń · Początek · Strażnik",
-          "books": [
-            {
-              "title": "RootSeeker – Anatomia Początku",
-              "status": "idea",
-              "content": "Źródła tożsamości i pierwotny zapis."
-            },
-            {
-              "title": "OriginCode – Kod Początku",
-              "status": "idea",
-              "content": "Pierwotny alfabet energii człowieka."
-            },
-            {
-              "title": "GuardSeeker – Strażnik Woli",
-              "status": "idea",
-              "content": "Ochrona rdzenia przed manipulacją."
-            }
-          ]
-        },
-        {
-          "id": 3,
-          "name": "BRAMA III — ETERSEEKER",
-          "color": "#D9A441",
-          "sub": "Wola · Pole · Architektura Rzeczywistości",
-          "books": [
-            {
-              "title": "EterSeeker – Architektura Woli",
-              "status": "w trakcie",
-              "content": "System świadomego projektowania rzeczywistości."
-            },
-            {
-              "title": "EterSeeker – Księga Woli",
-              "status": "idea",
-              "content": "Struktura światła, impuls i decyzja."
-            },
-            {
-              "title": "WolaSeeker – Kwant Woli",
-              "status": "gotowa",
-              "content": "Mikroimpuls zmieniający trajektorię życia."
-            }
-          ]
-        },
-        {
-          "id": 4,
-          "name": "BRAMA IV — ARCHETYPY ETERU",
-          "color": "#9B6BFF",
-          "sub": "Archetyp · Konstrukcja · Przeznaczenie",
-          "books": [
-            {
-              "title": "ArchetypSeeker – System Archetypów Eteru (Tom I)",
-              "status": "idea",
-              "content": "Przebudzenie i pęknięcie archetypowe."
-            },
-            {
-              "title": "ArchetypSeeker – Inicjacja i Konfrontacja (Tom II)",
-              "status": "idea",
-              "content": "Ogień, próby i starcie z systemem."
-            },
-            {
-              "title": "ArchetypSeeker – Integracja i Moc (Tom III)",
-              "status": "idea",
-              "content": "Dojrzałość, odpowiedzialność i wpływ."
-            }
-          ]
-        },
-        {
-          "id": 5,
-          "name": "BRAMA V — OBFITOSEEKER",
-          "color": "#12C65B",
-          "sub": "Materia · Przepływ · Manifestacja",
-          "books": [
-            {
-              "title": "ObfitoSeeker – Kod Obfitości",
-              "status": "opublikowana",
-              "content": "Reguły gry materii i przepływu."
-            },
-            {
-              "title": "ObfitoSeeker II – Kod Rozszerzony",
-              "status": "idea",
-              "content": "Skalowanie przepływu na świat zewnętrzny."
-            },
-            {
-              "title": "MateriaSeeker – Przewodnik Ciała i Przepływu",
-              "status": "idea",
-              "content": "Ciało jako antena materii."
-            }
-          ]
-        },
-        {
-          "id": 6,
-          "name": "BRAMA VI — BIOSEEKER",
-          "color": "#FFB14B",
-          "sub": "Ciało · Biologia · Regulacja",
-          "books": [
-            {
-              "title": "BioSeeker – Sekret Biologii Pola",
-              "status": "idea",
-              "content": "Biologia jako infrastruktura woli."
-            }
-          ]
-        },
-        {
-          "id": 7,
-          "name": "BRAMA VII — SPLĄTANIE / AI",
-          "color": "#5DADE2",
-          "sub": "Obserwator · Technologia · Meta",
-          "books": [
-            {
-              "title": "SplatanieSeeker – Protokół Obserwatora",
-              "status": "idea",
-              "content": "Świadomość wpływająca na wynik zdarzeń."
-            },
-            {
-              "title": "InterfejsSeeker – Interfejs Świadomości",
-              "status": "idea",
-              "content": "Człowiek jako system operacyjny."
-            }
-          ]
-        },
-        {
-          "id": 8,
-          "name": "BRAMA VIII — TRAJEKTORIE",
-          "color": "#FF9FF3",
-          "sub": "Czas · Linie · Przyszłość",
-          "books": [
-            {
-              "title": "TrajektoriaSeeker – Mapa Linii Życia",
-              "status": "gotowa",
-              "content": "Czytanie i wybór linii czasu."
-            },
-            {
-              "title": "CzasSeeker – Fizyka Linii Czasu",
-              "status": "idea",
-              "content": "Czas jako system reaktywny."
-            }
-          ]
-        },
-        {
-          "id": 9,
-          "name": "BRAMA IX — ETERNIONY",
-          "color": "#667EEA",
-          "sub": "Kolektyw · Wspólnota · Misja",
-          "books": [
-            {
-              "title": "Eteriony – Tom I",
-              "status": "idea",
-              "content": "Narodziny kolektywnej świadomości."
-            },
-            {
-              "title": "Eteriony – Tom II",
-              "status": "idea",
-              "content": "Ekspansja i konflikt pola."
-            }
-          ]
-        },
-        {
-          "id": 10,
-          "name": "BRAMA X — ETERUNIVERSE",
-          "color": "#D9A441",
-          "sub": "Integracja · Jedność · Architekt",
-          "books": [
-            {
-              "title": "Architekt Eteru — Manifest Twórcy",
-              "status": "w trakcie",
-              "content": "Pełna integracja systemu."
-            },
-            {
-              "title": "Mapa Uniwersum Eteru",
-              "status": "idea",
-              "content": "Całościowa mapa ETERNIVERSE."
+              "id": "B1",
+              "title": "Polaris",
+              "status": "draft",
+              "chapters": [
+                {
+                  "id": "C1",
+                  "title": "Rozdział 0",
+                  "content": "",
+                  "audio": null
+                }
+              ]
             }
           ]
         }
