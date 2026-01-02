@@ -1,4 +1,4 @@
-/* Master CSS – Ultimate Professional Cosmic Interface (2026 Edition) */ 
+/* Master CSS – Ultimate Professional Cosmic Interface (2026 Edition) */
 
 * { box-sizing:border-box; margin:0; padding:0; font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
 
@@ -24,13 +24,7 @@ main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
 
 .panel:last-child { border-bottom:none; }
 
-.panel::-webkit-scrollbar { width:10px; }
-.panel::-webkit-scrollbar-track { background:#111827; }
-.panel::-webkit-scrollbar-thumb { background:#4a5568; border-radius:5px; }
-
-#worldList { max-height:40vh; }
-
-#worldList button { display:block; width:100%; padding:24px; margin-bottom:20px; background:linear-gradient(135deg,#0f2138,#071626); border:none; border-radius:24px; color:#E6F6F5; font-size:22px; font-weight:700; cursor:pointer; box-shadow:0 16px 60px rgba(0,0,0,0.7); transition:all 0.6s ease; text-align:left; position:relative; }
+#worldList button { display:block; width:100%; padding:24px; margin-bottom:20px; background:linear-gradient(135deg,#0f2138,#071626); border:none; border-radius:24px; color:#E6F6F5; font-size:22px; font-weight:700; cursor:pointer; box-shadow:0 16px 60px rgba(0,0,0,0.7); transition:all 0.6s ease; position:relative; }
 
 #worldList button:hover { transform:translateY(-12px) scale(1.03); box-shadow:0 24px 80px rgba(0,0,0,0.9); }
 
@@ -77,42 +71,10 @@ main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
 
 #log { background:#05070a; padding:24px; font-family:monospace; font-size:14px; line-height:1.6; white-space:pre-wrap; min-height:160px; border-top:1px solid #2d3748; }
 
-/* Responsywność – Master Edition */
+/* Responsywność */
 @media (min-width:1280px) {
   main { display:grid; grid-template-columns:340px 1fr 440px; }
   header { flex-direction:row; justify-content:space-between; align-items:center; }
   .controls { width:auto; gap:20px; }
   #worldList { max-height:none; }
-}
-
-@media (max-width:1279px) and (min-width:1024px) {
-  main { grid-template-columns:300px 1fr 400px; }
-}
-
-@media (max-width:1023px) and (min-width:768px) {
-  main { grid-template-columns:260px 1fr 340px; }
-  header h1 { font-size:30px; }
-}
-
-@media (max-width:767px) {
-  header { padding:20px; gap:24px; }
-  header h1 { font-size:26px; }
-  .controls { flex-direction:column; }
-  .controls input, .controls select, .controls button { width:100%; }
-  #contentArea { padding:24px; }
-  #contentArea h2 { font-size:34px; }
-  .gate { padding:40px; margin:48px 0; }
-  .gate h3 { font-size:30px; }
-  .book-actions { opacity:1; position:static; margin-top:32px; justify-content:center; }
-  .book-actions button { width:100%; margin:12px 0; }
-}
-
-@media (max-width:480px) {
-  header h1 { font-size:24px; }
-  #contentArea h2 { font-size:30px; }
-  .gate { padding:32px; margin:40px 0; }
-  .gate h3 { font-size:28px; }
-  .book { padding:24px; }
-  .book strong { font-size:22px; }
-  .add-book-btn { width:100%; }
 }
