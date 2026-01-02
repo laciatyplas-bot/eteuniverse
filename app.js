@@ -1,551 +1,402 @@
-// script.js
-// Eterniverse - Bella Asystent Redakcyjny (AUTHOR MODE)
-// Profesjonalny rozbudowany skrypt JS z dynamicznym dodawaniem rozdziałów i fragmentów
+(() => {
+  // Model danych: Hierarchia Uniwersum
+  // Struktura: Uniwersum -> Świat -> Tom -> Rozdział -> Podrozdział/Fragment
+  // Każdy element: { id, parentId, type, title, dateCreated, version, language, content, notes, children: [] }
+  const STORAGE_KEY = 'bella_author_mode_universe';
 
-const Eterniverse = (() => {
-  "use strict";
+  // Globalny przełącznik fabular generation OFF - system nie generuje fabuły
+  const FABULAR_GENERATION = false; // permanentnie OFF w AUTHOR MODE
 
-  // Główne kontenery dynamicznych sekcji w DOM
-  const container = document.querySelector("main section#dynamicContent");
-  const output = document.getElementById("output");
+  // Obecny zaznaczony element
+  let selectedElementId = null;
 
-  // Pole fabularnej generacji - zawsze OFF i zablokowany
-  const fabularSwitch = document.getElementById("fabularSwitch");
+  // Dane całego uniwersum
+  let universeData = loadData();
 
-  // Stałe localStorage
-  const STORAGE_KEY = "eterniverse_project_data";
+  // Elementy DOM
+  const universeListEl = document.getElementById('universeList');
+  const outputEl = document.getElementById('output');
+  const archiveOutputEl = document.getElementById('archiveOutput');
 
-  // Inicjalizacja
-  function init() {
-    fabularSwitch.value = "off";
-    fabularSwitch.disabled = true;
+  const elementTypeEl = document.getElementById('elementType');
+  const elementTitleEl = document.getElementById('elementTitle');
+  const elementDateEl = document.getElementById('elementDate');
+  const elementVersionEl = document.getElementById('elementVersion');
+  const elementLanguageEl = document.getElementById('elementLanguage');
+  const elementContentEl = document.getElementById('elementContent');
+  const elementNotesEl = document.getElementById('elementNotes');
 
-    // Przycisk do zapisu
-    document.getElementById("saveBtn").addEventListener("click", saveProject);
-    document.getElementById("exportTxtBtn").addEventListener("click", exportTxt);
-    document.getElementById("exportDocxBtn").addEventListener("click", exportDocx);
-    document.getElementById("exportPdfBtn").addEventListener("click", exportPdf);
+  const saveElementBtn = document.getElementById('saveElementBtn');
+  const deleteElementBtn = document.getElementById('deleteElementBtn');
+  const addUniverseBtn = document.getElementById('addUniverseBtn');
+  const addChildBtn = document.getElementById('addChildBtn');
 
-    // Kontenery do dynamicznego dodawania treści
-    prepareStaticFields();
+  const backupAllBtn = document.getElementById('backupAllBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const exportSelectEl = document.getElementById('exportSelect');
 
-    // Załaduj projekt jeśli istnieje
-    loadProject();
-
-    // Załaduj biblioteki do eksportu
-    loadExternalLibraries();
-
-    showMessage("System gotowy. Tryb AUTHOR MODE, fabularna generacja wyłączona.", "info");
+  // Pomocnicze - unikalne ID
+  function generateId() {
+    return 'id-' + Math.random().toString(36).substr(2, 9);
   }
 
-  // Pokaż komunikat w polu output
-  function showMessage(msg, type = "info") {
-    output.textContent = msg;
-    output.className = type;
-  }
-
-  // Przygotuj pola statyczne i dynamiczne kontenery dla tomów i rozdziałów
-  function prepareStaticFields() {
-    // Uniwersum, Świat i Tom - statyczne pola (jak w HTML)
-    // Stworzymy dynamiczne sekcje dla rozdziałów i fragmentów
-
-    // Znajdź kontener na rozdziały
-    const chaptersContainer = document.createElement("div");
-    chaptersContainer.id = "chaptersContainer";
-    chaptersContainer.setAttribute("aria-label", "Lista Rozdziałów");
-
-    // Dodaj przycisk do dodawania rozdziałów
-    const addChapterBtn = document.createElement("button");
-    addChapterBtn.type = "button";
-    addChapterBtn.textContent = "Dodaj nowy Rozdział";
-    addChapterBtn.addEventListener("click", () => {
-      addChapter(chaptersContainer);
-    });
-
-    // Wstaw obok sekcji rozdziałów w main
-    const main = document.querySelector("main");
-    main.insertBefore(addChapterBtn, main.querySelector("section:nth-last-child(2)")); // przed Notatkami Autora
-    main.insertBefore(chaptersContainer, main.querySelector("section:nth-last-child(2)")); // przed Notatkami Autora
-  }
-
-  // Dodaj nowy rozdział (dynamicznie)
-  function addChapter(container, data = null) {
-    const chapterIndex = container.children.length;
-
-    const chapterDiv = document.createElement("section");
-    chapterDiv.className = "chapter-block";
-    chapterDiv.setAttribute("aria-label", `Rozdział ${chapterIndex + 1}`);
-
-    // Nagłówek i przycisk usuń
-    const header = document.createElement("h3");
-    header.textContent = `Rozdział ${chapterIndex + 1}`;
-
-    const removeBtn = document.createElement("button");
-    removeBtn.type = "button";
-    removeBtn.textContent = "Usuń Rozdział";
-    removeBtn.style.marginLeft = "1em";
-    removeBtn.addEventListener("click", () => {
-      container.removeChild(chapterDiv);
-      refreshChapterHeaders(container);
-    });
-
-    header.appendChild(removeBtn);
-    chapterDiv.appendChild(header);
-
-    // Pola rozdziału
-    chapterDiv.appendChild(createLabeledInput("chapterTitle", "Tytuł Rozdziału", data?.title || ""));
-    chapterDiv.appendChild(createLabeledInput("chapterDate", "Data utworzenia", data?.date || "", "date"));
-    chapterDiv.appendChild(createLabeledInput("chapterVersion", "Wersja", data?.version || ""));
-    chapterDiv.appendChild(createLabeledSelect("chapterLanguage", "Język", data?.language || "pl"));
-
-    // Kontener fragmentów w rozdziale
-    const fragmentsContainer = document.createElement("div");
-    fragmentsContainer.className = "fragments-container";
-    fragmentsContainer.setAttribute("aria-label", `Fragmenty Rozdziału ${chapterIndex + 1}`);
-
-    // Przycisk dodaj fragment
-    const addFragmentBtn = document.createElement("button");
-    addFragmentBtn.type = "button";
-    addFragmentBtn.textContent = "Dodaj nowy Fragment";
-    addFragmentBtn.addEventListener("click", () => {
-      addFragment(fragmentsContainer);
-    });
-
-    chapterDiv.appendChild(addFragmentBtn);
-    chapterDiv.appendChild(fragmentsContainer);
-
-    // Jeśli mamy dane fragmentów, wczytujemy je
-    if (data && Array.isArray(data.fragments)) {
-      data.fragments.forEach((frag) => addFragment(fragmentsContainer, frag));
-    }
-
-    container.appendChild(chapterDiv);
-  }
-
-  // Odśwież nagłówki rozdziałów po usunięciu
-  function refreshChapterHeaders(container) {
-    Array.from(container.children).forEach((chapterDiv, idx) => {
-      const h3 = chapterDiv.querySelector("h3");
-      if (h3) {
-        h3.firstChild.textContent = `Rozdział ${idx + 1}`;
-        // aria-label dla fragmentów
-        const fragContainer = chapterDiv.querySelector(".fragments-container");
-        if (fragContainer) {
-          fragContainer.setAttribute("aria-label", `Fragmenty Rozdziału ${idx + 1}`);
-        }
-      }
-    });
-  }
-
-  // Dodaj fragment do danego kontenera fragmentów
-  function addFragment(container, data = null) {
-    const fragmentIndex = container.children.length;
-
-    const fragmentDiv = document.createElement("fieldset");
-    fragmentDiv.className = "fragment-block";
-    fragmentDiv.setAttribute("aria-label", `Fragment ${fragmentIndex + 1}`);
-
-    // Legenda i przycisk usuń
-    const legend = document.createElement("legend");
-    legend.textContent = `Fragment ${fragmentIndex + 1}`;
-
-    const removeBtn = document.createElement("button");
-    removeBtn.type = "button";
-    removeBtn.textContent = "Usuń Fragment";
-    removeBtn.style.marginLeft = "1em";
-    removeBtn.addEventListener("click", () => {
-      container.removeChild(fragmentDiv);
-      refreshFragmentLegends(container);
-    });
-
-    legend.appendChild(removeBtn);
-    fragmentDiv.appendChild(legend);
-
-    // Pola fragmentu
-    fragmentDiv.appendChild(createLabeledInput("fragmentTitle", "Tytuł Fragmentu", data?.title || ""));
-    fragmentDiv.appendChild(createLabeledInput("fragmentDate", "Data utworzenia", data?.date || "", "date"));
-    fragmentDiv.appendChild(createLabeledInput("fragmentVersion", "Wersja", data?.version || ""));
-    fragmentDiv.appendChild(createLabeledSelect("fragmentLanguage", "Język", data?.language || "pl"));
-    fragmentDiv.appendChild(createLabeledTextarea("fragmentText", "Tekst Fragmentu", data?.text || ""));
-
-    container.appendChild(fragmentDiv);
-  }
-
-  // Odśwież legendy fragmentów po usunięciu
-  function refreshFragmentLegends(container) {
-    Array.from(container.children).forEach((fragDiv, idx) => {
-      const legend = fragDiv.querySelector("legend");
-      if (legend) {
-        legend.firstChild.textContent = `Fragment ${idx + 1}`;
-      }
-    });
-  }
-
-  // Pomocnicze funkcje tworzenia elementów formularza z etykietą
-
-  function createLabeledInput(baseId, labelText, value = "", type = "text") {
-    const wrapper = document.createElement("div");
-    wrapper.className = "form-group";
-
-    const id = baseId + "-" + uniqueId();
-
-    const label = document.createElement("label");
-    label.setAttribute("for", id);
-    label.textContent = labelText;
-
-    const input = document.createElement("input");
-    input.type = type;
-    input.id = id;
-    input.name = baseId;
-    input.value = value;
-
-    wrapper.appendChild(label);
-    wrapper.appendChild(input);
-    return wrapper;
-  }
-
-  function createLabeledSelect(baseId, labelText, selectedValue = "pl") {
-    const wrapper = document.createElement("div");
-    wrapper.className = "form-group";
-
-    const id = baseId + "-" + uniqueId();
-
-    const label = document.createElement("label");
-    label.setAttribute("for", id);
-    label.textContent = labelText;
-
-    const select = document.createElement("select");
-    select.id = id;
-    select.name = baseId;
-
-    const options = [
-      { value: "pl", text: "Polski" },
-      { value: "en", text: "Angielski" },
-      { value: "other", text: "Inny" },
-    ];
-
-    options.forEach((opt) => {
-      const option = document.createElement("option");
-      option.value = opt.value;
-      option.textContent = opt.text;
-      if (opt.value === selectedValue) option.selected = true;
-      select.appendChild(option);
-    });
-
-    wrapper.appendChild(label);
-    wrapper.appendChild(select);
-    return wrapper;
-  }
-
-  function createLabeledTextarea(baseId, labelText, value = "") {
-    const wrapper = document.createElement("div");
-    wrapper.className = "form-group";
-
-    const id = baseId + "-" + uniqueId();
-
-    const label = document.createElement("label");
-    label.setAttribute("for", id);
-    label.textContent = labelText;
-
-    const textarea = document.createElement("textarea");
-    textarea.id = id;
-    textarea.name = baseId;
-    textarea.value = value;
-    textarea.rows = 6;
-
-    wrapper.appendChild(label);
-    wrapper.appendChild(textarea);
-    return wrapper;
-  }
-
-  // Generuje unikalny id dla inputów
-  function uniqueId() {
-    return Math.random().toString(16).slice(2, 8);
-  }
-
-  // Walidacja całej struktury formularza dynamicznego
-  function validateFields() {
-    // Uniwersum, Świat, Tom, Notatki i Fabular Switch - statyczne (zakładam, że są w HTML)
-    const staticRequired = [
-      "universeTitle",
-      "universeDate",
-      "universeVersion",
-      "universeLanguage",
-      "worldTitle",
-      "worldDate",
-      "worldVersion",
-      "worldLanguage",
-      "volumeTitle",
-      "volumeDate",
-      "volumeVersion",
-      "volumeLanguage",
-    ];
-
-    for (const id of staticRequired) {
-      const el = document.getElementById(id);
-      if (!el || !el.value.trim()) {
-        showMessage(`Pole "${getLabelText(el)}" jest wymagane i nie może być puste.`, "error");
-        el.focus();
-        return false;
-      }
-    }
-
-    // Rozdziały i ich fragmenty
-    const chaptersContainer = document.getElementById("chaptersContainer");
-    if (!chaptersContainer || chaptersContainer.children.length === 0) {
-      showMessage("Musisz dodać przynajmniej jeden Rozdział.", "error");
-      return false;
-    }
-
-    for (const chapter of chaptersContainer.children) {
-      const inputs = chapter.querySelectorAll("input, select");
-      for (const input of inputs) {
-        if (!input.value.trim()) {
-          showMessage(`Pole "${getLabelText(input)}" w Rozdziale jest wymagane.`, "error");
-          input.focus();
-          return false;
-        }
-      }
-      // Sprawdź fragmenty
-      const fragmentsContainer = chapter.querySelector(".fragments-container");
-      if (!fragmentsContainer || fragmentsContainer.children.length === 0) {
-        showMessage("Każdy Rozdział musi mieć przynajmniej jeden Fragment.", "error");
-        return false;
-      }
-      for (const fragment of fragmentsContainer.children) {
-        const fragInputs = fragment.querySelectorAll("input, select, textarea");
-        for (const input of fragInputs) {
-          if (!input.value.trim()) {
-            showMessage(`Pole "${getLabelText(input)}" w Fragmencie jest wymagane.`, "error");
-            input.focus();
-            return false;
-          }
-        }
-      }
-    }
-
-    // Notatki autora - mogą być puste, więc brak walidacji
-
-    return true;
-  }
-
-  // Pomocnik do pobrania labelki
-  function getLabelText(el) {
-    if (!el) return "Pole";
-    if (!el.id) return "Pole";
-    const label = document.querySelector(`label[for="${el.id}"]`);
-    return label ? label.textContent : el.id;
-  }
-
-  // Zbierz dane z formularza do obiektu
-  function collectData() {
-    const meta = {
-      timestamp: new Date().toISOString(),
-      fabularGeneration: fabularSwitch.value,
-      authorNotes: document.getElementById("authorNotes").value.trim(),
-    };
-
-    const universe = {
-      title: document.getElementById("universeTitle").value.trim(),
-      date: document.getElementById("universeDate").value,
-      version: document.getElementById("universeVersion").value.trim(),
-      language: document.getElementById("universeLanguage").value,
-    };
-
-    const world = {
-      title: document.getElementById("worldTitle").value.trim(),
-      date: document.getElementById("worldDate").value,
-      version: document.getElementById("worldVersion").value.trim(),
-      language: document.getElementById("worldLanguage").value,
-    };
-
-    const volume = {
-      title: document.getElementById("volumeTitle").value.trim(),
-      date: document.getElementById("volumeDate").value,
-      version: document.getElementById("volumeVersion").value.trim(),
-      language: document.getElementById("volumeLanguage").value,
-    };
-
-    // Rozdziały i fragmenty
-    const chaptersContainer = document.getElementById("chaptersContainer");
-    const chapters = [];
-
-    for (const chapterDiv of chaptersContainer.children) {
-      const chapter = {};
-      chapter.title = chapterDiv.querySelector('input[name="chapterTitle"]').value.trim();
-      chapter.date = chapterDiv.querySelector('input[name="chapterDate"]').value;
-      chapter.version = chapterDiv.querySelector('input[name="chapterVersion"]').value.trim();
-      chapter.language = chapterDiv.querySelector('select[name="chapterLanguage"]').value;
-
-      // Fragmenty
-      const fragmentsContainer = chapterDiv.querySelector(".fragments-container");
-      const fragments = [];
-      for (const fragDiv of fragmentsContainer.children) {
-        const fragment = {};
-        fragment.title = fragDiv.querySelector('input[name="fragmentTitle"]').value.trim();
-        fragment.date = fragDiv.querySelector('input[name="fragmentDate"]').value;
-        fragment.version = fragDiv.querySelector('input[name="fragmentVersion"]').value.trim();
-        fragment.language = fragDiv.querySelector('select[name="fragmentLanguage"]').value;
-        fragment.text = fragDiv.querySelector('textarea[name="fragmentText"]').value.trim();
-        fragments.push(fragment);
-      }
-      chapter.fragments = fragments;
-      chapters.push(chapter);
-    }
-
-    return {
-      meta,
-      structure: {
-        universe,
-        world,
-        volume,
-        chapters,
-      },
-    };
-  }
-
-  // Zapis do localStorage
-  function saveProject() {
-    if (!validateFields()) return;
-
+  // Załaduj dane z localStorage lub utwórz pustą strukturę
+  function loadData() {
     try {
-      const data = collectData();
-      let archive = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-      archive.push(data);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(archive));
-      showMessage(`Projekt zapisany lokalnie. Timestamp: ${data.meta.timestamp}`, "success");
+      const json = localStorage.getItem(STORAGE_KEY);
+      if (json) return JSON.parse(json);
     } catch (e) {
-      showMessage("Błąd zapisu: " + e.message, "error");
+      console.error('Błąd ładowania danych:', e);
     }
+    return [];
   }
 
-  // Załaduj ostatni zapisany projekt
-  function loadProject() {
+  // Zapisz dane do localStorage
+  function saveData() {
     try {
-      let archive = JSON.parse(localStorage.getItem(STORAGE_KEY));
-      if (archive && archive.length > 0) {
-        const last = archive[archive.length - 1];
-        fillForm(last);
-        showMessage(`Załadowano ostatni projekt z timestampem ${last.meta.timestamp}`, "info");
-      }
-    } catch {
-      // ignoruj błędy
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(universeData));
+    } catch (e) {
+      console.error('Błąd zapisu danych:', e);
     }
   }
 
-  // Wypełnij formularz danymi (statyczne i dynamiczne)
-  function fillForm(data) {
-    if (!data || !data.structure) return;
-    const s = data.structure;
-
-    document.getElementById("universeTitle").value = s.universe.title || "";
-    document.getElementById("universeDate").value = s.universe.date || "";
-    document.getElementById("universeVersion").value = s.universe.version || "";
-    document.getElementById("universeLanguage").value = s.universe.language || "pl";
-
-    document.getElementById("worldTitle").value = s.world.title || "";
-    document.getElementById("worldDate").value = s.world.date || "";
-    document.getElementById("worldVersion").value = s.world.version || "";
-    document.getElementById("worldLanguage").value = s.world.language || "pl";
-
-    document.getElementById("volumeTitle").value = s.volume.title || "";
-    document.getElementById("volumeDate").value = s.volume.date || "";
-    document.getElementById("volumeVersion").value = s.volume.version || "";
-    document.getElementById("volumeLanguage").value = s.volume.language || "pl";
-
-    // Usuń istniejące rozdziały
-    const chaptersContainer = document.getElementById("chaptersContainer");
-    chaptersContainer.innerHTML = "";
-
-    if (Array.isArray(s.chapters)) {
-      s.chapters.forEach((chapterData) => {
-        addChapter(chaptersContainer, chapterData);
-      });
+  // Znajdź element po ID w strukturze rekurencyjnie (zwraca obiekt oraz rodzica)
+  function findElementById(id, elements = universeData, parent = null) {
+    for (const el of elements) {
+      if (el.id === id) return { element: el, parent };
+      if (el.children && el.children.length) {
+        const found = findElementById(id, el.children, el);
+        if (found) return found;
+      }
     }
-
-    document.getElementById("authorNotes").value = data.meta.authorNotes || "";
+    return null;
   }
 
-  // Eksport do TXT (podobnie jak poprzednio)
-  function exportTxt() {
-    if (!validateFields()) return;
-    const data = collectData();
-
-    let txt = "";
-    txt += `ETERNIVERSE PROJECT EXPORT\n`;
-    txt += `Timestamp: ${data.meta.timestamp}\n\n`;
-
-    txt += "META:\n";
-    txt += `Fabular Generation: ${data.meta.fabularGeneration}\n`;
-    txt += `Notatki Autora:\n${data.meta.authorNotes}\n\n`;
-
-    const s = data.structure;
-
-    txt += "UNIWERSUM:\n";
-    for (const [k, v] of Object.entries(s.universe)) {
-      txt += `k:{k}:k:{v}\n`;
+  // Renderuj listę uniwersum w panelu struktury
+  function renderUniverseList() {
+    universeListEl.innerHTML = '';
+    if (!universeData.length) {
+      universeListEl.textContent = 'Brak Uniwersów. Dodaj nowy.';
+      return;
     }
-    txt += "\nŚWIAT:\n";
-    for (const [k, v] of Object.entries(s.world)) {
-      txt += `k:{k}:k:{v}\n`;
-    }
-    txt += "\nTOM:\n";
-    for (const [k, v] of Object.entries(s.volume)) {
-      txt += `k:{k}:k:{v}\n`;
-    }
-    txt += "\nROZDZIAŁY:\n";
+    const ul = document.createElement('ul');
+    ul.className = 'hierarchy';
+    universeData.forEach(universe => {
+      ul.appendChild(renderElementNode(universe));
+    });
+    universeListEl.appendChild(ul);
+  }
 
-    s.chapters.forEach((chap, i) => {
-      txt += `Rozdział ${i + 1}:\n`;
-      for (const [k, v] of Object.entries(chap)) {
-        if (k !== "fragments") {
-          txt += `k:{k}:k:{v}\n`;
-        }
+  // Render pojedynczego elementu oraz jego dzieci
+  function renderElementNode(element) {
+    const li = document.createElement('li');
+    li.textContent = `[element.type]{element.type}]element.type]{element.title || '(Bez tytułu)'}`;
+    li.title = `Wersja: element.version∣∣′v1′,Język:{element.version || 'v1'}, Język:element.version∣∣′v1′,Język:{element.language || 'pl'}`;
+    li.dataset.id = element.id;
+    li.tabIndex = 0;
+    if (element.id === selectedElementId) li.classList.add('selected');
+
+    // Kliknięcie zaznacza element
+    li.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectElement(element.id);
+    });
+    li.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectElement(element.id);
       }
-      txt += "Fragmenty:\n";
-      chap.fragments.forEach((frag, j) => {
-        txt += `  Fragment ${j + 1}:\n`;
-        for (const [fk, fv] of Object.entries(frag)) {
-          txt += `    fk:{fk}:fk:{fv}\n`;
-        }
-      });
-      txt += "\n";
     });
 
-    downloadFile("eterniverse_project.txt", txt, "text/plain");
-    showMessage("Eksport do pliku .txt zakończony pomyślnie.", "success");
+    if (element.children && element.children.length) {
+      const ul = document.createElement('ul');
+      ul.className = 'hierarchy';
+      element.children.forEach(child => ul.appendChild(renderElementNode(child)));
+      li.appendChild(ul);
+    }
+    return li;
   }
 
-  // Eksport DOCX i PDF podobnie jak w poprzednim kodzie,
-  // zmodyfikowane na nową strukturę (możesz rozbudować analogicznie).
+  // Wybierz element i załaduj do edytora
+  function selectElement(id) {
+    const found = findElementById(id);
+    if (!found) return;
+    selectedElementId = id;
+    renderUniverseList();
+    loadElementToEditor(found.element);
+    outputEl.textContent = '';
+  }
 
-  // Funkcja do pobierania plików
-  function downloadFile(filename, content, mimeType) {
-    const blob = content instanceof Blob ? content : new Blob([content], { type: mimeType });
+  // Załaduj dane elementu do edytora
+  function loadElementToEditor(el) {
+    elementTypeEl.value = el.type;
+    elementTitleEl.value = el.title || '';
+    elementDateEl.value = new Date(el.dateCreated).toLocaleString() || '';
+    elementVersionEl.value = el.version || 'v1';
+    elementLanguageEl.value = el.language || 'pl';
+    elementContentEl.value = el.content || '';
+    elementNotesEl.value = el.notes || '';
+    updateButtonsState(true);
+  }
+
+  // Wyczyszczenie edytora i odznaczenie elementu
+  function clearEditor() {
+    selectedElementId = null;
+    elementTypeEl.value = '';
+    elementTitleEl.value = '';
+    elementDateEl.value = '';
+    elementVersionEl.value = '';
+    elementLanguageEl.value = 'pl';
+    elementContentEl.value = '';
+    elementNotesEl.value = '';
+    updateButtonsState(false);
+    renderUniverseList();
+    outputEl.textContent = 'Edytor wyczyszczony.';
+  }
+
+  // Aktualizacja stanu przycisków (usuń/dodaj dziecko) w zależności od wybranego elementu
+  function updateButtonsState(enabled) {
+    deleteElementBtn.disabled = !enabled;
+    addChildBtn.disabled = !enabled;
+    saveElementBtn.disabled = !enabled;
+  }
+
+  // Dodaj nowy element na poziomie Uniwersum (najwyższy poziom)
+  addUniverseBtn.addEventListener('click', () => {
+    const newUniverse = createNewElement('Uniwersum');
+    universeData.push(newUniverse);
+    saveData();
+    selectedElementId = newUniverse.id;
+    renderUniverseList();
+    loadElementEditor(newUniverse);
+    outputEl.textContent = 'Dodano nowe Uniwersum.';
+  });
+
+  // Tworzy nowy element z datą, wersją, ID i pustymi polami
+  function createNewElement(type, parent = null) {
+    return {
+      id: generateId(),
+      parentId: parent ? parent.id : null,
+      type,
+      title: '',
+      dateCreated: new Date().toISOString(),
+      version: 'v1',
+      language: 'pl',
+      content: '',
+      notes: '',
+      children: []
+    };
+  }
+
+  // Obsługa zapisu zmian elementu
+  saveElementBtn.addEventListener('click', () => {
+    if (!selectedElementId) {
+      outputEl.textContent = 'Brak wybranego elementu do zapisu.';
+      return;
+    }
+    const found = findElementById(selectedElementId);
+    if (!found) {
+      outputEl.textContent = 'Element nie został znaleziony.';
+      return;
+    }
+    // Walidacja tytułu
+    if (!elementTitleEl.value.trim()) {
+      outputEl.textContent = 'Tytuł nie może być pusty!';
+      return;
+    }
+    // Aktualizacja danych
+    const el = found.element;
+    el.title = elementTitleEl.value.trim();
+    // DataCreated pozostaje stała
+    el.version = elementVersionEl.value.trim() || el.version || 'v1';
+    el.language = elementLanguageEl.value || 'pl';
+    el.content = elementContentEl.value;
+    el.notes = elementNotesEl.value;
+
+    saveData();
+    renderUniverseList();
+    outputEl.textContent = `Zapisano zmiany w elemencie "${el.title}".`;
+  });
+
+  // Usuwanie wybranego elementu wraz z dziećmi
+  deleteElementBtn.addEventListener('click', () => {
+    if (!selectedElementId) {
+      outputEl.textContent = 'Brak wybranego elementu do usunięcia.';
+      return;
+    }
+    if (!confirm('Czy na pewno chcesz usunąć ten element wraz z wszystkimi podrzędnymi?')) return;
+
+    const found = findElementById(selectedElementId);
+    if (!found) {
+      outputEl.textContent = 'Element nie został znaleziony.';
+      return;
+    }
+
+    if (found.parent) {
+      // Usuwamy z dzieci rodzica
+      found.parent.children = found.parent.children.filter(c => c.id !== selectedElementId);
+    } else {
+      // Usuwamy z root
+      universeData = universeData.filter(el => el.id !== selectedElementId);
+    }
+    saveData();
+    clearEditor();
+    renderUniverseList();
+    outputEl.textContent = 'Element usunięty.';
+  });
+
+  // Dodawanie dziecka do wybranego elementu
+  addChildBtn.addEventListener('click', () => {
+    if (!selectedElementId) {
+      outputEl.textContent = 'Wybierz element, do którego chcesz dodać podrzędny.';
+      return;
+    }
+    const found = findElementById(selectedElementId);
+    if (!found) {
+      outputEl.textContent = 'Wybrany element nie został znaleziony.';
+      return;
+    }
+    // Określamy typ podrzędny na podstawie typu rodzica (poziom hierarchii)
+    const nextType = getChildType(found.element.type);
+    if (!nextType) {
+      outputEl.textContent = `Nie można dodać podrzędnego elementu do typu "${found.element.type}".`;
+      return;
+    }
+    const newChild = createNewElement(nextType, found.element);
+    found.element.children.push(newChild);
+    saveData();
+    renderUniverseList();
+    selectedElementId = newChild.id;
+    loadElementToEditor(newChild);
+    outputEl.textContent = `Dodano nowy element typu "${nextType}".`;
+  });
+
+  // Określa typ dziecka na podstawie typu rodzica wg hierarchii
+  function getChildType(parentType) {
+    switch (parentType) {
+      case 'Uniwersum': return 'Świat';
+      case 'Świat': return 'Tom';
+      case 'Tom': return 'Rozdział';
+      case 'Rozdział': return 'Podrozdział / Fragment';
+      case 'Podrozdział / Fragment': return null;
+      default: return null;
+    }
+  }
+
+  // Załaduj element do edytora (pomocnicza)
+  function loadElementEditor(el) {
+    selectedElementId = el.id;
+    renderUniverseList();
+    loadElementToEditor(el);
+  }
+
+  // Backup całego projektu (archiwum autora) - eksport do JSON i pobranie pliku
+  backupAllBtn.addEventListener('click', () => {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `Bella_Archiwum_Backup_${timestamp}.json`;
+    const blob = new Blob([JSON.stringify(universeData, null, 2)], { type: 'application/json' });
+    triggerDownload(blob, filename);
+    archiveOutputEl.textContent = `Backup wykonany: ${filename}`;
+  });
+
+  // Eksport wybranego elementu do wybranego formatu
+  exportBtn.addEventListener('click', () => {
+    if (!selectedElementId) {
+      archiveOutputEl.textContent = 'Wybierz element do eksportu.';
+      return;
+    }
+    const found = findElementById(selectedElementId);
+    if (!found) {
+      archiveOutputEl.textContent = 'Nie znaleziono wybranego elementu.';
+      return;
+    }
+    const el = found.element;
+    const format = exportSelectEl.value;
+    exportElement(el, format);
+  });
+
+  // Eksport elementu do formatu docx, pdf, txt
+  async function exportElement(el, format) {
+    const title = `[el.type]{el.type}]el.type]{el.title || '(Bez tytułu)'}`;
+    const content = el.content || '';
+    const notes = el.notes ? `\n\nNOTATKI AUTORA:\n${el.notes}` : '';
+    const text = `title\nWersja:{title}\nWersja:title\nWersja:{el.version}\nJęzyk: el.language\nData:{el.language}\nData:el.language\nData:{new Date(el.dateCreated).toLocaleString()}\n\ncontent{content}content{notes}`;
+
+    if (format === 'docx') {
+      const doc = new docx.Document({
+        sections: [{
+          children: [
+            new docx.Paragraph({ text: title, heading: docx.HeadingLevel.HEADING_1 }),
+            new docx.Paragraph(`Wersja: ${el.version}`),
+            new docx.Paragraph(`Język: ${el.language}`),
+            new docx.Paragraph(`Data utworzenia: ${new Date(el.dateCreated).toLocaleString()}`),
+            new docx.Paragraph(''),
+            new docx.Paragraph(content),
+            ...(el.notes ? [new docx.Paragraph(''), new docx.Paragraph('NOTATKI AUTORA:'), new docx.Paragraph(el.notes)] : [])
+          ],
+        }],
+      });
+      const blob = await docx.Packer.toBlob(doc);
+      const filename = sanitizeFilename(`${title}.docx`);
+      triggerDownload(blob, filename);
+      archiveOutputEl.textContent = `Eksportowano ${filename}`;
+    } else if (format === 'pdf') {
+      // Używamy jsPDF
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const margin = 10;
+      const maxWidth = pageWidth - margin * 2;
+
+      pdf.setFontSize(16);
+      pdf.text(title, margin, 20);
+      pdf.setFontSize(10);
+      pdf.text(`Wersja: ${el.version}`, margin, 30);
+      pdf.text(`Język: ${el.language}`, margin, 36);
+      pdf.text(`Data utworzenia: ${new Date(el.dateCreated).toLocaleString()}`, margin, 42);
+
+      pdf.setFontSize(12);
+      const splitText = pdf.splitTextToSize(content + notes, maxWidth);
+      pdf.text(splitText, margin, 55);
+
+      const filename = sanitizeFilename(`${title}.pdf`);
+      pdf.save(filename);
+      archiveOutputEl.textContent = `Eksportowano ${filename}`;
+    } else if (format === 'txt') {
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const filename = sanitizeFilename(`${title}.txt`);
+      triggerDownload(blob, filename);
+      archiveOutputEl.textContent = `Eksportowano ${filename}`;
+    } else {
+      archiveOutputEl.textContent = 'Nieznany format eksportu.';
+    }
+  }
+
+  // Pomocnicza funkcja pobierania pliku
+  function triggerDownload(blob, filename) {
     const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
+    const a = document.createElement('a');
     a.href = url;
     a.download = filename;
-    a.style.display = "none";
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   }
 
-  // Ładowanie zewnętrznych bibliotek (jsPDF i docx) - jak poprzednio
-
-  // Public API
-  return {
-    init,
-  };
-})();
-
-document.addEventListener("DOMContentLoaded", () => {
-  Eterniverse.init();
-});
-document.addEventListener("DOMContentLoaded", () => {
-  if (typeof Eterniverse !== "undefined" && Eterniverse.init) {
-    Eterniverse.init();
+  // Usuwa znaki niedozwolone w nazwach plików
+  function sanitizeFilename(name) {
+    return name.replace(/[\/\\?%*:|"<>]/g, '-');
   }
-});
+
+  // Inicjalizacja - render listy i czyść edytor
+  renderUniverseList();
+  clearEditor();
+
+  // --- TRYB AUTORA - blokada generowania fabuły ---
+  // System NIE generuje fabuły, NIE proponuje stylu ani narracji
+  // W związku z tym funkcje generowania fabuły są wyłączone i nie istnieją
+
+  // Dodatkowo można wprowadzić ostrzeżenia przy próbie generowania (jeśli dodasz GUI do tego w przyszłości)
+
+})();
