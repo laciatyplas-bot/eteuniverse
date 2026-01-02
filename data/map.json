@@ -1,29 +1,109 @@
 {
+  "meta": {
+    "universe": "ETERNIVERSE",
+    "version": "1.0.0",
+    "created": "2026-01-01",
+    "author": "Maciej"
+  },
   "worlds": [
     {
       "id": "W1",
       "name": "InterSeeker",
+      "description": "Psychika, cień, trauma, mechanizmy przetrwania",
       "gates": [
         {
-          "id": "G1",
+          "id": "W1-G1",
           "name": "Brama Cienia",
-          "books": [
-            {
-              "id": "B1",
-              "title": "Polaris",
-              "status": "draft",
-              "chapters": [
-                {
-                  "id": "C1",
-                  "title": "Rozdział 0",
-                  "content": "",
-                  "audio": null
-                }
-              ]
-            }
-          ]
+          "books": []
+        },
+        {
+          "id": "W1-G2",
+          "name": "Brama Tożsamości",
+          "books": []
+        },
+        {
+          "id": "W1-G3",
+          "name": "Brama Lęku",
+          "books": []
+        },
+        {
+          "id": "W1-G4",
+          "name": "Brama Mechanizmów",
+          "books": []
+        },
+        {
+          "id": "W1-G5",
+          "name": "Brama Relacji",
+          "books": []
+        },
+        {
+          "id": "W1-G6",
+          "name": "Brama Pamięci",
+          "books": []
+        },
+        {
+          "id": "W1-G7",
+          "name": "Brama Przetrwania",
+          "books": []
+        },
+        {
+          "id": "W1-G8",
+          "name": "Brama Rozpadu",
+          "books": []
+        },
+        {
+          "id": "W1-G9",
+          "name": "Brama Integracji",
+          "books": []
+        },
+        {
+          "id": "W1-G10",
+          "name": "Brama Wyjścia",
+          "books": []
         }
       ]
+    },
+    {
+      "id": "W2",
+      "name": "EterSeeker",
+      "description": "Wola, struktura, architektura świadomości",
+      "gates": []
+    },
+    {
+      "id": "W3",
+      "name": "ObfitoSeeker",
+      "description": "Materia, energia, zasoby, manifestacja",
+      "gates": []
+    },
+    {
+      "id": "W4",
+      "name": "ChronoSeeker",
+      "description": "Czas, linie, przyczyna i skutek",
+      "gates": []
+    },
+    {
+      "id": "W5",
+      "name": "NeuroSeeker",
+      "description": "Umysł, biologia, system nerwowy",
+      "gates": []
+    },
+    {
+      "id": "W6",
+      "name": "MythoSeeker",
+      "description": "Archetypy, bogowie, narracje pierwotne",
+      "gates": []
+    },
+    {
+      "id": "W7",
+      "name": "TechnoSeeker",
+      "description": "AI, symulacje, systemy kontroli",
+      "gates": []
+    },
+    {
+      "id": "W8",
+      "name": "NutoSeeker",
+      "description": "Muzyka, rezonans, częstotliwość",
+      "gates": []
     }
   ]
 }
