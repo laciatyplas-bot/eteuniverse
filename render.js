@@ -1,9 +1,12 @@
-import { loadMap } from './data.js';
-import { renderWorlds } from './render.js';
+import { MAP } from './data.js';
 
-async function init() {
-  await loadMap();
-  renderWorlds();
+export function renderWorlds() {
+  const root = document.getElementById('app');
+  root.innerHTML = '';
+
+  MAP.worlds.forEach(world => {
+    const el = document.createElement('section');
+    el.innerHTML = `<h2>${world.name}</h2>`;
+    root.appendChild(el);
+  });
 }
-
-init();
