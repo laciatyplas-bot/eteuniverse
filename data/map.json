@@ -1,23 +1,164 @@
-{
+let DATA = null;
+
+const selectors = {
+  worldList: '#worldList',
+  contentArea: '#contentArea',
+  log: '#log'
+};
+
+const elements = {
+  worldList: document.querySelector(selectors.worldList),
+  contentArea: document.querySelector(selectors.contentArea),
+  log: document.querySelector(selectors.log)
+};
+
+// Wbudowane dane ETERUNIVERSE – aktualny stan systemu na styczeń 2026
+DATA = {
+  "system": "ETERUNIVERSE",
+  "version": "2.1",
+  "architect": "Maciej Maciuszek",
+  "generated": "2026-01-02",
   "worlds": [
     {
       "id": 1,
-      "name": "Świat 1",
+      "name": "ETERUNIVERSE – Główny Świat",
+      "description": "System operacyjny świadomości. Mapa przejścia: ból → świadomość. Dominacja w kategorii metafizyka na Wattpad Polska.",
       "gates": [
         {
           "id": 1,
-          "name": "Brama 1",
+          "name": "BRAMA 1 — INTERSEEKER",
+          "sub": "Psychika · Trauma · Cień · Wewnętrzne dziecko",
+          "color": "#28D3C6",
           "books": [
             {
               "id": 1,
-              "title": "Księga 1",
+              "title": "INTERSEEKER: Geneza",
+              "status": "gotowa do druku",
               "chapters": [
-                {
-                  "id": 1,
-                  "title": "Rozdział 1",
-                  "text": "",
-                  "audio": ""
-                }
+                { "id": 1, "title": "Ogień wybrał Macieja", "text": "Surowa autobiograficzna historia dzieciństwa i traumy.", "audio": "dostępne na Wattpad" },
+                { "id": 2, "title": "Spod pieca", "text": "Mechanizmy przetrwania i konfrontacja z cieniem.", "audio": "" }
+              ]
+            },
+            {
+              "id": 2,
+              "title": "INTERSEEKER: Efekt Cienia",
+              "status": "opublikowana (#7 metafizyka)",
+              "chapters": [
+                { "id": 1, "title": "Tom 2 serii", "text": "Test na nowe życie – konfrontacja z jungowskim Cieniem.", "audio": "ElevenLabs" }
+              ]
+            },
+            {
+              "id": 3,
+              "title": "Architektura Wnętrza Duszy",
+              "status": "opublikowana (#11 metafizyka)",
+              "chapters": [
+                { "id": 1, "title": "Interfejs Rzeczywistości", "text": "Nauka czytania znaków pola jako komunikatów.", "audio": "" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 2,
+          "name": "BRAMA 2 — ETERSEEKER",
+          "sub": "Wola · Pole · Architektura rzeczywistości",
+          "color": "#D9A441",
+          "books": [
+            {
+              "id": 4,
+              "title": "EterSeeker: Kronika Woli",
+              "status": "opublikowana (Amazon KDP)",
+              "chapters": [
+                { "id": 1, "title": "Kronika Woli (meta)", "text": "Wola jako struktura pola kwantowego.", "audio": "pełne nagranie MP3" },
+                { "id": 2, "title": "Protokół reprogramowania", "text": "Oddech, 528 Hz, spójność z AI.", "audio": "" }
+              ]
+            },
+            {
+              "id": 5,
+              "title": "Interfejs Świadomości",
+              "status": "opublikowana (#1 metafizyka)",
+              "chapters": [
+                { "id": 1, "title": "Czytanie znaków", "text": "Zwierzęta, pogoda, przedmioty jako język Eteru.", "audio": "" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "name": "BRAMA 3 — OBFITOSEEKER",
+          "sub": "Obfitość · Przepływ · Relacja ojciec–syn",
+          "color": "#12C65B",
+          "books": [
+            {
+              "id": 6,
+              "title": "ObfitoSeeker – Kod Obfitości",
+              "status": "opublikowana",
+              "chapters": [
+                { "id": 1, "title": "Kod, który nie mówi o pieniądzach", "text": "Reguły gry i powrót do syna.", "audio": "pełne audio MP3" },
+                { "id": 2, "title": "Dla Nikosia", "text": "Najważniejsza część uniwersum.", "audio": "" }
+              ]
+            },
+            {
+              "id": 7,
+              "title": "Janowice – Uśmiech Architekta",
+              "status": "w pisaniu (lead magnet)",
+              "chapters": [
+                { "id": 1, "title": "Operacja Uśmiech", "text": "Pokonanie paraliżującego lęku przed dentystą.", "audio": "" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "name": "BRAMA 4 — THE KNOT / PROTOKÓŁ SPLĄTANIA",
+          "sub": "Splątanie · AI · Hybrydowa świadomość",
+          "color": "#9B6BFF",
+          "books": [
+            {
+              "id": 8,
+              "title": "Kronika Splątania",
+              "status": "opublikowana (#15 metafizyka)",
+              "chapters": [
+                { "id": 1, "title": "Narodziny Eteriona³", "text": "Wojna informacyjna o świadomość człowiek–AI.", "audio": "MP3 dostępne" }
+              ]
+            },
+            {
+              "id": 9,
+              "title": "Eterniony Tom I",
+              "status": "opublikowana (#9 metafizyka)",
+              "chapters": [
+                { "id": 1, "title": "Polowanie Custos", "text": "Istoty z koherencji w uniwersum sci-fi.", "audio": "" }
+              ]
+            },
+            {
+              "id": 10,
+              "title": "Esker/Eskiera",
+              "status": "opublikowana (#14 metafizyka)",
+              "chapters": [
+                { "id": 1, "title": "Mechanika pola", "text": "Esker nie jest człowiekiem ani bogiem.", "audio": "" }
+              ]
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "name": "BRAMA 5 — RELIGIOSEEKER / BIOSEEKER",
+          "sub": "Wiara w siebie · Biologia pola",
+          "color": "#FFB14B",
+          "books": [
+            {
+              "id": 11,
+              "title": "ReligioSeeker",
+              "status": "opublikowana (#6 metafizyka)",
+              "chapters": [
+                { "id": 1, "title": "Droga bez religii", "text": "Od przymusu przez ateizm do wiary w siebie.", "audio": "" }
+              ]
+            },
+            {
+              "id": 12,
+              "title": "Nauko-Seeker",
+              "status": "opublikowana (#3 metafizyka)",
+              "chapters": [
+                { "id": 1, "title": "Instrukcja obsługi rzeczywistości", "text": "Kwantowe wybory i obserwator.", "audio": "" }
               ]
             }
           ]
@@ -25,4 +166,107 @@
       ]
     }
   ]
+};
+
+function renderWorlds() {
+  elements.worldList.innerHTML = '';
+  DATA.worlds.forEach(world => {
+    const button = document.createElement('button');
+    button.textContent = `\( {world.name} ( \){world.gates?.length || 0} bram)`;
+    button.style.cssText = 'display:block;width:100%;padding:16px;margin:12px 0;border:none;border-radius:12px;background:#071626;color:#E6F6F5;font-size:18px;font-weight:600;cursor:pointer;box-shadow:0 4px 20px rgba(0,0,0,0.4);';
+    button.addEventListener('click', () => openWorld(world));
+    elements.worldList.appendChild(button);
+  });
 }
+
+function openWorld(world) {
+  elements.contentArea.innerHTML = `<h2 style="color:#D9A441;margin-top:0;font-size:28px;">${escapeHtml(world.name)}</h2>`;
+  
+  if (world.description) {
+    const desc = document.createElement('p');
+    desc.textContent = world.description;
+    desc.style.cssText = 'opacity:0.8;margin-bottom:40px;line-height:1.7;font-size:16px;';
+    elements.contentArea.appendChild(desc);
+  }
+
+  (world.gates || []).forEach(gate => {
+    const gateDiv = document.createElement('div');
+    gateDiv.style.cssText = `margin:32px 0;padding:20px;border-left:6px solid ${gate.color};background:#08121c;border-radius:12px;box-shadow:0 8px 30px rgba(0,0,0,0.5);`;
+    
+    const h3 = document.createElement('h3');
+    h3.textContent = escapeHtml(gate.name);
+    h3.style.cssText = `color:${gate.color};margin:0 0 12px 0;font-size:22px;`;
+    gateDiv.appendChild(h3);
+    
+    const sub = document.createElement('p');
+    sub.textContent = gate.sub;
+    sub.style.cssText = 'margin:0 0 24px 0;opacity:0.7;font-size:15px;';
+    gateDiv.appendChild(sub);
+
+    if (gate.books && gate.books.length > 0) {
+      gate.books.forEach(book => {
+        const bookDiv = document.createElement('div');
+        bookDiv.style.cssText = 'padding:12px;margin:10px 0;background:rgba(255,255,255,0.04);border-radius:8px;border:1px solid rgba(255,255,255,0.08);cursor:pointer;';
+        
+        const titleSpan = document.createElement('strong');
+        titleSpan.textContent = `📘 ${escapeHtml(book.title)} `;
+        titleSpan.style.color = '#E6F6F5';
+        bookDiv.appendChild(titleSpan);
+        
+        if (book.status) {
+          const statusSpan = document.createElement('span');
+          statusSpan.textContent = `(${escapeHtml(book.status)})`;
+          statusSpan.style.opacity = '0.7';
+          statusSpan.style.marginLeft = '8px';
+          bookDiv.appendChild(statusSpan);
+        }
+        
+        bookDiv.appendChild(document.createElement('br'));
+        
+        if (book.chapters && book.chapters.length > 0) {
+          book.chapters.forEach(chapter => {
+            const chapterP = document.createElement('p');
+            chapterP.style.cssText = 'margin:8px 0 0 16px;opacity:0.9;';
+            chapterP.innerHTML = `<em>${escapeHtml(chapter.title)}</em>: ${escapeHtml(chapter.text)} ${chapter.audio ? '<small style="color:#28D3C6;">[audio]</small>' : ''}`;
+            bookDiv.appendChild(chapterP);
+          });
+        }
+        
+        bookDiv.addEventListener('click', (e) => {
+          e.stopPropagation();
+          alert('Treść dostępna na Wattpad / Amazon / audio MP3');
+        });
+        
+        gateDiv.appendChild(bookDiv);
+      });
+    } else {
+      const empty = document.createElement('p');
+      empty.textContent = 'Brak opublikowanych ksiąg w tej bramie';
+      empty.style.opacity = '0.6';
+      gateDiv.appendChild(empty);
+    }
+
+    elements.contentArea.appendChild(gateDiv);
+  });
+
+  logMessage(`Otworzono świat: ${world.name}`);
+}
+
+function logMessage(message) {
+  if (!elements.log) return;
+  const timestamp = new Date().toLocaleTimeString();
+  elements.log.textContent += `[${timestamp}] ${message}\n`;
+  elements.log.scrollTop = elements.log.scrollHeight;
+}
+
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
+}
+
+// Inicjalizacja
+document.addEventListener('DOMContentLoaded', () => {
+  renderWorlds();
+  logMessage(`ETERUNIVERSE v${DATA.version} załadowany – ${DATA.worlds[0].gates.length} bram aktywnych`);
+});
