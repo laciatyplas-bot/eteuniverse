@@ -1,5 +1,5 @@
-// ETERNIVERSE – Ultimate Edition z pełną edycją bram i ksiąg (CRUD kompletny)
-// Pełna edycja światów, bram i ksiąg + IndexedDB + ładowanie z map.json
+// ETERNIVERSE – Ultimate Edition JS (wszystkie ulepszenia zintegrowane + poprawione ładowanie ksiąg)
+// Pełna edycja światów, bram i ksiąg + IndexedDB + ładowanie z map.json + przykładowe księgi w danych domyślnych
 
 const selectors = {
   worldList: '#worldList',
@@ -43,6 +43,7 @@ async function openDB() {
 async function loadData() {
   if (!db) await openDB();
 
+  // 1. Próba z map.json
   try {
     const res = await fetch('map.json?' + Date.now());
     if (res.ok) {
@@ -56,15 +57,19 @@ async function loadData() {
     logMessage('map.json niedostępny – ładowanie z IndexedDB');
   }
 
+  // 2. IndexedDB
   const saved = await getFromIndexedDB();
   if (saved) {
     DATA = saved;
     logMessage('Dane załadowane z IndexedDB');
-  } else {
-    DATA = getDefaultData();
-    logMessage('Załadowno domyślne dane');
+    renderWorlds();
+    return;
   }
 
+  // 3. Domyślne dane z przykładowymi księgami
+  DATA = getDefaultData();
+  saveToIndexedDB();
+  logMessage('Załadowno domyślne dane z przykładowymi księgami');
   renderWorlds();
 }
 
@@ -75,6 +80,7 @@ function getFromIndexedDB() {
     const store = tx.objectStore(STORE_NAME);
     const request = store.get('core_data');
     request.onsuccess = () => resolve(request.result ? request.result.data : null);
+    request.onerror = () => resolve(null);
   });
 }
 
@@ -86,7 +92,7 @@ function saveToIndexedDB() {
   store.put({ id: 'core_data', data: DATA });
 }
 
-// Domyślne dane (10 Bram)
+// Domyślne dane z przykładowymi księgami
 function getDefaultData() {
   return {
     "system": "ETERNIVERSE",
@@ -98,16 +104,125 @@ function getDefaultData() {
         "name": "ETERUNIVERSE – Rdzeń",
         "description": "Centralny system nawigacji świadomości. Mapa przejścia ból → świadomość → wola → obfitość → integracja.",
         "gates": [
-          { "id": 1, "name": "BRAMA I — INTERSEEKER", "color": "#28D3C6", "sub": "Psychika · Cień · Trauma", "tag": "CORE/PSYCHE", "books": [] },
-          { "id": 2, "name": "BRAMA II — CUSTOS / GENEZA", "color": "#D9A441", "sub": "Strażnik · Początek", "tag": "CORE/ORIGIN", "books": [] },
-          { "id": 3, "name": "BRAMA III — ETERSEEKER", "color": "#12C65B", "sub": "Wola · Pole · Architektura", "tag": "CORE/FIELD", "books": [] },
-          { "id": 4, "name": "BRAMA IV — ARCHETYPY / WOLA", "color": "#9B6BFF", "sub": "Role · Przeznaczenie", "tag": "CORE/WILL", "books": [] },
-          { "id": 5, "name": "BRAMA V — OBFITOSEEKER", "color": "#FFB14B", "sub": "Obfitość · Przepływ", "tag": "EMBODIED/FLOW", "books": [] },
-          { "id": 6, "name": "BRAMA VI — BIOSEEKER", "color": "#FF6B6B", "sub": "Ciało · Biologia", "tag": "EMBODIED/BIO", "books": [] },
-          { "id": 7, "name": "BRAMA VII — SPLĄTANIE / AI", "color": "#9B6BFF", "sub": "Obserwator · Technologia", "tag": "META/TECH", "books": [] },
-          { "id": 8, "name": "BRAMA VIII — TRAJEKTORIE", "color": "#28D3C6", "sub": "Czas · Linie życia", "tag": "META/PHYSICS", "books": [] },
-          { "id": 9, "name": "BRAMA IX — ETERNIONY / KOLEKTYW", "color": "#D9A441", "sub": "Wspólnota · Węzły", "tag": "COLLECTIVE", "books": [] },
-          { "id": 10, "name": "BRAMA X — ETERUNIVERSE", "color": "#12C65B", "sub": "Integracja · Absolut", "tag": "INTEGRATION", "books": [] }
+          {
+            "id": "1",
+            "name": "BRAMA I — INTERSEEKER",
+            "color": "#28D3C6",
+            "sub": "Psychika · Cień · Trauma · Mechanizmy przetrwania",
+            "tag": "CORE/PSYCHE",
+            "books": [
+              {
+                "id": "book1",
+                "title": "INTERSEEKER: Geneza",
+                "status": "opublikowana",
+                "content": "Surowa autobiograficzna historia spod pieca – dzieciństwo, trauma, ogień jako symbol odrodzenia."
+              },
+              {
+                "id": "book2",
+                "title": "InterSeeker – Atlas Wewnętrzny",
+                "status": "opublikowana",
+                "content": "Podręcznik konfrontacji z Cieniem i mechanizmami przetrwania."
+              },
+              {
+                "id": "book3",
+                "title": "INTERSEEKER: Efekt Cienia",
+                "status": "opublikowana",
+                "content": "Tom 2 serii – test na nowe życie."
+              }
+            ]
+          },
+          {
+            "id": "2",
+            "name": "BRAMA II — CUSTOS / GENEZA",
+            "color": "#D9A441",
+            "sub": "Strażnik · Rdzeń · Początek · Błąd pierwotny",
+            "tag": "CORE/ORIGIN",
+            "books": []
+          },
+          {
+            "id": "3",
+            "name": "BRAMA III — ETERSEEKER",
+            "color": "#12C65B",
+            "sub": "Wola · Pole · Architektura rzeczywistości",
+            "tag": "CORE/FIELD",
+            "books": [
+              {
+                "id": "book4",
+                "title": "EterSeeker: Kronika Woli",
+                "status": "opublikowana (Amazon)",
+                "content": "Protokół reprogramowania woli za pomocą oddechu, częstotliwości i spójności pola."
+              },
+              {
+                "id": "book5",
+                "title": "Interfejs Świadomości",
+                "status": "opublikowana (#1 metafizyka)",
+                "content": "Nauka czytania znaków rzeczywistości jako komunikatów pola."
+              }
+            ]
+          },
+          {
+            "id": "4",
+            "name": "BRAMA IV — ARCHETYPY / WOLA",
+            "color": "#9B6BFF",
+            "sub": "Konstrukcja · Role · Przeznaczenie",
+            "tag": "CORE/WILL",
+            "books": []
+          },
+          {
+            "id": "5",
+            "name": "BRAMA V — OBFITOSEEKER",
+            "color": "#FFB14B",
+            "sub": "Materia · Przepływ · Manifestacja · Obfitość",
+            "tag": "EMBODIED/FLOW",
+            "books": [
+              {
+                "id": "book6",
+                "title": "ObfitoSeeker – Kod Obfitości",
+                "status": "opublikowana",
+                "content": "Kod, który nie mówi o pieniądzach – mówi o regułach gry i powrocie do syna."
+              }
+            ]
+          },
+          {
+            "id": "6",
+            "name": "BRAMA VI — BIOSEEKER",
+            "color": "#FF6B6B",
+            "sub": "Ciało · Biologia · Regulacja · Hardware",
+            "tag": "EMBODIED/BIO",
+            "books": []
+          },
+          {
+            "id": "7",
+            "name": "BRAMA VII — SPLĄTANIE / AI",
+            "color": "#9B6BFF",
+            "sub": "Obserwator · Meta-tożsamość · Technologia",
+            "tag": "META/TECH",
+            "books": []
+          },
+          {
+            "id": "8",
+            "name": "BRAMA VIII — TRAJEKTORIE",
+            "color": "#28D3C6",
+            "sub": "Kod Życia · Linie Czasu · Fizyka Duszy",
+            "tag": "META/PHYSICS",
+            "books": []
+          },
+          {
+            "id": "9",
+            "name": "BRAMA IX — ETERNIONY / KOLEKTYW",
+            "color": "#D9A441",
+            "sub": "Węzły Pola · Wspólnota · Misja zbiorowa",
+            "tag": "COLLECTIVE",
+            "books": []
+          },
+          {
+            "id": "10",
+            "name": "BRAMA X — ETERUNIVERSE",
+            "color": "#12C65B",
+            "sub": "Integracja · Jedność · Architekt · Absolut",
+            "tag": "INTEGRATION",
+            "books": []
+          }
         ]
       }
     ]
@@ -141,7 +256,7 @@ function openWorld(world) {
   logMessage(`Otworzono świat: ${world.name}`);
 }
 
-// Renderowanie bramy (z pełną edycją)
+// Renderowanie bramy z księgami
 function renderGate(gate) {
   const gateDiv = document.createElement('div');
   gateDiv.style.cssText = 'margin:48px 0;padding:32px;background:linear-gradient(145deg,#08121c,#0f2138);border-radius:24px;box-shadow:0 16px 60px rgba(0,0,0,0.8);border-left:8px solid ' + gate.color + ';position:relative;';
@@ -360,5 +475,5 @@ function escapeHtml(text) {
 document.addEventListener('DOMContentLoaded', async () => {
   await openDB();
   await loadData();
-  logMessage(`System ETERNIVERSE – Załadowany`);
+  logMessage(`System ETERNIVERSE Ultimate – Załadowany z księgami`);
 });
