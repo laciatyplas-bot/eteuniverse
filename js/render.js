@@ -1,28 +1,29 @@
-// js/render.js — Renderowanie mapy
-document.addEventListener('data-ready', () => {
-  renderWorlds();
+// js/render.js — Master Edition 2026 – Renderer ETERNIVERSE
+
+document.addEventListener('datastore:ready', () => {
+  console.log('Dane załadowane – start renderowania');
+  renderWorldList();
+  if (DataStore.getWorlds().length > 0) {
+    openWorld(DataStore.getWorlds()[0]);
+  }
 });
 
-function renderWorlds() {
-  const list = document.getElementById('worldList');
-  const container = document.getElementById('gatesContainer');
+function renderWorldList() {
+  const container = document.getElementById('worldList');
+  if (!container) return;
 
-  const worlds = DataStore.getWorlds();
-  list.innerHTML = '<h2>Światy</h2>';
-  container.innerHTML = '';
+  container.innerHTML = '<h2>Światy Eteru</h2>';
 
-  worlds.forEach(world => {
+  DataStore.getWorlds().forEach(world => {
     const btn = document.createElement('button');
+    btn.className = 'world-btn';
     btn.textContent = world.name;
-    btn.onclick = () => renderWorld(world);
-    list.appendChild(btn);
+    btn.onclick = () => openWorld(world);
+    container.appendChild(btn);
   });
-
-  // Otwórz pierwszy świat
-  if (worlds.length > 0) renderWorld(worlds[0]);
 }
 
-function renderWorld(world) {
+function openWorld(world) {
   document.getElementById('worldTitle').textContent = world.name;
   document.getElementById('worldDescription').textContent = world.description || '';
 
@@ -30,29 +31,47 @@ function renderWorld(world) {
   container.innerHTML = '';
 
   world.gates.forEach(gate => {
-    const gateDiv = document.createElement('div');
-    gateDiv.className = 'gate';
-    gateDiv.style.borderColor = gate.color;
+    const gateEl = document.createElement('div');
+    gateEl.className = 'gate';
+    gateEl.style.borderLeft = `10px solid ${gate.color}`;
 
-    gateDiv.innerHTML = `
-      <h3 style="color:\( {gate.color}"> \){gate.name}</h3>
-      <p>${gate.sub}</p>
-      <strong>${gate.tag}</strong>
-      <div class="books">
-        ${gate.books.map(book => `
-          <div class="book">
-            \( {book.cover ? `<img src=" \){book.cover}" alt="${book.title}">` : ''}
+    let booksHTML = '<div class="books-grid">';
+    if (gate.books && gate.books.length > 0) {
+      gate.books.forEach(book => {
+        let linksHTML = '';
+        if (book.links) {
+          linksHTML = Object.entries(book.links).map(([name, url]) => 
+            `<a href="\( {url}" target="_blank"> \){name.toUpperCase()}</a>`
+          ).join(' ');
+        }
+
+        booksHTML += `
+          <div class="book-card">
+            \( {book.cover ? `<img src=" \){book.cover}" alt="${book.title}" class="book-cover">` : ''}
             <h4>${book.title}</h4>
-            <p>${book.content}</p>
-            <div>
-              ${Object.entries(book.links || {}).map(([site, url]) => 
-                `<a href="\( {url}" target="_blank"> \){site}</a>`
-              ).join(' ')}
-            </div>
+            \( {book.status ? `<span class="book-status"> \){book.status}</span>` : ''}
+            ${book.format ? `<p>Formaty: ${book.format.join(', ')}</p>` : ''}
+            <p>${book.content || ''}</p>
+            <div class="links">${linksHTML}</div>
           </div>
-        `).join('') || '<p>Pusta brama...</p>'}
-      </div>
+        `;
+      });
+    } else {
+      booksHTML += '<p>Pusta brama – nadchodzi...</p>';
+    }
+    booksHTML += '</div>';
+
+    gateEl.innerHTML = `
+      <h3 style="color:\( {gate.color}"> \){gate.name}</h3>
+      <p>${gate.sub || ''}</p>
+      <strong>${gate.tag || ''}</strong>
+      ${booksHTML}
     `;
-    container.appendChild(gateDiv);
+
+    container.appendChild(gateEl);
   });
+
+  // Aktywny przycisk
+  document.querySelectorAll('.world-btn').forEach(b => b.classList.remove('active'));
+  document.querySelector(`.world-btn:nth-child(${DataStore.getWorlds().indexOf(world) + 2})`)?.classList.add('active'); // +2 bo h2
 }
