@@ -1,6 +1,6 @@
 // ========================================
-// ETERNIVERSE MASTER 2026 — app.js
-// Orkiestrator UI oparty o DataAPI (ŹRÓDŁO PRAWDY)
+// ETERNIVERSE MASTER 2026 - app.js v3.0
+// GŁÓWNY ORCHESTRATOR SYSTEMU
 // ========================================
 
 'use strict';
@@ -8,11 +8,14 @@
 class EterniverseApp {
   constructor() {
     this.state = {
-      currentTab: 'map',
-      currentWorldId: null,
-      currentBookId: null,
+      activeTab: 'map',
+      currentWorld: null,
+      currentBook: null,
+      dirty: false,
+      lastSave: null
     };
 
+    this.modules = {};
     this.init();
   }
 
@@ -20,205 +23,204 @@ class EterniverseApp {
   // INIT
   // =========================
   init() {
-    console.log('🌌 ETERNIVERSE APP START');
+    console.log('🚀 ETERNIVERSE APP v3.0 – BOOT');
 
     this.cacheDOM();
-    this.bindTabs();
-    this.bindSearch();
+    this.bindGlobalEvents();
+    this.initModules();
+    this.restoreState();
 
-    this.renderWorldMap();
-    this.switchTab('map');
-
-    console.log('✅ App gotowa');
+    CoreEngine.showToast('ETERNIVERSE gotowy', 'success');
   }
 
-  // =========================
-  // DOM CACHE
-  // =========================
   cacheDOM() {
     this.dom = {
-      tabs: document.querySelectorAll('.tab-btn'),
-      tabContents: document.querySelectorAll('.tab-content'),
       worldList: document.getElementById('worldList'),
-      gatesContainer: document.getElementById('gatesContainer'),
-      globalSearch: document.getElementById('globalSearch'),
-      statsTotalBooks: document.getElementById('totalBooks'),
-      statsPublishedBooks: document.getElementById('publishedBooks'),
+      miniWorldList: document.getElementById('miniWorldList'),
+      gates: document.getElementById('gatesContainer'),
+      autosave: document.getElementById('autosaveStatus'),
+      title: document.getElementById('activeBookTitle'),
+      editor: document.getElementById('editor-content')
     };
   }
 
   // =========================
-  // TABS
+  // MODULES
   // =========================
-  bindTabs() {
-    this.dom.tabs.forEach(btn => {
-      btn.addEventListener('click', () => {
-        this.switchTab(btn.dataset.tab);
-      });
+  initModules() {
+    // Map 3D
+    if (window.Map3DPro) {
+      this.modules.map = window.Map3DPro;
+    }
+
+    // Rich editor
+    if (window.RichEditorMaster) {
+      this.modules.editor = new RichEditorMaster();
+    }
+
+    // Analytics
+    if (window.AnalyticsMaster) {
+      this.modules.analytics = window.AnalyticsMaster;
+    }
+
+    // Tabs
+    if (window.TabsMaster) {
+      this.modules.tabs = window.TabsMaster;
+    }
+
+    // AI Bella (jeśli istnieje)
+    if (window.BellaMaster) {
+      this.modules.ai = window.BellaMaster;
+    }
+  }
+
+  // =========================
+  // EVENTS
+  // =========================
+  bindGlobalEvents() {
+    // TAB SWITCH
+    document.addEventListener('tabContentLoad', e => {
+      this.state.activeTab = e.detail.tabId;
+      this.persistState();
+    });
+
+    // WORLD SELECT
+    document.addEventListener('worldSelected', e => {
+      this.setWorld(e.detail.world);
+    });
+
+    // EDITOR CHANGE
+    document.addEventListener('input', CoreEngine.debounce(() => {
+      if (this.state.currentBook) {
+        this.state.dirty = true;
+        this.updateAutosaveStatus('zmiany…');
+        document.dispatchEvent(new CustomEvent('editorContentChanged'));
+      }
+    }, 300));
+
+    // SAVE
+    document.addEventListener('submit', e => {
+      if (e.target.id === 'superEditorForm') {
+        e.preventDefault();
+        this.saveCurrent();
+      }
+    });
+
+    // HOTKEYS FALLBACK
+    document.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        this.saveCurrent();
+      }
     });
   }
 
-  switchTab(tabId) {
-    this.dom.tabContents.forEach(t => t.classList.remove('active'));
-    this.dom.tabs.forEach(b => b.classList.remove('active'));
+  // =========================
+  // WORLD / BOOK
+  // =========================
+  setWorld(world) {
+    this.state.currentWorld = world;
 
-    document.getElementById(`${tabId}Tab`)?.classList.add('active');
-    document.querySelector(`[data-tab="${tabId}"]`)?.classList.add('active');
+    this.renderWorldLists();
+    CoreEngine.showToast(`🌍 ${world.name}`, 'info');
+  }
 
-    this.state.currentTab = tabId;
+  openBook(book) {
+    this.state.currentBook = book;
+    this.state.dirty = false;
 
-    if (tabId === 'analytics') this.renderAnalytics();
+    if (this.dom.title) {
+      this.dom.title.textContent = book.title || 'Nowa książka';
+    }
+
+    if (this.dom.editor) {
+      this.dom.editor.innerHTML = book.content || '';
+    }
+
+    this.updateAutosaveStatus('wczytano');
   }
 
   // =========================
-  // MAPA ŚWIATÓW
+  // SAVE / AUTOSAVE
   // =========================
-  renderWorldMap() {
-    if (!this.dom.worldList) return;
+  saveCurrent() {
+    if (!this.state.currentBook) return;
+
+    const content = this.dom.editor?.innerHTML || '';
+    const titleInput = document.getElementById('editor-title');
+
+    const updated = {
+      ...this.state.currentBook,
+      title: titleInput?.value || this.state.currentBook.title,
+      content,
+      updatedAt: new Date().toISOString()
+    };
+
+    const saved = DataAPI.saveBook(updated);
+    this.state.currentBook = saved;
+    this.state.dirty = false;
+    this.state.lastSave = Date.now();
+
+    this.updateAutosaveStatus('zapisano');
+    CoreEngine.showToast('💾 Zapisano książkę', 'success');
+  }
+
+  updateAutosaveStatus(text) {
+    if (!this.dom.autosave) return;
+    this.dom.autosave.textContent = `Autozapis: ${text}`;
+  }
+
+  // =========================
+  // RENDER
+  // =========================
+  renderWorldLists() {
+    if (!this.dom.miniWorldList) return;
 
     const worlds = DataAPI.getWorlds();
-    this.dom.worldList.innerHTML = '';
 
-    worlds.forEach(world => {
-      const card = document.createElement('div');
-      card.className = 'world-card';
-      card.style.borderLeft = `6px solid ${world.color}`;
-      card.innerHTML = `
-        <h3>${world.name}</h3>
-        <p>${world.description}</p>
-        <span>Status: ${world.status}</span>
-      `;
+    this.dom.miniWorldList.innerHTML = worlds.map(w => `
+      <div class="world-mini ${this.state.currentWorld?.id === w.id ? 'active' : ''}"
+           data-id="${w.id}">
+        <strong>${w.name}</strong><br/>
+        <small>${w.books || 0} książek</small>
+      </div>
+    `).join('');
 
-      card.addEventListener('click', () => {
-        this.openWorld(world.id);
-      });
-
-      this.dom.worldList.appendChild(card);
+    this.dom.miniWorldList.querySelectorAll('.world-mini').forEach(el => {
+      el.onclick = () => {
+        const world = DataAPI.getWorld(el.dataset.id);
+        if (world) this.setWorld(world);
+      };
     });
   }
 
-  openWorld(worldId) {
-    this.state.currentWorldId = worldId;
-    this.renderBooks(worldId);
+  // =========================
+  // STATE
+  // =========================
+  persistState() {
+    localStorage.setItem('eterniverse_app_state', JSON.stringify({
+      activeTab: this.state.activeTab,
+      currentWorld: this.state.currentWorld?.id || null
+    }));
   }
 
-  // =========================
-  // KSIĄŻKI
-  // =========================
-  renderBooks(worldId) {
-    if (!this.dom.gatesContainer) return;
+  restoreState() {
+    const raw = localStorage.getItem('eterniverse_app_state');
+    if (!raw) return;
 
-    const books = DataAPI.getBooks(worldId);
-    this.dom.gatesContainer.innerHTML = '';
-
-    if (books.length === 0) {
-      this.dom.gatesContainer.innerHTML =
-        '<p class="empty-gate">Brak książek w tym świecie</p>';
-      return;
-    }
-
-    books.forEach(book => {
-      const bookEl = document.createElement('div');
-      bookEl.className = 'book-card';
-
-      bookEl.innerHTML = `
-        <div class="book-cover">
-          ${book.cover ? `<img src="${book.cover}" alt="${book.title}">` : 'Brak okładki'}
-        </div>
-        <div class="book-info">
-          <h4>${book.title}</h4>
-          <p>${book.contentPreview || ''}</p>
-          <small>Status: ${book.status}</small>
-        </div>
-      `;
-
-      bookEl.addEventListener('click', () => {
-        this.openBook(book.id);
-      });
-
-      this.dom.gatesContainer.appendChild(bookEl);
-    });
-  }
-
-  openBook(bookId) {
-    this.state.currentBookId = bookId;
-    this.switchTab('editor');
-    this.fillEditor(bookId);
-  }
-
-  // =========================
-  // EDYTOR
-  // =========================
-  fillEditor(bookId) {
-    const book = DataAPI.getBook(bookId);
-    if (!book) return;
-
-    const titleInput = document.getElementById('editor-title');
-    const contentEditor = document.getElementById('editor-content');
-    const wordCount = document.getElementById('wordCount');
-
-    if (titleInput) titleInput.value = book.title || '';
-    if (contentEditor) contentEditor.innerText = book.contentPreview || '';
-
-    if (wordCount) {
-      const count = (book.contentPreview || '').split(/\s+/).filter(Boolean).length;
-      wordCount.textContent = `${count} słów`;
-    }
-  }
-
-  // =========================
-  // SEARCH
-  // =========================
-  bindSearch() {
-    if (!this.dom.globalSearch) return;
-
-    this.dom.globalSearch.addEventListener('input', e => {
-      const q = e.target.value.trim();
-      if (!q) {
-        this.renderWorldMap();
-        this.dom.gatesContainer.innerHTML = '';
-        return;
+    try {
+      const state = JSON.parse(raw);
+      if (state.currentWorld) {
+        const w = DataAPI.getWorld(state.currentWorld);
+        if (w) this.setWorld(w);
       }
-
-      const result = DataAPI.search(q);
-      this.renderSearchResults(result);
-    });
-  }
-
-  renderSearchResults({ worlds, books }) {
-    this.dom.worldList.innerHTML = '<h3>Światy</h3>';
-    this.dom.gatesContainer.innerHTML = '<h3>Książki</h3>';
-
-    worlds.forEach(w => {
-      const el = document.createElement('div');
-      el.textContent = w.name;
-      el.onclick = () => this.openWorld(w.id);
-      this.dom.worldList.appendChild(el);
-    });
-
-    books.forEach(b => {
-      const el = document.createElement('div');
-      el.textContent = b.title;
-      el.onclick = () => this.openBook(b.id);
-      this.dom.gatesContainer.appendChild(el);
-    });
-  }
-
-  // =========================
-  // ANALITYKA
-  // =========================
-  renderAnalytics() {
-    const stats = DataAPI.getStats();
-    if (this.dom.statsTotalBooks)
-      this.dom.statsTotalBooks.textContent = stats.totalBooks;
-    if (this.dom.statsPublishedBooks)
-      this.dom.statsPublishedBooks.textContent = stats.publishedBooks;
+    } catch {}
   }
 }
 
 // =========================
-// START
+// BOOT
 // =========================
 document.addEventListener('DOMContentLoaded', () => {
-  window.app = new EterniverseApp();
+  window.eterniverse = new EterniverseApp();
 });
