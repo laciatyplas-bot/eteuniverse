@@ -72,13 +72,10 @@
               "title": "EterSeeker: Kronika Woli",
               "status": "opublikowana",
               "format": ["książka", "ebook", "audiobook"],
-              "content": "Protokół reprogramowania woli za pomocą oddechu, częstotliwości i spójności pola. Osobista, filozoficzna opowieść o wyjściu z trybu przetrwania – bez motywacyjnych sloganów, bez gotowych recept i bez obietnic szybkich sukcesów. Książka o zatrzymaniu wewnętrznego automatu, odzyskaniu sprawczości bez presji i rezonansie z rzeczywistością zamiast walki z nią.",
+              "content": "Protokół reprogramowania woli za pomocą oddechu, częstotliwości i spójności pola. Osobista, filozoficzna opowieść o wyjściu z trybu przetrwania.",
               "cover": "images/covers/kronika-woli.jpg",
               "links": {
-                "amazon": "https://www.amazon.com.au/EterSeeker-Kronika-Woli-Maciej-Maciuszek/dp/B0G771HRGN",
-                "amazon-it": "https://www.amazon.it/EterSeeker-Kronika-Woli-Maciej-Maciuszek/dp/B0G771HRGN",
-                "amazon-br": "https://www.amazon.com.br/EterSeeker-Kronika-Woli-Maciej-Maciuszek/dp/B0G771HRGN",
-                "amazon-jp": "https://www.amazon.co.jp/EterSeeker-Kronika-Woli-Maciej-Maciuszek/dp/B0G771HRGN"
+                "amazon": "https://www.amazon.com.au/EterSeeker-Kronika-Woli-Maciej-Maciuszek/dp/B0G771HRGN"
               }
             },
             {
@@ -136,7 +133,19 @@
           "color": "#9B6BFF",
           "sub": "Obserwator · Meta-tożsamość · Technologia · Symulacja",
           "tag": "META/TECH",
-          "books": []
+          "books": [
+            {
+              "id": "bella-assistant",
+              "title": "Bella Asystent – Żywy Foton Redakcyjny",
+              "status": "aktywny",
+              "format": ["narzędzie", "webapp"],
+              "content": "Inteligentny asystent redakcyjny z głosowym dyktowaniem, profilami (Amazon, Wattpad, EterSeeker), sugestiami kontekstowymi i eksportem do .docx.",
+              "cover": "images/covers/bella-assistant.jpg",
+              "links": {
+                "otwórz": "bella-assistant.html"
+              }
+            }
+          ]
         },
         {
           "id": "8",
@@ -169,86 +178,16 @@
       "name": "POLARIS – Drugi Świat",
       "description": "Świat inicjacji i przejścia. 10 Kręgów testów prowadzących do Lemurii i Krasnali – droga bohatera w nowej rzeczywistości.",
       "gates": [
-        {
-          "id": "p1",
-          "name": "KRĄG I — PRZEBUDZENIE",
-          "color": "#FFD700",
-          "sub": "Chaos · Echa starego świata · Pierwszy szok",
-          "tag": "INITIATION",
-          "books": []
-        },
-        {
-          "id": "p2",
-          "name": "KRĄG II — CIAŁO I STRACH",
-          "color": "#FF4500",
-          "sub": "Ból fizyczny · Przetrwanie · Pierwotne instynkty",
-          "tag": "BODY",
-          "books": []
-        },
-        {
-          "id": "p3",
-          "name": "KRĄG III — WIĘŹ",
-          "color": "#00CED1",
-          "sub": "Relacje · Zaufanie · Zdrada · Bliskość",
-          "tag": "BOND",
-          "books": []
-        },
-        {
-          "id": "p4",
-          "name": "KRĄG IV — TOŻSAMOŚĆ",
-          "color": "#9370DB",
-          "sub": "Maski · Role społeczne · Prawdziwe imię",
-          "tag": "IDENTITY",
-          "books": []
-        },
-        {
-          "id": "p5",
-          "name": "KRĄG V — WOLA",
-          "color": "#FF1493",
-          "sub": "Decyzje · Cena wyboru · Mit osobisty",
-          "tag": "WILL",
-          "books": []
-        },
-        {
-          "id": "p6",
-          "name": "KRĄG VI — BOGOWIE",
-          "color": "#4169E1",
-          "sub": "Systemy wierzeń · Olimp · Asgard · Struktury władzy",
-          "tag": "GODS",
-          "books": []
-        },
-        {
-          "id": "p7",
-          "name": "KRĄG VII — GŁĘBIA",
-          "color": "#20B2AA",
-          "sub": "Nieświadomość · Emocje · Syreny · Otchłań",
-          "tag": "DEPTH",
-          "books": []
-        },
-        {
-          "id": "p8",
-          "name": "KRĄG VIII — HISTORIA",
-          "color": "#8B4513",
-          "sub": "Starożytne cywilizacje · Anak · Atlantis · Lekcje",
-          "tag": "HISTORY",
-          "books": []
-        },
-        {
-          "id": "p9",
-          "name": "KRĄG IX — LEMURIA",
-          "color": "#00FF7F",
-          "sub": "Złota era · Technologia serca · Kryształy · Pokój",
-          "tag": "LEMURIA",
-          "books": []
-        },
-        {
-          "id": "p10",
-          "name": "KRĄG X — POWRÓT",
-          "color": "#FFD700",
-          "sub": "Odpowiedzialność · Portal · Krasnale · Nowy początek",
-          "tag": "RETURN",
-          "books": []
-        }
+        { "id": "p1", "name": "KRĄG I — PRZEBUDZENIE", "color": "#FFD700", "sub": "Chaos · Echa starego świata · Pierwszy szok", "tag": "INITIATION", "books": [] },
+        { "id": "p2", "name": "KRĄG II — CIAŁO I STRACH", "color": "#FF4500", "sub": "Ból fizyczny · Przetrwanie · Pierwotne instynkty", "tag": "BODY", "books": [] },
+        { "id": "p3", "name": "KRĄG III — WIĘŹ", "color": "#00CED1", "sub": "Relacje · Zaufanie · Zdrada · Bliskość", "tag": "BOND", "books": [] },
+        { "id": "p4", "name": "KRĄG IV — TOŻSAMOŚĆ", "color": "#9370DB", "sub": "Maski · Role społeczne · Prawdziwe imię", "tag": "IDENTITY", "books": [] },
+        { "id": "p5", "name": "KRĄG V — WOLA", "color": "#FF1493", "sub": "Decyzje · Cena wyboru · Mit osobisty", "tag": "WILL", "books": [] },
+        { "id": "p6", "name": "KRĄG VI — BOGOWIE", "color": "#4169E1", "sub": "Systemy wierzeń · Olimp · Asgard · Struktury władzy", "tag": "GODS", "books": [] },
+        { "id": "p7", "name": "KRĄG VII — GŁĘBIA", "color": "#20B2AA", "sub": "Nieświadomość · Emocje · Syreny · Otchłań", "tag": "DEPTH", "books": [] },
+        { "id": "p8", "name": "KRĄG VIII — HISTORIA", "color": "#8B4513", "sub": "Starożytne cywilizacje · Anak · Atlantis · Lekcje", "tag": "HISTORY", "books": [] },
+        { "id": "p9", "name": "KRĄG IX — LEMURIA", "color": "#00FF7F", "sub": "Złota era · Technologia serca · Kryształy · Pokój", "tag": "LEMURIA", "books": [] },
+        { "id": "p10", "name": "KRĄG X — POWRÓT", "color": "#FFD700", "sub": "Odpowiedzialność · Portal · Krasnale · Nowy początek", "tag": "RETURN", "books": [] }
       ]
     }
   ]
