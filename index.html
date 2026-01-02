@@ -3,34 +3,92 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ETERNIVERSE — interaktywna mapa universum książek EterSeeker</title>
+  <meta name="description" content="ETERNIVERSE — interaktywna mapa universum książek EterSeeker Macieja Maciuszka. Brama do świadomości, woli i integracji.">
+  <meta name="author" content="Maciej Maciuszek">
+  <meta name="theme-color" content="#0f0c29">
+
+  <title>ETERNIVERSE — Mapa Świadomości | Master Edition 2026</title>
+
+  <!-- Favicon / Manifest PWA w przyszłości -->
+  <link rel="icon" href="images/favicon.ico">
+
+  <!-- Style eteryczne -->
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+  <!-- Splash screen – pojawi się przez JS -->
+  <div id="splash">
+    <div class="splash-content">
+      <h1>ETERNIVERSE</h1>
+      <p>Master Edition 2026</p>
+      <p>Architekt: <strong>Maciej Maciuszek</strong></p>
+      <div class="loading-bar">
+        <div class="progress"></div>
+      </div>
+      <p class="splash-quote">„Nazwij mnie — a będę istnieć.”</p>
+    </div>
+  </div>
+
   <header>
-    <h1>ETERNIVERSE — Mapa Światów</h1>
+    <div class="header-main">
+      <h1 id="mainTitle">ETERNIVERSE</h1>
+      <p id="worldTitle" class="world-title">Mapa Światów</p>
+    </div>
+
     <div class="controls">
-      <input type="text" id="searchInput" placeholder="Szukaj bram / ksiąg...">
+      <input type="text" id="globalSearch" placeholder="🔍 Szukaj w eterze (tytuły, treści, tagi...)">
+      
       <select id="filterSelect">
-        <option value="all">Wszystkie statusy</option>
-        <option value="aktywna">Aktywne</option>
-        <option value="planowana">Planowane</option>
-        <option value="w przygotowaniu">W przygotowaniu</option>
+        <option value="all">Wszystkie bramy</option>
+        <option value="published">Tylko opublikowane</option>
+        <option value="active">Aktywne / w produkcji</option>
+        <option value="empty">Puste bramy</option>
       </select>
+
       <select id="sortSelect">
-        <option value="id">Sortuj po ID</option>
-        <option value="books">Sortuj po liczbie ksiąg</option>
-        <option value="name">Sortuj po nazwie</option>
+        <option value="order">Kolejność kanoniczna</option>
+        <option value="name">Alfabetycznie</option>
+        <option value="books-desc">Najwięcej książek</option>
       </select>
-      <button id="themeToggle">🌙 Tryb ciemny</button>
+
+      <button id="themeToggle" title="Przełącz tryb">🌙</button>
+      <button id="addBookBtn" title="Dodaj nową księgę">+</button>
     </div>
   </header>
+
   <main>
-    <div class="panel" id="worldList"></div>
-    <div class="panel" id="contentArea"></div>
-    <div class="panel" id="log"></div>
+    <!-- Lewy panel: Lista Światów -->
+    <aside class="panel" id="worldList">
+      <h2>Światy</h2>
+      <!-- Tutaj renderowane przyciski światów -->
+    </aside>
+
+    <!-- Główny panel: Bramy i Księgi -->
+    <section class="panel" id="contentArea">
+      <p id="worldDescription" class="description"></p>
+      <div id="gatesContainer">
+        <!-- Tutaj dynamicznie renderowane bramy i karty książek -->
+      </div>
+    </section>
+
+    <!-- Prawy panel: Log / Powiadomienia / Dziennik zmian -->
+    <aside class="panel" id="log">
+      <h2>Dziennik Eteru</h2>
+      <div id="notifications"></div>
+      <details>
+        <summary>Status pamięci</summary>
+        <p id="memoryStatus">Ładowanie...</p>
+      </details>
+    </aside>
   </main>
 
-  <script src="app.js"></script>
+  <!-- Toast container -->
+  <div id="toastContainer"></div>
+
+  <!-- Skrypty – w kolejności ładowania -->
+  <script src="js/data.js"></script>
+  <script src="js/render.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
