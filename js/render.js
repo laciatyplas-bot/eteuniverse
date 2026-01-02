@@ -20,7 +20,6 @@ const Renderer = {
     });
   },
 
-  // Główna funkcja z animacją przejścia
   async transitionToWorld(world) {
     if (this.isTransitioning) return;
     this.isTransitioning = true;
@@ -29,7 +28,7 @@ const Renderer = {
     const titleEl = document.getElementById('worldTitle');
     const descEl = document.getElementById('worldDescription');
 
-    // 1. Fade out obecnej treści
+    // Fade out
     if (contentArea) {
       contentArea.style.opacity = '0';
       contentArea.style.transform = 'translateY(30px)';
@@ -37,13 +36,12 @@ const Renderer = {
     if (titleEl) titleEl.style.opacity = '0';
     if (descEl) descEl.style.opacity = '0';
 
-    // Czekamy na animację wyjścia
     await new Promise(resolve => setTimeout(resolve, 600));
 
-    // 2. Aktualizacja treści
+    // Aktualizacja treści
     this.renderWorldContent(world);
 
-    // 3. Fade in nowej treści
+    // Fade in
     if (contentArea) {
       contentArea.style.opacity = '1';
       contentArea.style.transform = 'translateY(0)';
@@ -57,15 +55,13 @@ const Renderer = {
       descEl.style.opacity = '1';
     }
 
-    // Podświetlenie aktywnego świata
+    // Aktywny świat
     document.querySelectorAll('#worldList .world-btn').forEach(b => b.classList.remove('active'));
     document.querySelector(`#worldList .world-btn[data-world-id="${world.id}"]`)?.classList.add('active');
 
-    // Koniec przejścia
     this.isTransitioning = false;
   },
 
-  // Renderuje tylko treść świata (bez animacji)
   renderWorldContent(world) {
     const titleEl = document.getElementById('worldTitle');
     const descEl = document.getElementById('worldDescription');
@@ -144,24 +140,22 @@ const Renderer = {
 
       const firstWorld = DataStore.getWorlds()[0];
       if (firstWorld) {
-        // Pierwsze otwarcie bez animacji
         this.renderWorldContent(firstWorld);
         document.querySelector(`#worldList .world-btn[data-world-id="${firstWorld.id}"]`)?.classList.add('active');
       }
     });
+
+    document.addEventListener('datastore:error', (e) => {
+      console.error('Renderer: błąd danych', e.detail);
+    });
   }
 };
 
-// CSS dla animacji przejść – dodaj do styles.css (jeśli nie masz)
-const transitionStyle = document.createElement('style');
-transitionStyle.textContent = `
+// Dodatkowe style dla animacji (jeśli nie masz w CSS)
+const style = document.createElement('style');
+style.textContent = `
   #gatesContainer, #worldTitle, #worldDescription {
     transition: opacity 0.6s ease, transform 0.8s ease;
-    opacity: 1;
-    transform: translateY(0);
-  }
-  #gatesContainer {
-    min-height: 60vh;
   }
   .gate {
     opacity: 0;
@@ -172,7 +166,7 @@ transitionStyle.textContent = `
     to { opacity: 1; transform: translateY(0); }
   }
 `;
-document.head.appendChild(transitionStyle);
+document.head.appendChild(style);
 
 // Start
 document.addEventListener('DOMContentLoaded', () => {
