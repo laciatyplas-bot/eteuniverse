@@ -11,11 +11,11 @@ class DataStore {
       return;
     }
 
-    const response = await fetch('data/mapa.json?t=' + Date.now());
+    console.log('🌀 Ładowanie pamięci ETERNIVERSE z data/mapa.json...');
 
+    let response;
     try {
-      // DOSTOSOWANE DO TWOJEGO PLIKU: mapa.json
-      const response = await fetch('data/mapa.json?t=' + Date.now());
+      response = await fetch('data/mapa.json?t=' + Date.now());
 
       if (!response.ok) {
         throw new Error(`Błąd HTTP ${response.status} – sprawdź nazwę pliku`);
@@ -30,23 +30,23 @@ class DataStore {
 
       this.initialized = true;
 
-      // Powiadomienie – renderer czeka na to
+      // Powiadomienie dla renderer.js i app.js
       document.dispatchEvent(new CustomEvent('datastore:ready', { detail: this.data }));
 
     } catch (error) {
       console.error('❌ Błąd ładowania data/mapa.json:', error.message);
 
-      // Przyjazny komunikat na stronie
+      // Przyjazny komunikat na ekranie
       const errorDiv = document.createElement('div');
-      errorDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#300;color:#ff6b6b;padding:40px;border-radius:20px;text-align:center;font-size:1.8rem;z-index:10000;max-width:80%;';
+      errorDiv.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#300;color:#ff6b6b;padding:40px;border-radius:20px;text-align:center;font-size:1.8rem;z-index:10000;max-width:90%;box-shadow:0 0 40px rgba(255,0,0,0.5);';
       errorDiv.innerHTML = `
         <h2>⚠️ Błąd eteru</h2>
         <p>Nie można załadować pliku <strong>data/mapa.json</strong></p>
-        <p>Otwórz konsolę (F12) i sprawdź błędy</p>
+        <p>Otwórz konsolę (F12) po szczegóły</p>
       `;
       document.body.appendChild(errorDiv);
 
-      // Fallback – pusta mapa
+      // Fallback – pusta struktura, żeby app nie padła
       this.data = { worlds: [] };
       this.initialized = true;
     }
@@ -69,10 +69,10 @@ class DataStore {
   }
 }
 
-// Start po załadowaniu strony
+// Automatyczne uruchomienie
 document.addEventListener('DOMContentLoaded', () => {
   DataStore.init();
 });
 
-// Globalny dostęp
+// Globalny dostęp dla debugu i innych skryptów
 window.DataStore = DataStore;
