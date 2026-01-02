@@ -1,81 +1,544 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Eterniverse – AUTHOR MODE</title>
-
-  <!-- CSS – TWÓJ ISTNIEJĄCY -->
-  <link rel="stylesheet" href="style.css" />
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bella Author Mode - Uniwersum Manager</title>
+<style>
+  body {
+    background: #121212;
+    color: #eee;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh;
+  }
+  header {
+    background: #222;
+    padding: 1rem;
+    font-size: 1.5rem;
+    font-weight: bold;
+    text-align: center;
+    user-select: none;
+  }
+  #motto {
+    font-style: italic;
+    text-align: center;
+    margin: 0.5rem auto 1rem auto;
+    color: #888;
+  }
+  main {
+    flex: 1;
+    display: flex;
+    gap: 1rem;
+    padding: 0 1rem 1rem 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  #structurePanel, #editorPanel, #archivePanel {
+    background: #222;
+    border-radius: 6px;
+    padding: 1rem;
+    min-width: 320px;
+    max-width: 600px;
+    box-sizing: border-box;
+  }
+  #structurePanel {
+    flex: 1 1 320px;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+  #structurePanel h2, #editorPanel h2, #archivePanel h2 {
+    margin-top: 0;
+  }
+  ul.hierarchy {
+    list-style: none;
+    padding-left: 1rem;
+  }
+  ul.hierarchy li {
+    margin: 0.3rem 0;
+    cursor: pointer;
+  }
+  ul.hierarchy li.selected {
+    background: #444;
+    border-radius: 4px;
+  }
+  label {
+    display: block;
+    margin-top: 0.5rem;
+  }
+  input[type=text], select, textarea {
+    width: 100%;
+    padding: 6px;
+    border-radius: 4px;
+    border: none;
+    background-color: #333;
+    color: #eee;
+    margin-top: 0.2rem;
+    box-sizing: border-box;
+  }
+  textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+  button {
+    margin-top: 0.7rem;
+    padding: 0.5rem 1rem;
+    background: #3a3a3a;
+    border: none;
+    border-radius: 4px;
+    color: #eee;
+    cursor: pointer;
+    user-select: none;
+  }
+  button:hover {
+    background: #555;
+  }
+  #output, #archiveOutput {
+    margin-top: 0.5rem;
+    font-size: 0.9rem;
+    color: #aaa;
+    min-height: 1.5em;
+  }
+  .section-group {
+    margin-bottom: 1rem;
+  }
+  /* Scrollbar */
+  #structurePanel::-webkit-scrollbar {
+    width: 8px;
+  }
+  #structurePanel::-webkit-scrollbar-thumb {
+    background-color: #444;
+    border-radius: 4px;
+  }
+</style>
 </head>
-
 <body>
-  <div class="app-container">
-    <h1>Eterniverse – AUTHOR MODE</h1>
+<header>Bella Author Mode - Zarządzanie Uniwersum i Ochrona Praw</header>
+<div id="motto">System nie tworzy literatury. System chroni literaturę stworzoną przez autora.</div>
 
-    <main>
-      <!-- UNIWERSUM -->
-      <section>
-        <h2>Uniwersum</h2>
-        <input id="universeTitle" type="text" placeholder="Tytuł uniwersum" />
-        <input id="universeDate" type="date" />
-        <input id="universeVersion" type="text" placeholder="Wersja" />
-        <select id="universeLanguage">
-          <option value="pl">PL</option>
-          <option value="en">EN</option>
-        </select>
-      </section>
+<main>
+  <section id="structurePanel" aria-label="Struktura Uniwersum">
+    <h2>Struktura Uniwersum</h2>
+    <div>
+      <button id="addUniverseBtn">Dodaj Uniwersum</button>
+    </div>
+    <ul id="universeList" class="hierarchy"></ul>
+  </section>
 
-      <!-- ŚWIAT -->
-      <section>
-        <h2>Świat</h2>
-        <input id="worldTitle" type="text" placeholder="Tytuł świata" />
-        <input id="worldDate" type="date" />
-        <input id="worldVersion" type="text" placeholder="Wersja" />
-        <select id="worldLanguage">
-          <option value="pl">PL</option>
-          <option value="en">EN</option>
-        </select>
-      </section>
+  <section id="editorPanel" aria-label="Edytor Tekstu i Metadane">
+    <h2>Edytuj element</h2>
+    <div class="section-group">
+      <label for="elementType">Typ elementu</label>
+      <input type="text" id="elementType" readonly />
+    </div>
+    <div class="section-group">
+      <label for="elementTitle">Tytuł</label>
+      <input type="text" id="elementTitle" />
+    </div>
+    <div class="section-group">
+      <label for="elementDate">Data utworzenia</label>
+      <input type="text" id="elementDate" readonly />
+    </div>
+    <div class="section-group">
+      <label for="elementVersion">Wersja</label>
+      <input type="text" id="elementVersion" />
+    </div>
+    <div class="section-group">
+      <label for="elementLanguage">Język</label>
+      <select id="elementLanguage">
+        <option value="pl">Polski</option>
+        <option value="en">Angielski</option>
+        <option value="de">Niemiecki</option>
+        <option value="fr">Francuski</option>
+      </select>
+    </div>
+    <div class="section-group">
+      <label for="elementContent">Zawartość (tekst)</label>
+      <textarea id="elementContent" spellcheck="true" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
+    </div>
+    <div class="section-group">
+      <label for="elementNotes">Notatki autora (niewidoczne dla czytelnika)</label>
+      <textarea id="elementNotes" placeholder="Opis emocji, kontekstu, powodów powstania..."></textarea>
+    </div>
+    <div>
+      <button id="saveElementBtn">Zapisz zmiany</button>
+      <button id="deleteElementBtn" style="background:#a33;">Usuń element</button>
+      <button id="addChildBtn">Dodaj element podrzędny</button>
+    </div>
+    <div id="output"></div>
+  </section>
 
-      <!-- TOM -->
-      <section>
-        <h2>Tom</h2>
-        <input id="volumeTitle" type="text" placeholder="Tytuł tomu" />
-        <input id="volumeDate" type="date" />
-        <input id="volumeVersion" type="text" placeholder="Wersja" />
-        <select id="volumeLanguage">
-          <option value="pl">PL</option>
-          <option value="en">EN</option>
-        </select>
-      </section>
+  <section id="archivePanel" aria-label="Archiwum i Eksport">
+    <h2>Archiwum Praw Autorskich</h2>
+    <div>
+      <button id="backupAllBtn">Wykonaj backup całości projektu</button>
+    </div>
+    <div class="section-group">
+      <label for="exportSelect">Eksportuj wybrany element do:</label>
+      <select id="exportSelect">
+        <option value="docx">DOCX</option>
+        <option value="pdf">PDF</option>
+        <option value="txt">TXT</option>
+      </select>
+      <button id="exportBtn">Eksportuj</button>
+    </div>
+    <div id="archiveOutput"></div>
+  </section>
+</main>
 
-      <!-- FABULAR SWITCH (ZABLOKOWANY) -->
-      <input type="hidden" id="fabularSwitch" value="off" />
+<!-- Biblioteki do eksportu -->
+<script src="https://cdn.jsdelivr.net/npm/docx@7.3.0/build/index.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
-      <!-- TU JS DODA ROZDZIAŁY -->
-      <section id="dynamicContent"></section>
+<script>
+(() => {
+  const STORAGE_KEY = 'bella_author_mode_universe';
+  const FABULAR_GENERATION = false; // Tryb autora - bez generacji fabuły
+  let selectedElementId = null;
+  let universeData = loadData();
 
-      <!-- NOTATKI -->
-      <section>
-        <h2>Notatki autora</h2>
-        <textarea id="authorNotes"></textarea>
-      </section>
+  // DOM
+  const universeListEl = document.getElementById('universeList');
+  const outputEl = document.getElementById('output');
+  const archiveOutputEl = document.getElementById('archiveOutput');
+  const elementTypeEl = document.getElementById('elementType');
+  const elementTitleEl = document.getElementById('elementTitle');
+  const elementDateEl = document.getElementById('elementDate');
+  const elementVersionEl = document.getElementById('elementVersion');
+  const elementLanguageEl = document.getElementById('elementLanguage');
+  const elementContentEl = document.getElementById('elementContent');
+  const elementNotesEl = document.getElementById('elementNotes');
+  const saveElementBtn = document.getElementById('saveElementBtn');
+  const deleteElementBtn = document.getElementById('deleteElementBtn');
+  const addUniverseBtn = document.getElementById('addUniverseBtn');
+  const addChildBtn = document.getElementById('addChildBtn');
+  const backupAllBtn = document.getElementById('backupAllBtn');
+  const exportBtn = document.getElementById('exportBtn');
+  const exportSelectEl = document.getElementById('exportSelect');
 
-      <!-- PRZYCISKI -->
-      <section>
-        <button id="saveBtn" type="button">Zapisz</button>
-        <button id="exportTxtBtn" type="button">TXT</button>
-        <button id="exportDocxBtn" type="button">DOCX</button>
-        <button id="exportPdfBtn" type="button">PDF</button>
-      </section>
+  function generateId() {
+    return 'id-' + Math.random().toString(36).substr(2, 9);
+  }
 
-      <!-- KOMUNIKATY -->
-      <div id="output"></div>
-    </main>
-  </div>
+  function loadData() {
+    try {
+      const json = localStorage.getItem(STORAGE_KEY);
+      if (json) return JSON.parse(json);
+    } catch (e) {
+      console.error('Błąd ładowania danych:', e);
+    }
+    return [];
+  }
 
-  <!-- JS – TWÓJ ISTNIEJĄCY -->
-  <script src="app.js"></script>
+  function saveData() {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(universeData));
+    } catch (e) {
+      console.error('Błąd zapisu danych:', e);
+    }
+  }
+
+  function findElementById(id, elements = universeData, parent = null) {
+    for (const el of elements) {
+      if (el.id === id) return { element: el, parent };
+      if (el.children && el.children.length) {
+        const found = findElementById(id, el.children, el);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  function renderUniverseList() {
+    universeListEl.innerHTML = '';
+    if (!universeData.length) {
+      universeListEl.textContent = 'Brak Uniwersów. Dodaj nowy.';
+      return;
+    }
+    const ul = document.createElement('ul');
+    ul.className = 'hierarchy';
+    universeData.forEach(universe => {
+      ul.appendChild(renderElementNode(universe));
+    });
+    universeListEl.appendChild(ul);
+  }
+
+  function renderElementNode(element) {
+    const li = document.createElement('li');
+    li.textContent = `[element.type]{element.type}]element.type]{element.title || '(Bez tytułu)'}`;
+    li.title = `Wersja: element.version∣∣′v1′,Język:{element.version || 'v1'}, Język:element.version∣∣′v1′,Język:{element.language || 'pl'}`;
+    li.dataset.id = element.id;
+    li.tabIndex = 0;
+    if (element.id === selectedElementId) li.classList.add('selected');
+    li.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectElement(element.id);
+    });
+    li.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        selectElement(element.id);
+      }
+    });
+    if (element.children && element.children.length) {
+      const ul = document.createElement('ul');
+      ul.className = 'hierarchy';
+      element.children.forEach(child => ul.appendChild(renderElementNode(child)));
+      li.appendChild(ul);
+    }
+    return li;
+  }
+
+  function selectElement(id) {
+    const found = findElementById(id);
+    if (!found) return;
+    selectedElementId = id;
+    renderUniverseList();
+    loadElementToEditor(found.element);
+    outputEl.textContent = '';
+  }
+
+  function loadElementToEditor(el) {
+    elementTypeEl.value = el.type;
+    elementTitleEl.value = el.title || '';
+    elementDateEl.value = new Date(el.dateCreated).toLocaleString() || '';
+    elementVersionEl.value = el.version || 'v1';
+    elementLanguageEl.value = el.language || 'pl';
+    elementContentEl.value = el.content || '';
+    elementNotesEl.value = el.notes || '';
+    updateButtonsState(true);
+  }
+
+  function clearEditor() {
+    selectedElementId = null;
+    elementTypeEl.value = '';
+    elementTitleEl.value = '';
+    elementDateEl.value = '';
+    elementVersionEl.value = '';
+    elementLanguageEl.value = 'pl';
+    elementContentEl.value = '';
+    elementNotesEl.value = '';
+    updateButtonsState(false);
+    renderUniverseList();
+    outputEl.textContent = 'Edytor wyczyszczony.';
+  }
+
+  function updateButtonsState(enabled) {
+    deleteElementBtn.disabled = !enabled;
+    addChildBtn.disabled = !enabled;
+    saveElementBtn.disabled = !enabled;
+  }
+
+  addUniverseBtn.addEventListener('click', () => {
+    const newUniverse = createNewElement('Uniwersum');
+    universeData.push(newUniverse);
+    saveData();
+    selectedElementId = newUniverse.id;
+    renderUniverseList();
+    loadElementEditor(newUniverse);
+    outputEl.textContent = 'Dodano nowe Uniwersum.';
+  });
+
+  function createNewElement(type, parent = null) {
+    return {
+      id: generateId(),
+      parentId: parent ? parent.id : null,
+      type,
+      title: '',
+      dateCreated: new Date().toISOString(),
+      version: 'v1',
+      language: 'pl',
+      content: '',
+      notes: '',
+      children: []
+    };
+  }
+
+  saveElementBtn.addEventListener('click', () => {
+    if (!selectedElementId) {
+      outputEl.textContent = 'Brak wybranego elementu do zapisu.';
+      return;
+    }
+    const found = findElementById(selectedElementId);
+    if (!found) {
+      outputEl.textContent = 'Element nie został znaleziony.';
+      return;
+    }
+    if (!elementTitleEl.value.trim()) {
+      outputEl.textContent = 'Tytuł nie może być pusty!';
+      return;
+    }
+    const el = found.element;
+    el.title = elementTitleEl.value.trim();
+    el.version = elementVersionEl.value.trim() || el.version || 'v1';
+    el.language = elementLanguageEl.value || 'pl';
+    el.content = elementContentEl.value;
+    el.notes = elementNotesEl.value;
+    saveData();
+    renderUniverseList();
+    outputEl.textContent = `Zapisano zmiany w elemencie "${el.title}".`;
+  });
+
+  deleteElementBtn.addEventListener('click', () => {
+    if (!selectedElementId) {
+      outputEl.textContent = 'Brak wybranego elementu do usunięcia.';
+      return;
+    }
+    if (!confirm('Czy na pewno chcesz usunąć ten element wraz z wszystkimi podrzędnymi?')) return;
+    const found = findElementById(selectedElementId);
+    if (!found) {
+      outputEl.textContent = 'Element nie został znaleziony.';
+      return;
+    }
+    if (found.parent) {
+      found.parent.children = found.parent.children.filter(c => c.id !== selectedElementId);
+    } else {
+      universeData = universeData.filter(el => el.id !== selectedElementId);
+    }
+    saveData();
+    clearEditor();
+    renderUniverseList();
+    outputEl.textContent = 'Element usunięty.';
+  });
+
+  addChildBtn.addEventListener('click', () => {
+    if (!selectedElementId) {
+      outputEl.textContent = 'Wybierz element, do którego chcesz dodać podrzędny.';
+      return;
+    }
+    const found = findElementById(selectedElementId);
+    if (!found) {
+      outputEl.textContent = 'Wybrany element nie został znaleziony.';
+      return;
+    }
+    const nextType = getChildType(found.element.type);
+    if (!nextType) {
+      outputEl.textContent = `Nie można dodać podrzędnego elementu do typu "${found.element.type}".`;
+      return;
+    }
+    const newChild = createNewElement(nextType, found.element);
+    found.element.children.push(newChild);
+    saveData();
+    renderUniverseList();
+    selectedElementId = newChild.id;
+    loadElementToEditor(newChild);
+    outputEl.textContent = `Dodano nowy element typu "${nextType}".`;
+  });
+
+  function getChildType(parentType) {
+    switch (parentType) {
+      case 'Uniwersum': return 'Świat';
+      case 'Świat': return 'Tom';
+      case 'Tom': return 'Rozdział';
+      case 'Rozdział': return 'Podrozdział / Fragment';
+      case 'Podrozdział / Fragment': return null;
+      default: return null;
+    }
+  }
+
+  function loadElementEditor(el) {
+    selectedElementId = el.id;
+    renderUniverseList();
+    loadElementToEditor(el);
+  }
+
+  backupAllBtn.addEventListener('click', () => {
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+    const filename = `Bella_Archiwum_Backup_${timestamp}.json`;
+    const blob = new Blob([JSON.stringify(universeData, null, 2)], { type: 'application/json' });
+    triggerDownload(blob, filename);
+    archiveOutputEl.textContent = `Backup wykonany: ${filename}`;
+  });
+
+  exportBtn.addEventListener('click', () => {
+    if (!selectedElementId) {
+      archiveOutputEl.textContent = 'Wybierz element do eksportu.';
+      return;
+    }
+    const found = findElementById(selectedElementId);
+    if (!found) {
+      archiveOutputEl.textContent = 'Nie znaleziono wybranego elementu.';
+      return;
+    }
+    const el = found.element;
+    const format = exportSelectEl.value;
+    exportElement(el, format);
+  });
+
+  async function exportElement(el, format) {
+    const title = `[el.type]{el.type}]el.type]{el.title || '(Bez tytułu)'}`;
+    const content = el.content || '';
+    const notes = el.notes ? `\n\nNOTATKI AUTORA:\n${el.notes}` : '';
+    const text = `title\nWersja:{title}\nWersja:title\nWersja:{el.version}\nJęzyk: el.language\nData:{el.language}\nData:el.language\nData:{new Date(el.dateCreated).toLocaleString()}\n\ncontent{content}content{notes}`;
+
+    if (format === 'docx') {
+      const doc = new docx.Document({
+        sections: [{
+          children: [
+            new docx.Paragraph({ text: title, heading: docx.HeadingLevel.HEADING_1 }),
+            new docx.Paragraph(`Wersja: ${el.version}`),
+                        new docx.Paragraph(`Język: ${el.language}`),
+            new docx.Paragraph(`Data utworzenia: ${new Date(el.dateCreated).toLocaleString()}`),
+            new docx.Paragraph(''),
+            new docx.Paragraph(content),
+            ...(el.notes ? [new docx.Paragraph(''), new docx.Paragraph('NOTATKI AUTORA:'), new docx.Paragraph(el.notes)] : [])
+          ],
+        }],
+      });
+      const blob = await docx.Packer.toBlob(doc);
+      const filename = sanitizeFilename(`${title}.docx`);
+      triggerDownload(blob, filename);
+      archiveOutputEl.textContent = `Eksportowano ${filename}`;
+    } else if (format === 'pdf') {
+      const { jsPDF } = window.jspdf;
+      const pdf = new jsPDF();
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const margin = 10;
+      const maxWidth = pageWidth - margin * 2;
+
+      pdf.setFontSize(16);
+      pdf.text(title, margin, 20);
+      pdf.setFontSize(10);
+      pdf.text(`Wersja: ${el.version}`, margin, 30);
+      pdf.text(`Język: ${el.language}`, margin, 36);
+      pdf.text(`Data utworzenia: ${new Date(el.dateCreated).toLocaleString()}`, margin, 42);
+
+      pdf.setFontSize(12);
+      const splitText = pdf.splitTextToSize(content + notes, maxWidth);
+      pdf.text(splitText, margin, 55);
+
+      const filename = sanitizeFilename(`${title}.pdf`);
+      pdf.save(filename);
+      archiveOutputEl.textContent = `Eksportowano ${filename}`;
+    } else if (format === 'txt') {
+      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+      const filename = sanitizeFilename(`${title}.txt`);
+      triggerDownload(blob, filename);
+      archiveOutputEl.textContent = `Eksportowano ${filename}`;
+    } else {
+      archiveOutputEl.textContent = 'Nieznany format eksportu.';
+    }
+  }
+
+  function triggerDownload(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }
+
+  function sanitizeFilename(name) {
+    return name.replace(/[\/\\?%*:|"<>]/g, '-');
+  }
+
+  renderUniverseList();
+  clearEditor();
+
+})();
+</script>
 </body>
 </html>
+
