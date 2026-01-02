@@ -1,61 +1,72 @@
-// ==============================
-// RENDER.JS — WYŚWIETLANIE ŚWIATA
-// ==============================
+// js/render.js
+const EterniverseRender = {
 
-const Renderer = (() => {
-  const root = document.getElementById('app');
+  init() {
+    EterniverseData.loadFromLocal();
+    this.renderWorldList();
+  },
 
-  function clear() {
-    root.innerHTML = '';
-  }
+  renderWorldList() {
+    const container = document.getElementById("worldList");
+    container.innerHTML = "";
 
-  function renderWorlds(data) {
-    clear();
+    EterniverseData.getWorlds().forEach(world => {
+      const btn = document.createElement("button");
+      btn.className = "world-btn";
+      btn.textContent = world.name;
+      btn.onclick = () => this.openWorld(world.id);
+      container.appendChild(btn);
+    });
+  },
 
-    data.worlds.forEach(world => {
-      const worldEl = document.createElement('section');
-      worldEl.className = 'world';
+  openWorld(worldId) {
+    const world = EterniverseData.getWorldById(worldId);
+    EterniverseData.currentWorld = world;
 
-      worldEl.innerHTML = `<h2>${world.name}</h2>`;
-      world.gates.forEach(gate => {
-        worldEl.appendChild(renderGate(world.id, gate));
+    document.getElementById("worldTitle").textContent = world.name;
+    document.getElementById("worldDescription").textContent = world.description;
+
+    this.renderGates(world);
+  },
+
+  renderGates(world) {
+    const container = document.getElementById("gatesContainer");
+    container.innerHTML = "";
+
+    world.gates.forEach(gate => {
+      const gateBox = document.createElement("div");
+      gateBox.className = "gate";
+
+      const title = document.createElement("h3");
+      title.textContent = gate.name;
+
+      const books = document.createElement("div");
+      books.className = "books";
+
+      gate.books.forEach((book, index) => {
+        const bookEl = document.createElement("div");
+        bookEl.className = "book";
+        bookEl.textContent = book.title;
+        bookEl.onclick = () => {
+          EterniverseData.currentGate = gate;
+          EterniverseData.currentBookIndex = index;
+          EterniverseEditor.open(book);
+        };
+        books.appendChild(bookEl);
       });
 
-      root.appendChild(worldEl);
+      const addBtn = document.createElement("button");
+      addBtn.textContent = "+ Dodaj książkę";
+      addBtn.onclick = () => {
+        EterniverseData.currentGate = gate;
+        EterniverseData.currentBookIndex = null;
+        EterniverseEditor.open(null);
+      };
+
+      gateBox.appendChild(title);
+      gateBox.appendChild(books);
+      gateBox.appendChild(addBtn);
+      container.appendChild(gateBox);
     });
   }
-
-  function renderGate(worldId, gate) {
-    const gateEl = document.createElement('div');
-    gateEl.className = 'gate';
-
-    const header = document.createElement('h3');
-    header.textContent = gate.name;
-    gateEl.appendChild(header);
-
-    gate.books.forEach(book => {
-      const bookEl = document.createElement('div');
-      bookEl.className = 'book';
-      bookEl.innerHTML = `
-        <strong>${book.title}</strong>
-        <div>Status: ${book.status}</div>
-      `;
-      gateEl.appendChild(bookEl);
-    });
-
-    const addBtn = document.createElement('button');
-    addBtn.textContent = '+ Dodaj książkę';
-    addBtn.onclick = () => {
-      document.dispatchEvent(new CustomEvent('ADD_BOOK', {
-        detail: { worldId, gateId: gate.id }
-      }));
-    };
-
-    gateEl.appendChild(addBtn);
-    return gateEl;
-  }
-
-  return {
-    renderWorlds
-  };
-})();
+};
