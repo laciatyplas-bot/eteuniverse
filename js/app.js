@@ -1,270 +1,224 @@
 // ========================================
-// ETERNIVERSE MASTER PANEL 2026 - app.js
-// Główny orchestrator
+// ETERNIVERSE MASTER 2026 — app.js
+// Orkiestrator UI oparty o DataAPI (ŹRÓDŁO PRAWDY)
 // ========================================
 
 'use strict';
 
-class EterniverseMaster {
+class EterniverseApp {
   constructor() {
     this.state = {
       currentTab: 'map',
-      currentWorld: null,
-      currentBook: null,
-      unsavedChanges: false,
-      history: [],
-      historyIndex: -1,
-      dataVersion: '1.0'
+      currentWorldId: null,
+      currentBookId: null,
     };
-
-    this.worlds = [];
-    this.books = [];
-    this.settings = { theme: 'dark', autosave: true };
 
     this.init();
   }
 
-  /* ================= INIT ================= */
+  // =========================
+  // INIT
+  // =========================
+  init() {
+    console.log('🌌 ETERNIVERSE APP START');
 
-  async init() {
-    console.log('🌌 ETERNIVERSE MASTER INIT');
+    this.cacheDOM();
+    this.bindTabs();
+    this.bindSearch();
 
-    await this.loadAllData();
-    this.bindGlobalEvents();
-    this.initTabs();
-    this.initMap();
-    this.initAI();
-    this.initAnalytics();
-
+    this.renderWorldMap();
     this.switchTab('map');
-    this.startServices();
+
+    console.log('✅ App gotowa');
   }
 
-  /* ================= DATA ================= */
-
-  async loadAllData() {
-    try {
-      const cached = localStorage.getItem('eterniverse_master');
-      if (cached) {
-        const parsed = JSON.parse(cached);
-        this.worlds = parsed.worlds || [];
-        this.books = parsed.books || [];
-        return;
-      }
-
-      // demo fallback
-      this.worlds = [
-        { id: 'eter1', name: 'Eter-1', color: '#00ff88' },
-        { id: 'kwant', name: 'Kwantowe Splątanie', color: '#ff6b6b' }
-      ];
-
-      this.books = [];
-    } catch (e) {
-      console.error('❌ Błąd ładowania danych', e);
-    }
+  // =========================
+  // DOM CACHE
+  // =========================
+  cacheDOM() {
+    this.dom = {
+      tabs: document.querySelectorAll('.tab-btn'),
+      tabContents: document.querySelectorAll('.tab-content'),
+      worldList: document.getElementById('worldList'),
+      gatesContainer: document.getElementById('gatesContainer'),
+      globalSearch: document.getElementById('globalSearch'),
+      statsTotalBooks: document.getElementById('totalBooks'),
+      statsPublishedBooks: document.getElementById('publishedBooks'),
+    };
   }
 
-  saveAllData() {
-    localStorage.setItem(
-      'eterniverse_master',
-      JSON.stringify({ worlds: this.worlds, books: this.books })
-    );
-    this.state.unsavedChanges = false;
-  }
-
-  /* ================= EVENTS ================= */
-
-  bindGlobalEvents() {
-    document.addEventListener('keydown', e => {
-      if (e.ctrlKey || e.metaKey) {
-        switch (e.key.toLowerCase()) {
-          case 's':
-            e.preventDefault();
-            this.saveCurrent();
-            break;
-          case 'n':
-            e.preventDefault();
-            this.newBook();
-            break;
-        }
-      }
-    });
-  }
-
-  /* ================= TABS ================= */
-
-  initTabs() {
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-      btn.addEventListener('click', () =>
-        this.switchTab(btn.dataset.tab)
-      );
+  // =========================
+  // TABS
+  // =========================
+  bindTabs() {
+    this.dom.tabs.forEach(btn => {
+      btn.addEventListener('click', () => {
+        this.switchTab(btn.dataset.tab);
+      });
     });
   }
 
   switchTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(t =>
-      t.classList.remove('active')
-    );
-    document.querySelectorAll('.tab-btn').forEach(b =>
-      b.classList.remove('active')
-    );
+    this.dom.tabContents.forEach(t => t.classList.remove('active'));
+    this.dom.tabs.forEach(b => b.classList.remove('active'));
 
-    const tab = document.getElementById(`${tabId}Tab`);
-    const btn = document.querySelector(`[data-tab="${tabId}"]`);
+    document.getElementById(`${tabId}Tab`)?.classList.add('active');
+    document.querySelector(`[data-tab="${tabId}"]`)?.classList.add('active');
 
-    if (tab && btn) {
-      tab.classList.add('active');
-      btn.classList.add('active');
-      this.state.currentTab = tabId;
-    }
+    this.state.currentTab = tabId;
 
-    if (tabId === 'editor') this.renderSuperEditor();
-    if (tabId === 'analytics') this.renderDashboard();
+    if (tabId === 'analytics') this.renderAnalytics();
   }
 
-  /* ================= MAP ================= */
+  // =========================
+  // MAPA ŚWIATÓW
+  // =========================
+  renderWorldMap() {
+    if (!this.dom.worldList) return;
 
-  initMap() {
-    const canvas = document.getElementById('mapCanvas');
-    if (!canvas) return;
+    const worlds = DataAPI.getWorlds();
+    this.dom.worldList.innerHTML = '';
 
-    this.mapCtx = canvas.getContext('2d');
-    canvas.width = canvas.offsetWidth;
-    canvas.height = canvas.offsetHeight;
+    worlds.forEach(world => {
+      const card = document.createElement('div');
+      card.className = 'world-card';
+      card.style.borderLeft = `6px solid ${world.color}`;
+      card.innerHTML = `
+        <h3>${world.name}</h3>
+        <p>${world.description}</p>
+        <span>Status: ${world.status}</span>
+      `;
 
-    const animate = () => {
-      this.renderMap();
-      requestAnimationFrame(animate);
-    };
-    animate();
-  }
+      card.addEventListener('click', () => {
+        this.openWorld(world.id);
+      });
 
-  renderMap() {
-    const ctx = this.mapCtx;
-    if (!ctx) return;
-
-    const w = ctx.canvas.width;
-    const h = ctx.canvas.height;
-    ctx.clearRect(0, 0, w, h);
-
-    this.worlds.forEach((wld, i) => {
-      const x = w / 2 + Math.cos(i) * 150;
-      const y = h / 2 + Math.sin(i) * 150;
-
-      ctx.fillStyle = wld.color || '#00d4ff';
-      ctx.beginPath();
-      ctx.arc(x, y, 30, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.fillStyle = '#fff';
-      ctx.font = '14px Orbitron';
-      ctx.textAlign = 'center';
-      ctx.fillText(wld.name, x, y + 55);
+      this.dom.worldList.appendChild(card);
     });
   }
 
-  /* ================= EDITOR ================= */
+  openWorld(worldId) {
+    this.state.currentWorldId = worldId;
+    this.renderBooks(worldId);
+  }
 
-  renderSuperEditor() {
-    const titleEl = document.getElementById('editor-title');
-    const contentEl = document.getElementById('editor-content');
+  // =========================
+  // KSIĄŻKI
+  // =========================
+  renderBooks(worldId) {
+    if (!this.dom.gatesContainer) return;
 
-    if (!titleEl || !contentEl) return;
+    const books = DataAPI.getBooks(worldId);
+    this.dom.gatesContainer.innerHTML = '';
 
-    if (!this.currentBook) {
-      titleEl.value = '';
-      contentEl.innerHTML = '';
+    if (books.length === 0) {
+      this.dom.gatesContainer.innerHTML =
+        '<p class="empty-gate">Brak książek w tym świecie</p>';
       return;
     }
 
-    titleEl.value = this.currentBook.title || '';
-    contentEl.innerHTML = this.currentBook.content || '';
-  }
+    books.forEach(book => {
+      const bookEl = document.createElement('div');
+      bookEl.className = 'book-card';
 
-  saveCurrent() {
-    if (!this.currentBook) return;
+      bookEl.innerHTML = `
+        <div class="book-cover">
+          ${book.cover ? `<img src="${book.cover}" alt="${book.title}">` : 'Brak okładki'}
+        </div>
+        <div class="book-info">
+          <h4>${book.title}</h4>
+          <p>${book.contentPreview || ''}</p>
+          <small>Status: ${book.status}</small>
+        </div>
+      `;
 
-    const titleEl = document.getElementById('editor-title');
-    const contentEl = document.getElementById('editor-content');
+      bookEl.addEventListener('click', () => {
+        this.openBook(book.id);
+      });
 
-    this.currentBook.title = titleEl?.value || '';
-    this.currentBook.content = contentEl?.innerHTML || '';
-    this.currentBook.updated = new Date().toISOString();
-
-    this.saveAllData();
-    this.showToast('💾 Zapisano');
-  }
-
-  newBook() {
-    const book = {
-      id: `book_${Date.now()}`,
-      title: 'Nowa książka',
-      content: '',
-      status: 'draft'
-    };
-
-    this.books.push(book);
-    this.currentBook = book;
-    this.switchTab('editor');
-    this.showToast('➕ Nowa książka');
-  }
-
-  /* ================= ANALYTICS ================= */
-
-  renderDashboard() {
-    const total = document.getElementById('totalBooks');
-    if (total) total.textContent = this.books.length;
-  }
-
-  /* ================= AI ================= */
-
-  initAI() {
-    const btn = document.getElementById('generateContent');
-    if (!btn) return;
-
-    btn.addEventListener('click', () => {
-      const out = document.getElementById('aiOutput');
-      if (out) out.textContent = '🤖 AI wygenerowało treść (mock)';
+      this.dom.gatesContainer.appendChild(bookEl);
     });
   }
 
-  /* ================= SERVICES ================= */
+  openBook(bookId) {
+    this.state.currentBookId = bookId;
+    this.switchTab('editor');
+    this.fillEditor(bookId);
+  }
 
-  startServices() {
-    setInterval(() => {
-      if (this.state.unsavedChanges) this.saveAllData();
-    }, 30000);
+  // =========================
+  // EDYTOR
+  // =========================
+  fillEditor(bookId) {
+    const book = DataAPI.getBook(bookId);
+    if (!book) return;
 
-    const contentEl = document.getElementById('editor-content');
-    if (contentEl) {
-      contentEl.addEventListener('input', () => this.updateWordCount());
+    const titleInput = document.getElementById('editor-title');
+    const contentEditor = document.getElementById('editor-content');
+    const wordCount = document.getElementById('wordCount');
+
+    if (titleInput) titleInput.value = book.title || '';
+    if (contentEditor) contentEditor.innerText = book.contentPreview || '';
+
+    if (wordCount) {
+      const count = (book.contentPreview || '').split(/\s+/).filter(Boolean).length;
+      wordCount.textContent = `${count} słów`;
     }
   }
 
-  updateWordCount() {
-    const el = document.getElementById('editor-content');
-    const counter = document.getElementById('wordCount');
-    if (!el || !counter) return;
+  // =========================
+  // SEARCH
+  // =========================
+  bindSearch() {
+    if (!this.dom.globalSearch) return;
 
-    const text = el.innerText || '';
-    const count = text.trim().split(/\s+/).filter(Boolean).length;
-    counter.textContent = `${count} słów`;
+    this.dom.globalSearch.addEventListener('input', e => {
+      const q = e.target.value.trim();
+      if (!q) {
+        this.renderWorldMap();
+        this.dom.gatesContainer.innerHTML = '';
+        return;
+      }
+
+      const result = DataAPI.search(q);
+      this.renderSearchResults(result);
+    });
   }
 
-  /* ================= UI ================= */
+  renderSearchResults({ worlds, books }) {
+    this.dom.worldList.innerHTML = '<h3>Światy</h3>';
+    this.dom.gatesContainer.innerHTML = '<h3>Książki</h3>';
 
-  showToast(msg) {
-    const t = document.createElement('div');
-    t.textContent = msg;
-    t.style.cssText =
-      'position:fixed;top:90px;right:20px;background:#00ff88;color:#000;padding:12px 20px;border-radius:20px;font-weight:bold;z-index:9999';
-    document.body.appendChild(t);
-    setTimeout(() => t.remove(), 3000);
+    worlds.forEach(w => {
+      const el = document.createElement('div');
+      el.textContent = w.name;
+      el.onclick = () => this.openWorld(w.id);
+      this.dom.worldList.appendChild(el);
+    });
+
+    books.forEach(b => {
+      const el = document.createElement('div');
+      el.textContent = b.title;
+      el.onclick = () => this.openBook(b.id);
+      this.dom.gatesContainer.appendChild(el);
+    });
+  }
+
+  // =========================
+  // ANALITYKA
+  // =========================
+  renderAnalytics() {
+    const stats = DataAPI.getStats();
+    if (this.dom.statsTotalBooks)
+      this.dom.statsTotalBooks.textContent = stats.totalBooks;
+    if (this.dom.statsPublishedBooks)
+      this.dom.statsPublishedBooks.textContent = stats.publishedBooks;
   }
 }
 
-/* ================= START ================= */
-
+// =========================
+// START
+// =========================
 document.addEventListener('DOMContentLoaded', () => {
-  window.eterniverse = new EterniverseMaster();
+  window.app = new EterniverseApp();
 });
