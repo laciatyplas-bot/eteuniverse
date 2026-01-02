@@ -3,47 +3,271 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>ETERNIVERSE — Panel Redakcyjny</title>
+  <meta name="description" content="ETERNIVERSE — zaawansowany panel redakcyjny universum EterSeeker. Master Edition 2026 z AI, timeline, search i collab."/>
+  <title>ETERNIVERSE — Master Panel · 2026</title>
   <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Roboto+Mono:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="icon" href="favicon.ico">
 </head>
 <body>
 
-<header>
-  <h1>ETERNIVERSE</h1>
-  <h2>Mapa Światów · Panel Redakcyjny</h2>
+<!-- GLOBAL HEADER z wyszukiwarką i AI -->
+<header class="global-header">
+  <div class="header-grid">
+    <div class="logo-section">
+      <h1>ETERNIVERSE</h1>
+      <span class="edition-badge">MASTER 2026</span>
+    </div>
+    
+    <!-- MEGA SEARCH -->
+    <div class="search-section">
+      <div class="search-box">
+        <input type="text" id="globalSearch" placeholder="🔍 Szukaj tytułów, światów, tagów, autorów...">
+        <button id="aiAssistantBtn" class="ai-btn">🤖 AI Helper</button>
+      </div>
+    </div>
+    
+    <!-- USER & GLOBAL CONTROLS -->
+    <div class="user-controls">
+      <div class="status-indicators">
+        <span id="syncStatus" class="status-dot online"></span>
+        <span id="autosaveStatus">Autozapis: aktywny</span>
+      </div>
+      <div class="header-actions">
+        <button id="undoBtn" title="Cofnij (Ctrl+Z)">↶</button>
+        <button id="redoBtn" title="Ponów (Ctrl+Y)">↷</button>
+        <button id="publishBtn" class="btn-primary">🚀 Publikuj</button>
+      </div>
+    </div>
+  </div>
 </header>
 
-<main style="display:flex; gap:20px;">
+<!-- TAB SYSTEM -->
+<nav class="tab-nav">
+  <button class="tab-btn active" data-tab="map">🗺️ Mapa Światów</button>
+  <button class="tab-btn" data-tab="editor">✍️ Edytor</button>
+  <button class="tab-btn" data-tab="timeline">📊 Timeline</button>
+  <button class="tab-btn" data-tab="analytics">📈 Analiza</button>
+  <button class="tab-btn" data-tab="universe">🌌 Universum</button>
+  <button class="tab-btn" data-tab="ai">🤖 AI Studio</button>
+</nav>
 
-  <!-- LEWA STRONA: MAPA -->
-  <section style="flex:2;">
-    <div id="worldList"></div>
-    <div id="gatesContainer"></div>
-  </section>
+<!-- GŁÓWNY KONTENER Z TABAMI -->
+<div class="main-container">
 
-  <!-- PRAWA STRONA: EDYTOR -->
-  <aside style="flex:1; border-left:2px solid #333; padding-left:16px;">
-    <h2>Edytor książki</h2>
+<!-- TAB 1: MAPA ŚWIATÓW (rozszerzona) -->
+<div id="mapTab" class="tab-content active">
+  <div class="sidebar">
+    <!-- FILTRY MAPY -->
+    <div class="filter-panel">
+      <h4>Filtry</h4>
+      <select id="worldFilter">
+        <option value="">Wszystkie światy</option>
+        <option value="eter-1">Eter-1</option>
+        <option value="kwant">Kwantowe Splątanie</option>
+      </select>
+      <select id="statusFilter">
+        <option value="">Wszystkie statusy</option>
+        <option value="opublikowana">Opublikowane</option>
+      </select>
+      <input type="range" id="ratingFilter" min="0" max="5" value="0">
+    </div>
+    
+    <!-- MINIATURA LISTA -->
+    <div class="world-list-mini">
+      <h4>Światy (24)</h4>
+      <div id="miniWorldList"></div>
+    </div>
+  </div>
+  
+  <div class="map-main">
+    <div class="map-controls-advanced">
+      <button id="addWorldBtn">➕ Nowy Świat</button>
+      <button id="connectGatesBtn">🔗 Połącz Bramy</button>
+      <div class="zoom-controls">
+        <button id="zoomIn">🔍</button>
+        <button id="zoomOut">🔎</button>
+        <button id="resetZoom">📐</button>
+      </div>
+    </div>
+    <div id="interactiveMap" class="interactive-map">
+      <canvas id="mapCanvas"></canvas>
+      <div id="worldList" class="world-grid-overlay"></div>
+      <div id="gatesContainer"></div>
+    </div>
+  </div>
+</div>
 
-    <label>Tytuł książki</label>
-    <input id="editor-title" type="text" placeholder="Tytuł książki"/>
+<!-- TAB 2: SUPER EDYTOR (z podglądem live) -->
+<div id="editorTab" class="tab-content">
+  <div class="editor-split">
+    <!-- LEWY PANE - FORM -->
+    <div class="editor-form-container">
+      <div class="editor-header">
+        <h2 id="activeBookTitle">Nowa książka</h2>
+        <div class="editor-meta">
+          <span id="bookId">#NEW-001</span>
+          <span id="wordCount">0 słów</span>
+          <span id="lastEdit">Ostatnia edycja: teraz</span>
+        </div>
+      </div>
+      
+      <form id="superEditorForm">
+        <!-- QUICK ACTIONS -->
+        <div class="quick-actions">
+          <button type="button" id="duplicateBook">📋 Duplikuj</button>
+          <button type="button" id="exportSingle">📤 Eksport PDF</button>
+          <button type="button" id="shareBook">🔗 Udostępnij</button>
+        </div>
+        
+        <!-- CORE FIELDS -->
+        <div class="form-section">
+          <h4>Podstawowe</h4>
+          <input id="editor-title" placeholder="Tytuł *" required/>
+          <div class="dual-input">
+            <select id="editor-status"></select>
+            <input id="editor-priority" type="range" min="1" max="5" value="3"/>
+          </div>
+        </div>
+        
+        <!-- MULTIMEDIA -->
+        <div class="form-section">
+          <h4>Multimedia</h4>
+          <div class="media-grid">
+            <input id="editor-cover" type="url" placeholder="Okładka URL"/>
+            <input id="editor-promo" type="url" placeholder="Film promocyjny"/>
+            <div class="file-upload">
+              <input type="file" id="galleryUpload" multiple accept="image/*">
+              <label>Galeria (drag & drop)</label>
+            </div>
+          </div>
+        </div>
+        
+        <!-- CONTENT -->
+        <div class="form-section full-height">
+          <h4>Treść & Manifest</h4>
+          <div id="editor-content" contenteditable="true" class="rich-editor">
+            <!-- Rich text editor area -->
+          </div>
+          <div class="editor-toolbar">
+            <button type="button" data-cmd="bold">B</button>
+            <button type="button" data-cmd="italic">I</button>
+            <select data-cmd="format">
+              <option>H1</option><option>H2</option><option>P</option>
+            </select>
+          </div>
+        </div>
+        
+        <!-- ADVANCED METADATA -->
+        <div class="form-section">
+          <h4>Zaawansowane metadane</h4>
+          <div class="metadata-accordion">
+            <details>
+              <summary>🌐 Połączenia universum</summary>
+              <div class="universe-links">
+                <input placeholder="Powiązana książka"/>
+                <input placeholder="Brama wejściowa"/>
+              </div>
+            </details>
+            <details>
+              <summary>🏷️ Tagi & kategorie</summary>
+              <input id="editor-tags" placeholder="scifi, kwantowe, eter..."/>
+            </details>
+            <details open>
+              <summary>🔗 Linki sprzedaży</summary>
+              <div class="links-grid">
+                <input data-platform="amazon"/>
+                <input data-platform="empik"/>
+                <input data-platform="custom"/>
+              </div>
+            </details>
+          </div>
+        </div>
+        
+        <!-- ACTIONS -->
+        <div class="editor-actions-full">
+          <button type="submit" class="btn-primary-large">💾 Zapisz i synchronizuj</button>
+          <button type="button" class="btn-success">✅ Opublikuj</button>
+          <button type="button" class="btn-danger">🗑️ Usuń na zawsze</button>
+        </div>
+      </form>
+    </div>
+    
+    <!-- PRAWY PANE - LIVE PREVIEW -->
+    <div class="preview-pane">
+      <div class="preview-header">
+        <h4>Podgląd na żywo</h4>
+        <div class="preview-controls">
+          <button id="previewDesktop">💻</button>
+          <button id="previewMobile">📱</button>
+          <button id="previewDark">🌙</button>
+        </div>
+      </div>
+      <iframe id="livePreview" class="live-preview-frame"></iframe>
+    </div>
+  </div>
+</div>
 
-    <label>Opis / treść</label>
-    <textarea id="editor-content" rows="6" placeholder="Opis książki"></textarea>
+<!-- TAB 3: TIMELINE -->
+<div id="timelineTab" class="tab-content">
+  <div class="timeline-container">
+    <canvas id="timelineCanvas"></canvas>
+    <div id="timelineLegend"></div>
+  </div>
+</div>
 
-    <label>Link Amazon</label>
-    <input id="editor-amazon" type="text" placeholder="https://amazon..."/>
+<!-- TAB 4: ANALITYKA -->
+<div id="analyticsTab" class="tab-content">
+  <div class="analytics-dashboard">
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3 id="totalBooks">24</h3>
+        <p>Książki</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="publishedBooks">12</h3>
+        <p>Opublikowane</h3>
+      </div>
+    </div>
+    <canvas id="chartCanvas"></canvas>
+  </div>
+</div>
 
-    <label>Link Wattpad</label>
-    <input id="editor-wattpad" type="text" placeholder="https://wattpad..."/>
+<!-- TAB 5 & 6: placeholders -->
+<div id="universeTab" class="tab-content">Universum Builder...</div>
+<div id="aiTab" class="tab-content">
+  <div class="ai-studio">
+    <textarea id="aiPrompt" placeholder="Poproś AI o: opis świata, fabułę, tagi..."></textarea>
+    <button id="generateContent">Generuj z AI</button>
+    <div id="aiOutput"></div>
+  </div>
+</div>
 
-    <button id="saveBookBtn">Zapisz książkę</button>
+</div>
 
-    <p id="editor-info" style="opacity:0.7; font-size:0.9em;"></p>
-  </aside>
+<!-- GLOBAL MODALS -->
+<div id="notificationCenter" class="notification-panel"></div>
+<div id="confirmModal" class="modal"></div>
 
-</main>
+<!-- LOADING & TOOLTIPS -->
+<div id="globalLoader" class="global-loader"></div>
 
+<!-- SKRYPTY (15 plików modularnych) -->
+<script src="js/core.js"></script>
+<script src="js/tabs.js"></script>
+<script src="js/map3d.js"></script>
+<script src="js/editor-rich.js"></script>
+<script src="js/ai-integration.js"></script>
+<script src="js/analytics.js"></script>
+<script src="js/timeline.js"></script>
+<script src="js/search.js"></script>
+<script src="js/export-advanced.js"></script>
+<script src="js/sync-github.js"></script>
+<script src="js/preview-live.js"></script>
+<script src="js/notifications.js"></script>
+<script src="js/hotkeys.js"></script>
+<script src="js/data.js"></script>
 <script src="js/app.js"></script>
+
 </body>
 </html>
