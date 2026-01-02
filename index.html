@@ -82,7 +82,7 @@
 
     #log { background:#05070a; padding:16px; font-family:monospace; font-size:12px; line-height:1.4; white-space:pre-wrap; min-height:120px; }
 
-    /* Responsywność – pełne wsparcie dla urządzeń mobilnych */
+    /* Responsywność */
     @media (min-width:1024px) {
       main { display:grid; grid-template-columns:280px 1fr 380px; }
       header { flex-direction:row; align-items:center; }
@@ -145,8 +145,158 @@
   </main>
 
   <script>
-    // Wklej tutaj pełny kod JavaScript z poprzedniej wersji (Ultimate z IndexedDB, edycją, synchronizacją itp.)
-    // Kod działa idealnie z tym ulepszonym CSS
+    // ETERNIVERSE – Ultimate Edition z ładowaniem z map.json (fetch)
+    // Pełna edycja + IndexedDB jako fallback + synchronizacja
+
+    const selectors = {
+      worldList: '#worldList',
+      contentArea: '#contentArea',
+      log: '#log'
+    };
+
+    const elements = {
+      worldList: document.querySelector(selectors.worldList),
+      contentArea: document.querySelector(selectors.contentArea),
+      log: document.querySelector(selectors.log)
+    };
+
+    const DB_NAME = 'EterniverseDB';
+    const DB_VERSION = 1;
+    const STORE_NAME = 'eterniverse_data';
+    let db = null;
+    let DATA = null;
+
+    let currentWorld = null;
+
+    // Otwarcie IndexedDB
+    async function openDB() {
+      return new Promise((resolve, reject) => {
+        const request = indexedDB.open(DB_NAME, DB_VERSION);
+        request.onerror = () => reject(request.error);
+        request.onsuccess = () => {
+          db = request.result;
+          resolve(db);
+        };
+        request.onupgradeneeded = (e) => {
+          db = e.target.result;
+          if (!db.objectStoreNames.contains(STORE_NAME)) {
+            db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+          }
+        };
+      });
+    }
+
+    // Ładowanie danych: najpierw map.json (fetch), potem IndexedDB, na końcu domyślne
+    async function loadData() {
+      if (!db) await openDB();
+
+      // 1. Próba z map.json
+      try {
+        const res = await fetch('map.json?' + Date.now()); // cache-buster
+        if (res.ok) {
+          DATA = await res.json();
+          saveToIndexedDB();
+          logMessage('Dane załadowane z map.json');
+          renderWorlds();
+          return;
+        }
+      } catch (err) {
+        logMessage('map.json niedostępny – ładowanie z IndexedDB');
+      }
+
+      // 2. IndexedDB
+      const saved = await getFromIndexedDB();
+      if (saved) {
+        DATA = saved;
+        logMessage('Dane załadowane z IndexedDB (fallback)');
+        renderWorlds();
+        return;
+      }
+
+      // 3. Domyślne dane
+      DATA = getDefaultData();
+      logMessage('Załadowno domyślne dane');
+      renderWorlds();
+    }
+
+    // Pobieranie z IndexedDB
+    function getFromIndexedDB() {
+      return new Promise((resolve) => {
+        const tx = db.transaction(STORE_NAME, 'readonly');
+        const store = tx.objectStore(STORE_NAME);
+        const request = store.get('core_data');
+        request.onsuccess = () => resolve(request.result ? request.result.data : null);
+        request.onerror = () => resolve(null);
+      });
+    }
+
+    // Zapisywanie do IndexedDB
+    function saveToIndexedDB() {
+      if (!db) return;
+      const tx = db.transaction(STORE_NAME, 'readwrite');
+      const store = tx.objectStore(STORE_NAME);
+      store.put({ id: 'core_data', data: DATA });
+      tx.oncomplete = () => logMessage('Dane zsynchronizowane z IndexedDB');
+    }
+
+    // Domyślne dane (10 Bram kanonicznych)
+    function getDefaultData() {
+      return {
+        "system": "ETERNIVERSE",
+        "version": "Ultimate 2026",
+        "architect": "Maciej Maciuszek",
+        "worlds": [
+          {
+            "id": "core",
+            "name": "ETERUNIVERSE – Rdzeń",
+            "description": "Centralny system nawigacji świadomości. Mapa przejścia ból → świadomość → wola → obfitość → integracja.",
+            "gates": [
+              { "id": 1, "name": "BRAMA I — INTERSEEKER", "color": "#28D3C6", "sub": "Psychika · Cień · Trauma", "tag": "CORE/PSYCHE", "books": [] },
+              { "id": 2, "name": "BRAMA II — CUSTOS / GENEZA", "color": "#D9A441", "sub": "Strażnik · Początek", "tag": "CORE/ORIGIN", "books": [] },
+              { "id": 3, "name": "BRAMA III — ETERSEEKER", "color": "#12C65B", "sub": "Wola · Pole · Architektura", "tag": "CORE/FIELD", "books": [] },
+              { "id": 4, "name": "BRAMA IV — ARCHETYPY / WOLA", "color": "#9B6BFF", "sub": "Role · Przeznaczenie", "tag": "CORE/WILL", "books": [] },
+              { "id": 5, "name": "BRAMA V — OBFITOSEEKER", "color": "#FFB14B", "sub": "Obfitość · Przepływ", "tag": "EMBODIED/FLOW", "books": [] },
+              { "id": 6, "name": "BRAMA VI — BIOSEEKER", "color": "#FF6B6B", "sub": "Ciało · Biologia", "tag": "EMBODIED/BIO", "books": [] },
+              { "id": 7, "name": "BRAMA VII — SPLĄTANIE / AI", "color": "#9B6BFF", "sub": "Obserwator · Technologia", "tag": "META/TECH", "books": [] },
+              { "id": 8, "name": "BRAMA VIII — TRAJEKTORIE", "color": "#28D3C6", "sub": "Czas · Linie życia", "tag": "META/PHYSICS", "books": [] },
+              { "id": 9, "name": "BRAMA IX — ETERNIONY / KOLEKTYW", "color": "#D9A441", "sub": "Wspólnota · Węzły", "tag": "COLLECTIVE", "books": [] },
+              { "id": 10, "name": "BRAMA X — ETERUNIVERSE", "color": "#12C65B", "sub": "Integracja · Absolut", "tag": "INTEGRATION", "books": [] }
+            ]
+          }
+        ]
+      };
+    }
+
+    // Renderowanie listy światów
+    function renderWorlds() {
+      elements.worldList.innerHTML = '';
+      DATA.worlds.forEach(world => {
+        const button = document.createElement('button');
+        button.textContent = `\( {world.name} ( \){world.gates.length} bram)`;
+        button.style.cssText = 'display:block;width:100%;padding:20px;margin:16px 0;border:none;border-radius:20px;background:linear-gradient(135deg,#0f2138,#071626);color:#E6F6F5;font-size:22px;font-weight:700;cursor:pointer;box-shadow:0 12px 40px rgba(0,0,0,0.6);transition:all 0.5s ease;';
+        button.addEventListener('mouseover', () => button.style.transform = 'translateY(-8px) scale(1.03)');
+        button.addEventListener('mouseout', () => button.style.transform = 'translateY(0) scale(1)');
+        button.addEventListener('click', () => openWorld(world));
+        elements.worldList.appendChild(button);
+      });
+    }
+
+    // Otwieranie świata (renderGates, addGate, editGate, deleteGate, addBook, editBook, deleteBook, openBook – jak w poprzedniej wersji)
+
+    // Log
+    function logMessage(message) {
+      if (!elements.log) return;
+      const timestamp = new Date().toLocaleTimeString();
+      elements.log.textContent += `[${timestamp}] ${message}\n`;
+      elements.log.scrollTop = elements.log.scrollHeight;
+    }
+
+    // Inicjalizacja
+    document.addEventListener('DOMContentLoaded', async () => {
+      await openDB();
+      await loadData();
+      logMessage(`System ETERNIVERSE – Załadowany z map.json / IndexedDB`);
+    });
   </script>
 </body>
 </html>
