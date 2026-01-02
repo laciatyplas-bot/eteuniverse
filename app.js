@@ -1,6 +1,6 @@
-// ETERNIVERSE – Master Edition JS (wszystkie funkcje uzupełnione i działające)
-// Pełna edycja światów, bram i ksiąg + IndexedDB + map.json
+// ETERNIVERSE – Master Edition JS (pełny, kompletny kod z obsługą wielu światów, pełną edycją i księgami)
 
+// Selektory elementów DOM
 const selectors = {
   worldList: '#worldList',
   contentArea: '#contentArea',
@@ -13,6 +13,7 @@ const elements = {
   log: document.querySelector(selectors.log)
 };
 
+// Konfiguracja IndexedDB
 const DB_NAME = 'EterniverseDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'eterniverse_data';
@@ -43,7 +44,7 @@ async function openDB() {
 async function loadData() {
   if (!db) await openDB();
 
-  // 1. map.json
+  // 1. Próba z map.json
   try {
     const res = await fetch('map.json?' + Date.now());
     if (res.ok) {
@@ -89,11 +90,11 @@ function saveToIndexedDB() {
   store.put({ id: 'core_data', data: DATA });
 }
 
-// Domyślne dane z przykładowymi księgami
+// Domyślne dane – dwa światy z przykładowymi księgami
 function getDefaultData() {
   return {
     "system": "ETERNIVERSE",
-    "version": "Master 2026",
+    "version": "Multi-World Master 2026",
     "architect": "Maciej Maciuszek",
     "worlds": [
       {
@@ -114,100 +115,119 @@ function getDefaultData() {
             ]
           },
           {
-            "id": "2",
-            "name": "BRAMA II — CUSTOS / GENEZA",
-            "color": "#D9A441",
-            "sub": "Strażnik · Rdzeń · Początek · Błąd pierwotny",
-            "tag": "CORE/ORIGIN",
-            "books": []
-          },
-          {
             "id": "3",
             "name": "BRAMA III — ETERSEEKER",
             "color": "#12C65B",
             "sub": "Wola · Pole · Architektura rzeczywistości",
             "tag": "CORE/FIELD",
             "books": [
-              { "id": "b4", "title": "EterSeeker: Kronika Woli", "status": "opublikowana", "content": "Protokół reprogramowania woli za pomocą oddechu, częstotliwości i spójności pola." },
-              { "id": "b5", "title": "Interfejs Świadomości", "status": "opublikowana", "content": "Nauka czytania znaków rzeczywistości jako komunikatów pola." }
+              { "id": "b4", "title": "EterSeeker: Kronika Woli", "status": "opublikowana", "content": "Protokół reprogramowania woli za pomocą oddechu, częstotliwości i spójności pola." }
             ]
           },
-          {
-            "id": "4",
-            "name": "BRAMA IV — ARCHETYPY / WOLA",
-            "color": "#9B6BFF",
-            "sub": "Konstrukcja · Role · Przeznaczenie",
-            "tag": "CORE/WILL",
-            "books": []
-          },
-          {
-            "id": "5",
-            "name": "BRAMA V — OBFITOSEEKER",
-            "color": "#FFB14B",
-            "sub": "Materia · Przepływ · Manifestacja · Obfitość",
-            "tag": "EMBODIED/FLOW",
-            "books": [
-              { "id": "b6", "title": "ObfitoSeeker – Kod Obfitości", "status": "opublikowana", "content": "Kod, który nie mówi o pieniądzach – mówi o regułach gry i powrocie do syna." }
-            ]
-          },
-          {
-            "id": "6",
-            "name": "BRAMA VI — BIOSEEKER",
-            "color": "#FF6B6B",
-            "sub": "Ciało · Biologia · Regulacja · Hardware",
-            "tag": "EMBODIED/BIO",
-            "books": []
-          },
-          {
-            "id": "7",
-            "name": "BRAMA VII — SPLĄTANIE / AI",
-            "color": "#9B6BFF",
-            "sub": "Obserwator · Meta-tożsamość · Technologia",
-            "tag": "META/TECH",
-            "books": []
-          },
-          {
-            "id": "8",
-            "name": "BRAMA VIII — TRAJEKTORIE",
-            "color": "#28D3C6",
-            "sub": "Kod Życia · Linie Czasu · Fizyka Duszy",
-            "tag": "META/PHYSICS",
-            "books": []
-          },
-          {
-            "id": "9",
-            "name": "BRAMA IX — ETERNIONY / KOLEKTYW",
-            "color": "#D9A441",
-            "sub": "Węzły Pola · Wspólnota · Misja zbiorowa",
-            "tag": "COLLECTIVE",
-            "books": []
-          },
-          {
-            "id": "10",
-            "name": "BRAMA X — ETERUNIVERSE",
-            "color": "#12C65B",
-            "sub": "Integracja · Jedność · Architekt · Absolut",
-            "tag": "INTEGRATION",
-            "books": []
-          }
+          // Pozostałe bramy z books: []
+          { "id": "2", "name": "BRAMA II — CUSTOS / GENEZA", "color": "#D9A441", "sub": "Strażnik · Początek", "tag": "CORE/ORIGIN", "books": [] },
+          { "id": "4", "name": "BRAMA IV — ARCHETYPY / WOLA", "color": "#9B6BFF", "sub": "Role · Przeznaczenie", "tag": "CORE/WILL", "books": [] },
+          { "id": "5", "name": "BRAMA V — OBFITOSEEKER", "color": "#FFB14B", "sub": "Obfitość · Przepływ", "tag": "EMBODIED/FLOW", "books": [] },
+          { "id": "6", "name": "BRAMA VI — BIOSEEKER", "color": "#FF6B6B", "sub": "Ciało · Biologia", "tag": "EMBODIED/BIO", "books": [] },
+          { "id": "7", "name": "BRAMA VII — SPLĄTANIE / AI", "color": "#9B6BFF", "sub": "Obserwator · Technologia", "tag": "META/TECH", "books": [] },
+          { "id": "8", "name": "BRAMA VIII — TRAJEKTORIE", "color": "#28D3C6", "sub": "Czas · Linie życia", "tag": "META/PHYSICS", "books": [] },
+          { "id": "9", "name": "BRAMA IX — ETERNIONY / KOLEKTYW", "color": "#D9A441", "sub": "Wspólnota · Węzły", "tag": "COLLECTIVE", "books": [] },
+          { "id": "10", "name": "BRAMA X — ETERUNIVERSE", "color": "#12C65B", "sub": "Integracja · Absolut", "tag": "INTEGRATION", "books": [] }
+        ]
+      },
+      {
+        "id": "polaris",
+        "name": "POLARIS – Drugi Świat",
+        "description": "Świat przejścia, testu i bram. 10 Kręgów inicjacji – droga do Lemurii i Krasnali.",
+        "gates": [
+          { "id": "p1", "name": "KRĄG I — PRZEBUDZENIE", "color": "#FFD700", "sub": "Chaos · Echa starego świata", "tag": "INITIATION", "books": [] },
+          { "id": "p2", "name": "KRĄG II — CIAŁO I STRACH", "color": "#FF4500", "sub": "Ból · Przetrwanie · Pierwotność", "tag": "BODY", "books": [] },
+          { "id": "p3", "name": "KRĄG III — WIĘŹ", "color": "#00CED1", "sub": "Relacje · Zaufanie · Zdrada", "tag": "BOND", "books": [] },
+          { "id": "p4", "name": "KRĄG IV — TOŻSAMOŚĆ", "color": "#9370DB", "sub": "Maski · Role · Imię", "tag": "IDENTITY", "books": [] },
+          { "id": "p5", "name": "KRĄG V — WOLA", "color": "#FF1493", "sub": "Decyzje · Cena · Mit", "tag": "WILL", "books": [] },
+          { "id": "p6", "name": "KRĄG VI — BOGOWIE", "color": "#4169E1", "sub": "Olimp · Asgard · Systemy", "tag": "GODS", "books": [] },
+          { "id": "p7", "name": "KRĄG VII — GŁĘBIA", "color": "#20B2AA", "sub": "Nieświadomość · Syreny · Emocje", "tag": "DEPTH", "books": [] },
+          { "id": "p8", "name": "KRĄG VIII — HISTORIA", "color": "#8B4513", "sub": "Anak · Atlantis · Błędy", "tag": "HISTORY", "books": [] },
+          { "id": "p9", "name": "KRĄG IX — LEMURIA", "color": "#00FF7F", "sub": "Technologia · Pokój · Kryształy", "tag": "LEMURIA", "books": [] },
+          { "id": "p10", "name": "KRĄG X — POWRÓT", "color": "#FFD700", "sub": "Odpowiedzialność · Portal · Krasnale", "tag": "RETURN", "books": [] }
         ]
       }
     ]
   };
 }
 
-// Renderowanie listy światów
+// Renderowanie listy światów z edycją
 function renderWorlds() {
-  elements.worldList.innerHTML = '';
+  elements.worldList.innerHTML = `
+    <button style="display:block;width:100%;padding:20px;margin:20px 0;border:none;border-radius:20px;background:#1e40af;color:#fff;font-size:20px;font-weight:700;cursor:pointer;box-shadow:0 12px 40px rgba(0,0,0,0.6);" onclick="addWorld()">+ Dodaj nowy Świat</button>
+  `;
+
   DATA.worlds.forEach(world => {
     const button = document.createElement('button');
     button.textContent = `\( {world.name} ( \){world.gates.length} bram)`;
-    button.style.cssText = 'display:block;width:100%;padding:20px;margin:16px 0;border:none;border-radius:20px;background:linear-gradient(135deg,#0f2138,#071626);color:#E6F6F5;font-size:22px;font-weight:700;cursor:pointer;box-shadow:0 12px 40px rgba(0,0,0,0.6);transition:all 0.5s ease;';
+    button.style.cssText = 'display:block;width:100%;padding:20px;margin:16px 0;border:none;border-radius:20px;background:linear-gradient(135deg,#0f2138,#071626);color:#E6F6F5;font-size:22px;font-weight:700;cursor:pointer;box-shadow:0 12px 40px rgba(0,0,0,0.6);transition:all 0.5s ease;position:relative;';
     button.addEventListener('mouseover', () => button.style.transform = 'translateY(-8px) scale(1.03)');
     button.addEventListener('mouseout', () => button.style.transform = 'translateY(0) scale(1)');
     button.addEventListener('click', () => openWorld(world));
+
+    const actions = document.createElement('div');
+    actions.style.cssText = 'position:absolute;top:16px;right:16px;display:flex;gap:8px;opacity:0;transition:opacity 0.3s;';
+    actions.innerHTML = `
+      <button style="padding:8px 16px;background:#2563eb;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;" onclick="editWorld(event, '${world.id}')">Edytuj</button>
+      <button style="padding:8px 16px;background:#dc2626;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;" onclick="deleteWorld(event, '${world.id}')">Usuń</button>
+    `;
+    button.appendChild(actions);
+    button.addEventListener('mouseover', () => actions.style.opacity = '1');
+    button.addEventListener('mouseout', () => actions.style.opacity = '0');
+
     elements.worldList.appendChild(button);
   });
+}
+
+// Dodawanie nowego świata
+function addWorld() {
+  const name = prompt('Nazwa nowego świata:');
+  if (!name) return;
+  const description = prompt('Opis świata:', 'Nowy świat w ETERNIVERSE');
+
+  const newWorld = {
+    id: Date.now().toString(),
+    name,
+    description,
+    gates: []
+  };
+
+  DATA.worlds.push(newWorld);
+  saveToIndexedDB();
+  renderWorlds();
+  logMessage(`Dodano nowy świat: ${name}`);
+}
+
+// Edycja świata
+function editWorld(e, worldId) {
+  e.stopPropagation();
+  const world = DATA.worlds.find(w => w.id === worldId);
+  if (!world) return;
+
+  const newName = prompt('Nowa nazwa:', world.name);
+  if (newName) world.name = newName;
+  const newDesc = prompt('Nowy opis:', world.description);
+  if (newDesc !== null) world.description = newDesc;
+
+  saveToIndexedDB();
+  renderWorlds();
+  logMessage(`Edytowano świat: ${world.name}`);
+}
+
+// Usuwanie świata
+function deleteWorld(e, worldId) {
+  e.stopPropagation();
+  if (!confirm('Usunąć cały świat wraz z bramami i księgami?')) return;
+
+  DATA.worlds = DATA.worlds.filter(w => w.id !== worldId);
+  saveToIndexedDB();
+  renderWorlds();
+  logMessage(`Usunięto świat ID ${worldId}`);
 }
 
 // Otwieranie świata
@@ -442,5 +462,5 @@ function escapeHtml(text) {
 document.addEventListener('DOMContentLoaded', async () => {
   await openDB();
   await loadData();
-  logMessage(`System ETERNIVERSE Master – Załadowany z księgami`);
+  logMessage(`System ETERNIVERSE Multi-World – Załadowany (${DATA.worlds.length} światów aktywnych)`);
 });
