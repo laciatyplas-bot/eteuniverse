@@ -1,544 +1,632 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Bella Author Mode - Uniwersum Manager</title>
-<style>
-  body {
-    background: #121212;
-    color: #eee;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    margin: 0; padding: 0; display: flex; flex-direction: column; min-height: 100vh;
-  }
-  header {
-    background: #222;
-    padding: 1rem;
-    font-size: 1.5rem;
-    font-weight: bold;
-    text-align: center;
-    user-select: none;
-  }
-  #motto {
-    font-style: italic;
-    text-align: center;
-    margin: 0.5rem auto 1rem auto;
-    color: #888;
-  }
-  main {
-    flex: 1;
-    display: flex;
-    gap: 1rem;
-    padding: 0 1rem 1rem 1rem;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  #structurePanel, #editorPanel, #archivePanel {
-    background: #222;
-    border-radius: 6px;
-    padding: 1rem;
-    min-width: 320px;
-    max-width: 600px;
-    box-sizing: border-box;
-  }
-  #structurePanel {
-    flex: 1 1 320px;
-    max-height: 80vh;
-    overflow-y: auto;
-  }
-  #structurePanel h2, #editorPanel h2, #archivePanel h2 {
-    margin-top: 0;
-  }
-  ul.hierarchy {
-    list-style: none;
-    padding-left: 1rem;
-  }
-  ul.hierarchy li {
-    margin: 0.3rem 0;
-    cursor: pointer;
-  }
-  ul.hierarchy li.selected {
-    background: #444;
-    border-radius: 4px;
-  }
-  label {
-    display: block;
-    margin-top: 0.5rem;
-  }
-  input[type=text], select, textarea {
-    width: 100%;
-    padding: 6px;
-    border-radius: 4px;
-    border: none;
-    background-color: #333;
-    color: #eee;
-    margin-top: 0.2rem;
-    box-sizing: border-box;
-  }
-  textarea {
-    resize: vertical;
-    min-height: 100px;
-  }
-  button {
-    margin-top: 0.7rem;
-    padding: 0.5rem 1rem;
-    background: #3a3a3a;
-    border: none;
-    border-radius: 4px;
-    color: #eee;
-    cursor: pointer;
-    user-select: none;
-  }
-  button:hover {
-    background: #555;
-  }
-  #output, #archiveOutput {
-    margin-top: 0.5rem;
-    font-size: 0.9rem;
-    color: #aaa;
-    min-height: 1.5em;
-  }
-  .section-group {
-    margin-bottom: 1rem;
-  }
-  /* Scrollbar */
-  #structurePanel::-webkit-scrollbar {
-    width: 8px;
-  }
-  #structurePanel::-webkit-scrollbar-thumb {
-    background-color: #444;
-    border-radius: 4px;
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Eterniverse PRO Master — Demo</title>
+  <style>
+    /* --- Wklej tutaj cały CSS z mojej poprzedniej wiadomości --- */
+    /* ...pełen CSS jak w poprzedniej odpowiedzi... */
+    :root {
+      --bg: #050814;
+      --bg-gradient: radial-gradient(circle at 25% 15%, #1A254B 0%, #0A1423 30%, #050814 60%, #01030A 100%);
+      --bg-nebula: radial-gradient(circle at 75% 85%, rgba(217,164,65,0.03) 0%, transparent 50%);
+      --card: #0A1727;
+      --card-soft: #0F2138;
+      --card-glow: #14263F;
+      --card-field: rgba(40,211,198,0.03);
+      --text: #E9F4FF;
+      --text-glow: #F0F8FF;
+      --muted: #9BB0D4;
+      --border: #20324A;
+      --border-field: rgba(217,164,65,0.15);
+      --border-quantum: rgba(155,107,255,0.2);
+      --gold: #D9A441;
+      --gold-field: #E9B949;
+      --gold-gradient: linear-gradient(135deg, #D9A441 0%, #E9B949 50%, #F0C14D 100%);
+      --teal: #28D3C6;
+      --teal-field: #3AD9D0;
+      --green: #12C65B;
+      --orange: #FFB14B;
+      --red: #FF6B6B;
+      --purple: #9B6BFF;
+      --shadow-atom: 0 8px 32px rgba(5,8,20,0.8);
+      --shadow-field: 0 20px 80px rgba(217,164,65,0.12);
+      --shadow-quantum: 0 0 40px rgba(40,211,198,0.2);
+      --shadow-nebula: 0 32px 120px rgba(0,0,0,0.7);
+      --radius-atom: 16px;
+      --radius-field: 24px;
+      --radius-gate: 32px;
+      --transition-field: all 0.6s cubic-bezier(0.23,1,0.32,1);
+      --transition-atom: all 0.3s cubic-bezier(0.4,0,0.2,1);
+      --font-main: system-ui, -apple-system, 'Inter var', BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --font-mono: 'SF Mono', Monaco, 'Cascadia Code', 'Roboto Mono', monospace;
+    }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    html, body {
+      height: 100%;
+      background: var(--bg-gradient), var(--bg-nebula);
+      background-blend-mode: overlay;
+      color: var(--text);
+      font-family: var(--font-main);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      overflow-x: hidden;
+      position: relative;
+      line-height: 1.5;
+      font-size: 16px;
+    }
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: 
+        radial-gradient(circle at 20% 80%, rgba(40,211,198,0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(217,164,65,0.04) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(155,107,255,0.03) 0%, transparent 50%);
+      pointer-events: none;
+      z-index: -1;
+      animation: fieldPulse 20s ease-in-out infinite alternate;
+    }
+    @keyframes fieldPulse {
+      0%, 100% { opacity: 0.6; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.05); }
+    }
+    .app-container {
+      min-height: 100vh;
+      padding: 48px 40px 100px;
+      max-width: 1400px;
+      margin: 0 auto;
+      position: relative;
+    }
+    form, main {
+      background: var(--card);
+      border-radius: var(--radius-field);
+      padding: 24px;
+      box-shadow: var(--shadow-field);
+      margin-bottom: 48px;
+    }
+    .form-group {
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+    .form-group label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--gold);
+      text-shadow: 0 0 6px var(--gold-field);
+      user-select: none;
+    }
+    .form-group input[type="text"],
+    .form-group input[type="date"],
+    .form-group select,
+    .form-group textarea {
+      background: var(--card-soft);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-atom);
+      color: var(--text);
+      padding: 10px 16px;
+      font-size: 1rem;
+      font-family: var(--font-main);
+      transition: var(--transition-field);
+      box-shadow: inset 0 0 10px var(--card-field);
+      resize: vertical;
+    }
+    .form-group input[type="text"]:focus,
+    .form-group input[type="date"]:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--teal);
+      box-shadow: 0 0 12px var(--teal-field);
+      background: var(--card-glow);
+      color: var(--text-glow);
+    }
+    .chapter-block, .fragment-block {
+      background: var(--card-soft);
+      border-radius: var(--radius-atom);
+      border: 1px solid var(--border-quantum);
+      box-shadow: 0 0 8px var(--purple);
+      margin-bottom: 24px;
+      padding: 20px;
+      position: relative;
+      transition: var(--transition-field);
+    }
+    .chapter-block:hover, .fragment-block:hover {
+      box-shadow: 0 0 16px var(--gold), 0 0 20px var(--purple);
+    }
+    .chapter-block > h3,
+    .fragment-block > legend {
+      font-weight: 700;
+      font-size: 1.3rem;
+      color: var(--gold);
+      text-shadow: 0 0 8px var(--gold-field);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .chapter-block button,
+    .fragment-block button,
+    #addChapterBtn,
+    #addFragmentBtn {
+      background: transparent;
+      border: 1.5px solid var(--red);
+      color: var(--red);
+      padding: 4px 12px;
+      font-weight: 600;
+      font-family: var(--font-main);
+      border-radius: var(--radius-atom);
+      cursor: pointer;
+      transition: var(--transition-atom);
+      user-select: none;
+      margin-top: 10px;
+    }
+    .chapter-block button:hover,
+    .fragment-block button:hover,
+    #addChapterBtn:hover,
+    #addFragmentBtn:hover {
+      background: var(--red);
+      color: var(--card);
+      box-shadow: 0 0 12px var(--red);
+    }
+    button[type="button"] {
+      background: var(--teal);
+      color: var(--card);
+      border: none;
+      padding: 10px 20px;
+      font-weight: 700;
+      border-radius: var(--radius-atom);
+      cursor: pointer;
+      box-shadow: 0 0 14px var(--teal-field);
+      transition: var(--transition-atom);
+      user-select: none;
+      margin: 10px 0 20px;
+    }
+    button[type="button"]:hover {
+      background: var(--green);
+      box-shadow: 0 0 20px var(--green);
+      color: var(--card-glow);
+    }
+    textarea[name="fragmentText"] {
+      font-family: var(--font-main);
+      font-size: 1rem;
+      line-height: 1.4;
+      min-height: 140px;
+      background: var(--card-glow);
+      box-shadow: inset 0 0 14px var(--teal-field);
+      border-color: var(--teal);
+      color: var(--text-glow);
+      resize: vertical;
+      transition: var(--transition-field);
+    }
+    #output {
+      min-height: 28px;
+      font-weight: 700;
+      margin-top: 20px;
+      padding: 12px 16px;
+      border-radius: var(--radius-atom);
+      user-select: none;
+    }
+    #output.info {
+      background: rgba(40,211,198,0.15);
+      color: var(--teal);
+      box-shadow: 0 0 10px var(--teal-field);
+    }
+    #output.success {
+      background: rgba(82,255,112,0.2);
+      color: var(--green);
+      box-shadow: 0 0 14px var(--green);
+    }
+    #output.error {
+      background: rgba(255,107,107,0.15);
+      color: var(--red);
+      box-shadow: 0 0 12px var(--red);
+    }
+    @media (max-width: 960px) {
+      .app-container {
+        padding: 32px 24px 64px;
+        max-width: 100%;
+      }
+      form, main {
+        padding: 16px;
+      }
+      button[type="button"] {
+        width: 100%;
+        margin: 12px 0;
+      }
+    }
+    ::-webkit-scrollbar {
+      width: 10px;
+    }
+    ::-webkit-scrollbar-track {
+      background: var(--card);
+      border-radius: var(--radius-atom);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--teal);
+      border-radius: var(--radius-atom);
+      box-shadow: inset 0 0 6px var(--teal-field);
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--green);
+    }
+    a {
+      color: var(--gold);
+      text-decoration: none;
+      transition: var(--transition-atom);
+    }
+    a:hover, a:focus {
+      color: var(--teal);
+      text-decoration: underline;
+      outline: none;
+    }
+  </style>
 </head>
 <body>
-<header>Bella Author Mode - Zarządzanie Uniwersum i Ochrona Praw</header>
-<div id="motto">System nie tworzy literatury. System chroni literaturę stworzoną przez autora.</div>
+  <div class="app-container">
+    <header class="dashboard-header">
+      <h1>Eterniverse PRO Master — Demo</h1>
+    </header>
 
-<main>
-  <section id="structurePanel" aria-label="Struktura Uniwersum">
-    <h2>Struktura Uniwersum</h2>
-    <div>
-      <button id="addUniverseBtn">Dodaj Uniwersum</button>
-    </div>
-    <ul id="universeList" class="hierarchy"></ul>
-  </section>
+    <main id="mainContent">
+      <form id="projectForm" novalidate>
+        <section>
+          <h2>Uniwersum</h2>
+          <div class="form-group">
+            <label for="universeName">Nazwa uniwesrum</label>
+            <input type="text" id="universeName" name="universeName" required />
+          </div>
+          <div class="form-group">
+            <label for="universeDescription">Opis uniwesrum</label>
+            <textarea id="universeDescription" name="universeDescription" rows="3" required></textarea>
+          </div>
+        </section>
 
-  <section id="editorPanel" aria-label="Edytor Tekstu i Metadane">
-    <h2>Edytuj element</h2>
-    <div class="section-group">
-      <label for="elementType">Typ elementu</label>
-      <input type="text" id="elementType" readonly />
-    </div>
-    <div class="section-group">
-      <label for="elementTitle">Tytuł</label>
-      <input type="text" id="elementTitle" />
-    </div>
-    <div class="section-group">
-      <label for="elementDate">Data utworzenia</label>
-      <input type="text" id="elementDate" readonly />
-    </div>
-    <div class="section-group">
-      <label for="elementVersion">Wersja</label>
-      <input type="text" id="elementVersion" />
-    </div>
-    <div class="section-group">
-      <label for="elementLanguage">Język</label>
-      <select id="elementLanguage">
-        <option value="pl">Polski</option>
-        <option value="en">Angielski</option>
-        <option value="de">Niemiecki</option>
-        <option value="fr">Francuski</option>
-      </select>
-    </div>
-    <div class="section-group">
-      <label for="elementContent">Zawartość (tekst)</label>
-      <textarea id="elementContent" spellcheck="true" autocomplete="off" autocorrect="off" autocapitalize="off"></textarea>
-    </div>
-    <div class="section-group">
-      <label for="elementNotes">Notatki autora (niewidoczne dla czytelnika)</label>
-      <textarea id="elementNotes" placeholder="Opis emocji, kontekstu, powodów powstania..."></textarea>
-    </div>
-    <div>
-      <button id="saveElementBtn">Zapisz zmiany</button>
-      <button id="deleteElementBtn" style="background:#a33;">Usuń element</button>
-      <button id="addChildBtn">Dodaj element podrzędny</button>
-    </div>
-    <div id="output"></div>
-  </section>
+        <section>
+          <h2>Świat</h2>
+          <div class="form-group">
+            <label for="worldName">Nazwa świata</label>
+            <input type="text" id="worldName" name="worldName" required />
+          </div>
+          <div class="form-group">
+            <label for="worldDescription">Opis świata</label>
+            <textarea id="worldDescription" name="worldDescription" rows="3" required></textarea>
+          </div>
+        </section>
 
-  <section id="archivePanel" aria-label="Archiwum i Eksport">
-    <h2>Archiwum Praw Autorskich</h2>
-    <div>
-      <button id="backupAllBtn">Wykonaj backup całości projektu</button>
-    </div>
-    <div class="section-group">
-      <label for="exportSelect">Eksportuj wybrany element do:</label>
-      <select id="exportSelect">
-        <option value="docx">DOCX</option>
-        <option value="pdf">PDF</option>
-        <option value="txt">TXT</option>
-      </select>
-      <button id="exportBtn">Eksportuj</button>
-    </div>
-    <div id="archiveOutput"></div>
-  </section>
-</main>
+        <section>
+          <h2>Tom</h2>
+          <div class="form-group">
+            <label for="volumeTitle">Tytuł tomu</label>
+            <input type="text" id="volumeTitle" name="volumeTitle" required />
+          </div>
+          <div class="form-group">
+            <label for="volumeDescription">Opis tomu</label>
+            <textarea id="volumeDescription" name="volumeDescription" rows="3" required></textarea>
+          </div>
+        </section>
 
-<!-- Biblioteki do eksportu -->
-<script src="https://cdn.jsdelivr.net/npm/docx@7.3.0/build/index.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+        <section>
+          <h2>Rozdziały</h2>
+          <div id="chaptersContainer"></div>
+          <button type="button" id="addChapterBtn">Dodaj Rozdział</button>
+        </section>
 
-<script>
-(() => {
-  const STORAGE_KEY = 'bella_author_mode_universe';
-  const FABULAR_GENERATION = false; // Tryb autora - bez generacji fabuły
-  let selectedElementId = null;
-  let universeData = loadData();
+        <section>
+          <h2>Notatki autora</h2>
+          <div class="form-group">
+            <textarea id="authorNotes" name="authorNotes" rows="4" placeholder="Notatki autora..."></textarea>
+          </div>
+        </section>
 
-  // DOM
-  const universeListEl = document.getElementById('universeList');
-  const outputEl = document.getElementById('output');
-  const archiveOutputEl = document.getElementById('archiveOutput');
-  const elementTypeEl = document.getElementById('elementType');
-  const elementTitleEl = document.getElementById('elementTitle');
-  const elementDateEl = document.getElementById('elementDate');
-  const elementVersionEl = document.getElementById('elementVersion');
-  const elementLanguageEl = document.getElementById('elementLanguage');
-  const elementContentEl = document.getElementById('elementContent');
-  const elementNotesEl = document.getElementById('elementNotes');
-  const saveElementBtn = document.getElementById('saveElementBtn');
-  const deleteElementBtn = document.getElementById('deleteElementBtn');
-  const addUniverseBtn = document.getElementById('addUniverseBtn');
-  const addChildBtn = document.getElementById('addChildBtn');
-  const backupAllBtn = document.getElementById('backupAllBtn');
-  const exportBtn = document.getElementById('exportBtn');
-  const exportSelectEl = document.getElementById('exportSelect');
+        <section>
+          <button type="button" id="exportTxtBtn">Eksportuj do TXT</button>
+          <div id="output" aria-live="polite"></div>
+        </section>
+      </form>
+    </main>
+  </div>
 
-  function generateId() {
-    return 'id-' + Math.random().toString(36).substr(2, 9);
-  }
+  <script>
+    (function() {
+      const chaptersContainer = document.getElementById("chaptersContainer");
+      const addChapterBtn = document.getElementById("addChapterBtn");
+      const exportTxtBtn = document.getElementById("exportTxtBtn");
+      const output = document.getElementById("output");
 
-  function loadData() {
-    try {
-      const json = localStorage.getItem(STORAGE_KEY);
-      if (json) return JSON.parse(json);
-    } catch (e) {
-      console.error('Błąd ładowania danych:', e);
-    }
-    return [];
-  }
+      function createFragmentElement(chapterIndex, fragmentIndex) {
+        const fragmentDiv = document.createElement("fieldset");
+        fragmentDiv.classList.add("fragment-block");
 
-  function saveData() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(universeData));
-    } catch (e) {
-      console.error('Błąd zapisu danych:', e);
-    }
-  }
+        const legend = document.createElement("legend");
+        legend.textContent = `Fragment ${fragmentIndex + 1}`;
+        fragmentDiv.appendChild(legend);
 
-  function findElementById(id, elements = universeData, parent = null) {
-    for (const el of elements) {
-      if (el.id === id) return { element: el, parent };
-      if (el.children && el.children.length) {
-        const found = findElementById(id, el.children, el);
-        if (found) return found;
+        const titleGroup = document.createElement("div");
+        titleGroup.className = "form-group";
+        const titleLabel = document.createElement("label");
+        titleLabel.textContent = "Tytuł fragmentu";
+        titleLabel.setAttribute("for", `chapterchapterIndexfragmentTitle{chapterIndex}_fragmentTitlechapterIndexf​ragmentTitle{fragmentIndex}`);
+        const titleInput = document.createElement("input");
+        titleInput.type = "text";
+        titleInput.id = `chapterchapterIndexfragmentTitle{chapterIndex}_fragmentTitlechapterIndexf​ragmentTitle{fragmentIndex}`;
+        titleInput.name = `chapterchapterIndexfragmentTitle{chapterIndex}_fragmentTitlechapterIndexf​ragmentTitle{fragmentIndex}`;
+        titleInput.required = true;
+        titleGroup.appendChild(titleLabel);
+        titleGroup.appendChild(titleInput);
+        fragmentDiv.appendChild(titleGroup);
+
+        const textGroup = document.createElement("div");
+        textGroup.className = "form-group";
+        const textLabel = document.createElement("label");
+        textLabel.textContent = "Tekst fragmentu";
+        textLabel.setAttribute("for", `chapterchapterIndexfragmentText{chapterIndex}_fragmentTextchapterIndexf​ragmentText{fragmentIndex}`);
+        const textArea = document.createElement("textarea");
+        textArea.id = `chapterchapterIndexfragmentText{chapterIndex}_fragmentTextchapterIndexf​ragmentText{fragmentIndex}`;
+        textArea.name = `chapterchapterIndexfragmentText{chapterIndex}_fragmentTextchapterIndexf​ragmentText{fragmentIndex}`;
+        textArea.rows = 5;
+        textArea.required = true;
+        textGroup.appendChild(textLabel);
+        textGroup.appendChild(textArea);
+        fragmentDiv.appendChild(textGroup);
+
+        const removeFragmentBtn = document.createElement("button");
+        removeFragmentBtn.type = "button";
+        removeFragmentBtn.textContent = "Usuń fragment";
+        removeFragmentBtn.addEventListener("click", () => {
+          fragmentDiv.remove();
+          updateFragmentLegends(chapterIndex);
+        });
+        fragmentDiv.appendChild(removeFragmentBtn);
+
+        return fragmentDiv;
       }
-    }
-    return null;
-  }
 
-  function renderUniverseList() {
-    universeListEl.innerHTML = '';
-    if (!universeData.length) {
-      universeListEl.textContent = 'Brak Uniwersów. Dodaj nowy.';
-      return;
-    }
-    const ul = document.createElement('ul');
-    ul.className = 'hierarchy';
-    universeData.forEach(universe => {
-      ul.appendChild(renderElementNode(universe));
-    });
-    universeListEl.appendChild(ul);
-  }
-
-  function renderElementNode(element) {
-    const li = document.createElement('li');
-    li.textContent = `[element.type]{element.type}]element.type]{element.title || '(Bez tytułu)'}`;
-    li.title = `Wersja: element.version∣∣′v1′,Język:{element.version || 'v1'}, Język:element.version∣∣′v1′,Język:{element.language || 'pl'}`;
-    li.dataset.id = element.id;
-    li.tabIndex = 0;
-    if (element.id === selectedElementId) li.classList.add('selected');
-    li.addEventListener('click', (e) => {
-      e.stopPropagation();
-      selectElement(element.id);
-    });
-    li.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' || e.key === ' ') {
-        e.preventDefault();
-        selectElement(element.id);
+      function updateFragmentLegends(chapterIndex) {
+        const chapterDiv = document.querySelector(`#chapter${chapterIndex}`);
+        if (!chapterDiv) return;
+        const fragments = chapterDiv.querySelectorAll(".fragment-block");
+        fragments.forEach((frag, idx) => {
+          const legend = frag.querySelector("legend");
+          if (legend) legend.textContent = `Fragment ${idx + 1}`;
+        });
       }
-    });
-    if (element.children && element.children.length) {
-      const ul = document.createElement('ul');
-      ul.className = 'hierarchy';
-      element.children.forEach(child => ul.appendChild(renderElementNode(child)));
-      li.appendChild(ul);
-    }
-    return li;
-  }
 
-  function selectElement(id) {
-    const found = findElementById(id);
-    if (!found) return;
-    selectedElementId = id;
-    renderUniverseList();
-    loadElementToEditor(found.element);
-    outputEl.textContent = '';
-  }
+      function createChapterElement(index) {
+        const chapterDiv = document.createElement("section");
+        chapterDiv.classList.add("chapter-block");
+        chapterDiv.id = `chapter${index}`;
 
-  function loadElementToEditor(el) {
-    elementTypeEl.value = el.type;
-    elementTitleEl.value = el.title || '';
-    elementDateEl.value = new Date(el.dateCreated).toLocaleString() || '';
-    elementVersionEl.value = el.version || 'v1';
-    elementLanguageEl.value = el.language || 'pl';
-    elementContentEl.value = el.content || '';
-    elementNotesEl.value = el.notes || '';
-    updateButtonsState(true);
-  }
+        const h3 = document.createElement("h3");
+        h3.textContent = `Rozdział ${index + 1}`;
+        chapterDiv.appendChild(h3);
 
-  function clearEditor() {
-    selectedElementId = null;
-    elementTypeEl.value = '';
-    elementTitleEl.value = '';
-    elementDateEl.value = '';
-    elementVersionEl.value = '';
-    elementLanguageEl.value = 'pl';
-    elementContentEl.value = '';
-    elementNotesEl.value = '';
-    updateButtonsState(false);
-    renderUniverseList();
-    outputEl.textContent = 'Edytor wyczyszczony.';
-  }
+        const titleGroup = document.createElement("div");
+        titleGroup.className = "form-group";
+        const titleLabel = document.createElement("label");
+        titleLabel.textContent = "Tytuł rozdziału";
+        titleLabel.setAttribute("for", `chapterTitle${index}`);
+        const titleInput = document.createElement("input");
+        titleInput.type = "text";
+        titleInput.id = `chapterTitle${index}`;
+        titleInput.name = `chapterTitle${index}`;
+        titleInput.required = true;
+        titleGroup.appendChild(titleLabel);
+        titleGroup.appendChild(titleInput);
+        chapterDiv.appendChild(titleGroup);
 
-  function updateButtonsState(enabled) {
-    deleteElementBtn.disabled = !enabled;
-    addChildBtn.disabled = !enabled;
-    saveElementBtn.disabled = !enabled;
-  }
+        const descGroup = document.createElement("div");
+        descGroup.className = "form-group";
+        const descLabel = document.createElement("label");
+        descLabel.textContent = "Opis rozdziału";
+        descLabel.setAttribute("for", `chapterDescription${index}`);
+        const descTextarea = document.createElement("textarea");
+        descTextarea.id = `chapterDescription${index}`;
+        descTextarea.name = `chapterDescription${index}`;
+        descTextarea.rows = 3;
+        descTextarea.required = true;
+        descGroup.appendChild(descLabel);
+        descGroup.appendChild(descTextarea);
+        chapterDiv.appendChild(descGroup);
 
-  addUniverseBtn.addEventListener('click', () => {
-    const newUniverse = createNewElement('Uniwersum');
-    universeData.push(newUniverse);
-    saveData();
-    selectedElementId = newUniverse.id;
-    renderUniverseList();
-    loadElementEditor(newUniverse);
-    outputEl.textContent = 'Dodano nowe Uniwersum.';
-  });
+        const fragmentsContainer = document.createElement("div");
+        fragmentsContainer.className = "fragments-container";
+        chapterDiv.appendChild(fragmentsContainer);
 
-  function createNewElement(type, parent = null) {
-    return {
-      id: generateId(),
-      parentId: parent ? parent.id : null,
-      type,
-      title: '',
-      dateCreated: new Date().toISOString(),
-      version: 'v1',
-      language: 'pl',
-      content: '',
-      notes: '',
-      children: []
-    };
-  }
+        // Dodaj pierwszy fragment domyślnie
+        fragmentsContainer.appendChild(createFragmentElement(index, 0));
 
-  saveElementBtn.addEventListener('click', () => {
-    if (!selectedElementId) {
-      outputEl.textContent = 'Brak wybranego elementu do zapisu.';
-      return;
-    }
-    const found = findElementById(selectedElementId);
-    if (!found) {
-      outputEl.textContent = 'Element nie został znaleziony.';
-      return;
-    }
-    if (!elementTitleEl.value.trim()) {
-      outputEl.textContent = 'Tytuł nie może być pusty!';
-      return;
-    }
-    const el = found.element;
-    el.title = elementTitleEl.value.trim();
-    el.version = elementVersionEl.value.trim() || el.version || 'v1';
-    el.language = elementLanguageEl.value || 'pl';
-    el.content = elementContentEl.value;
-    el.notes = elementNotesEl.value;
-    saveData();
-    renderUniverseList();
-    outputEl.textContent = `Zapisano zmiany w elemencie "${el.title}".`;
-  });
+                const addFragmentBtn = document.createElement("button");
+        addFragmentBtn.type = "button";
+        addFragmentBtn.textContent = "Dodaj fragment";
+        addFragmentBtn.addEventListener("click", () => {
+          const currentFragments = fragmentsContainer.querySelectorAll(".fragment-block").length;
+          fragmentsContainer.appendChild(createFragmentElement(index, currentFragments));
+        });
+        chapterDiv.appendChild(addFragmentBtn);
 
-  deleteElementBtn.addEventListener('click', () => {
-    if (!selectedElementId) {
-      outputEl.textContent = 'Brak wybranego elementu do usunięcia.';
-      return;
-    }
-    if (!confirm('Czy na pewno chcesz usunąć ten element wraz z wszystkimi podrzędnymi?')) return;
-    const found = findElementById(selectedElementId);
-    if (!found) {
-      outputEl.textContent = 'Element nie został znaleziony.';
-      return;
-    }
-    if (found.parent) {
-      found.parent.children = found.parent.children.filter(c => c.id !== selectedElementId);
-    } else {
-      universeData = universeData.filter(el => el.id !== selectedElementId);
-    }
-    saveData();
-    clearEditor();
-    renderUniverseList();
-    outputEl.textContent = 'Element usunięty.';
-  });
+        const removeChapterBtn = document.createElement("button");
+        removeChapterBtn.type = "button";
+        removeChapterBtn.textContent = "Usuń rozdział";
+        removeChapterBtn.addEventListener("click", () => {
+          chapterDiv.remove();
+          updateChapterHeaders();
+        });
+        chapterDiv.appendChild(removeChapterBtn);
 
-  addChildBtn.addEventListener('click', () => {
-    if (!selectedElementId) {
-      outputEl.textContent = 'Wybierz element, do którego chcesz dodać podrzędny.';
-      return;
-    }
-    const found = findElementById(selectedElementId);
-    if (!found) {
-      outputEl.textContent = 'Wybrany element nie został znaleziony.';
-      return;
-    }
-    const nextType = getChildType(found.element.type);
-    if (!nextType) {
-      outputEl.textContent = `Nie można dodać podrzędnego elementu do typu "${found.element.type}".`;
-      return;
-    }
-    const newChild = createNewElement(nextType, found.element);
-    found.element.children.push(newChild);
-    saveData();
-    renderUniverseList();
-    selectedElementId = newChild.id;
-    loadElementToEditor(newChild);
-    outputEl.textContent = `Dodano nowy element typu "${nextType}".`;
-  });
+        return chapterDiv;
+      }
 
-  function getChildType(parentType) {
-    switch (parentType) {
-      case 'Uniwersum': return 'Świat';
-      case 'Świat': return 'Tom';
-      case 'Tom': return 'Rozdział';
-      case 'Rozdział': return 'Podrozdział / Fragment';
-      case 'Podrozdział / Fragment': return null;
-      default: return null;
-    }
-  }
+      function updateChapterHeaders() {
+        const chapters = chaptersContainer.querySelectorAll(".chapter-block");
+        chapters.forEach((chapter, idx) => {
+          chapter.id = `chapter${idx}`;
+          const h3 = chapter.querySelector("h3");
+          if (h3) h3.textContent = `Rozdział ${idx + 1}`;
 
-  function loadElementEditor(el) {
-    selectedElementId = el.id;
-    renderUniverseList();
-    loadElementToEditor(el);
-  }
+          // Aktualizacja atrybutów inputów i label
+          const titleInput = chapter.querySelector(`input[name^="chapterTitle"]`);
+          const descTextarea = chapter.querySelector(`textarea[name^="chapterDescription"]`);
+          if (titleInput) {
+            titleInput.id = `chapterTitle${idx}`;
+            titleInput.name = `chapterTitle${idx}`;
+          }
+          if (descTextarea) {
+            descTextarea.id = `chapterDescription${idx}`;
+            descTextarea.name = `chapterDescription${idx}`;
+          }
 
-  backupAllBtn.addEventListener('click', () => {
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = `Bella_Archiwum_Backup_${timestamp}.json`;
-    const blob = new Blob([JSON.stringify(universeData, null, 2)], { type: 'application/json' });
-    triggerDownload(blob, filename);
-    archiveOutputEl.textContent = `Backup wykonany: ${filename}`;
-  });
+          // Aktualizacja fragmentów
+          const fragments = chapter.querySelectorAll(".fragment-block");
+          fragments.forEach((frag, fIdx) => {
+            const legend = frag.querySelector("legend");
+            if (legend) legend.textContent = `Fragment ${fIdx + 1}`;
 
-  exportBtn.addEventListener('click', () => {
-    if (!selectedElementId) {
-      archiveOutputEl.textContent = 'Wybierz element do eksportu.';
-      return;
-    }
-    const found = findElementById(selectedElementId);
-    if (!found) {
-      archiveOutputEl.textContent = 'Nie znaleziono wybranego elementu.';
-      return;
-    }
-    const el = found.element;
-    const format = exportSelectEl.value;
-    exportElement(el, format);
-  });
+            const fragTitle = frag.querySelector(`input[type="text"]`);
+            const fragText = frag.querySelector("textarea");
+            if (fragTitle) {
+              fragTitle.id = `chapter${idx}_fragmentTitle${fIdx}`;
+              fragTitle.name = `chapter${idx}_fragmentTitle${fIdx}`;
+              const label = fragTitle.previousElementSibling;
+              if (label) label.setAttribute("for", fragTitle.id);
+            }
+            if (fragText) {
+              fragText.id = `chapter${idx}_fragmentText${fIdx}`;
+              fragText.name = `chapter${idx}_fragmentText${fIdx}`;
+              const label = fragText.previousElementSibling;
+              if (label) label.setAttribute("for", fragText.id);
+            }
+          });
+        });
+      }
 
-  async function exportElement(el, format) {
-    const title = `[el.type]{el.type}]el.type]{el.title || '(Bez tytułu)'}`;
-    const content = el.content || '';
-    const notes = el.notes ? `\n\nNOTATKI AUTORA:\n${el.notes}` : '';
-    const text = `title\nWersja:{title}\nWersja:title\nWersja:{el.version}\nJęzyk: el.language\nData:{el.language}\nData:el.language\nData:{new Date(el.dateCreated).toLocaleString()}\n\ncontent{content}content{notes}`;
+      function collectData() {
+        const data = {
+          universe: {
+            name: document.getElementById("universeName").value.trim(),
+            description: document.getElementById("universeDescription").value.trim()
+          },
+          world: {
+            name: document.getElementById("worldName").value.trim(),
+            description: document.getElementById("worldDescription").value.trim()
+          },
+          volume: {
+            title: document.getElementById("volumeTitle").value.trim(),
+            description: document.getElementById("volumeDescription").value.trim()
+          },
+          chapters: [],
+          authorNotes: document.getElementById("authorNotes").value.trim()
+        };
 
-    if (format === 'docx') {
-      const doc = new docx.Document({
-        sections: [{
-          children: [
-            new docx.Paragraph({ text: title, heading: docx.HeadingLevel.HEADING_1 }),
-            new docx.Paragraph(`Wersja: ${el.version}`),
-                        new docx.Paragraph(`Język: ${el.language}`),
-            new docx.Paragraph(`Data utworzenia: ${new Date(el.dateCreated).toLocaleString()}`),
-            new docx.Paragraph(''),
-            new docx.Paragraph(content),
-            ...(el.notes ? [new docx.Paragraph(''), new docx.Paragraph('NOTATKI AUTORA:'), new docx.Paragraph(el.notes)] : [])
-          ],
-        }],
+        const chapters = chaptersContainer.querySelectorAll(".chapter-block");
+        chapters.forEach((chapter) => {
+          const chapterTitle = chapter.querySelector(`input[name^="chapterTitle"]`).value.trim();
+          const chapterDesc = chapter.querySelector(`textarea[name^="chapterDescription"]`).value.trim();
+
+          const fragmentsArr = [];
+          const fragments = chapter.querySelectorAll(".fragment-block");
+          fragments.forEach((frag) => {
+            const fragTitle = frag.querySelector(`input[type="text"]`).value.trim();
+            const fragText = frag.querySelector("textarea").value.trim();
+            fragmentsArr.push({
+              title: fragTitle,
+              text: fragText
+            });
+          });
+
+          data.chapters.push({
+            title: chapterTitle,
+            description: chapterDesc,
+            fragments: fragmentsArr
+          });
+        });
+
+        return data;
+      }
+
+      function validateData(data) {
+        if (!data.universe.name || !data.universe.description) return false;
+        if (!data.world.name || !data.world.description) return false;
+        if (!data.volume.title || !data.volume.description) return false;
+        if (data.chapters.length === 0) return false;
+
+        for (const ch of data.chapters) {
+          if (!ch.title || !ch.description) return false;
+          if (ch.fragments.length === 0) return false;
+          for (const f of ch.fragments) {
+            if (!f.title || !f.text) return false;
+          }
+        }
+        return true;
+      }
+
+      function showMessage(msg, type = "info") {
+        output.textContent = msg;
+        output.className = type;
+      }
+
+      function exportTxt() {
+        const data = collectData();
+        if (!validateData(data)) {
+          showMessage("Proszę wypełnić wszystkie wymagane pola!", "error");
+          return;
+        }
+
+        let txt = "ETERNIVERSE PROJECT EXPORT\n\n";
+
+        txt += "UNIWERSUM:\n";
+        txt += `Nazwa: ${data.universe.name}\n`;
+        txt += `Opis: ${data.universe.description}\n\n`;
+
+        txt += "ŚWIAT:\n";
+        txt += `Nazwa: ${data.world.name}\n`;
+        txt += `Opis: ${data.world.description}\n\n`;
+
+        txt += "TOM:\n";
+        txt += `Tytuł: ${data.volume.title}\n`;
+        txt += `Opis: ${data.volume.description}\n\n`;
+
+        txt += "ROZDZIAŁY:\n";
+        data.chapters.forEach((ch, i) => {
+          txt += `Rozdział ${i + 1}: ${ch.title}\n`;
+          txt += `Opis: ${ch.description}\n`;
+          ch.fragments.forEach((f, j) => {
+            txt += `  Fragment ${j + 1}: ${f.title}\n`;
+            txt += `  Tekst: ${f.text}\n`;
+          });
+          txt += "\n";
+        });
+
+        txt += `NOTATKI AUTORA:\n${data.authorNotes}\n`;
+
+        const blob = new Blob([txt], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "eterniverse_project.txt";
+        a.click();
+
+        URL.revokeObjectURL(url);
+        showMessage("Eksport zakończony pomyślnie!", "success");
+      }
+
+      addChapterBtn.addEventListener("click", () => {
+        const chapterCount = chaptersContainer.querySelectorAll(".chapter-block").length;
+        chaptersContainer.appendChild(createChapterElement(chapterCount));
       });
-      const blob = await docx.Packer.toBlob(doc);
-      const filename = sanitizeFilename(`${title}.docx`);
-      triggerDownload(blob, filename);
-      archiveOutputEl.textContent = `Eksportowano ${filename}`;
-    } else if (format === 'pdf') {
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF();
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const margin = 10;
-      const maxWidth = pageWidth - margin * 2;
 
-      pdf.setFontSize(16);
-      pdf.text(title, margin, 20);
-      pdf.setFontSize(10);
-      pdf.text(`Wersja: ${el.version}`, margin, 30);
-      pdf.text(`Język: ${el.language}`, margin, 36);
-      pdf.text(`Data utworzenia: ${new Date(el.dateCreated).toLocaleString()}`, margin, 42);
+      exportTxtBtn.addEventListener("click", exportTxt);
 
-      pdf.setFontSize(12);
-      const splitText = pdf.splitTextToSize(content + notes, maxWidth);
-      pdf.text(splitText, margin, 55);
-
-      const filename = sanitizeFilename(`${title}.pdf`);
-      pdf.save(filename);
-      archiveOutputEl.textContent = `Eksportowano ${filename}`;
-    } else if (format === 'txt') {
-      const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
-      const filename = sanitizeFilename(`${title}.txt`);
-      triggerDownload(blob, filename);
-      archiveOutputEl.textContent = `Eksportowano ${filename}`;
-    } else {
-      archiveOutputEl.textContent = 'Nieznany format eksportu.';
-    }
-  }
-
-  function triggerDownload(blob, filename) {
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  }
-
-  function sanitizeFilename(name) {
-    return name.replace(/[\/\\?%*:|"<>]/g, '-');
-  }
-
-  renderUniverseList();
-  clearEditor();
-
-})();
-</script>
+      document.addEventListener("DOMContentLoaded", () => {
+        addChapterBtn.click();
+      });
+    })();
+  </script>
 </body>
 </html>
-
