@@ -1,65 +1,177 @@
+/* Master CSS for Eterniverse - Cosmic Dark Theme */
+/* Version: 1.0 - Professional and Ethereal Design */
+
 * {
   box-sizing: border-box;
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
 }
 
 body {
   margin: 0;
-  background: #0b0f14;
+  padding: 0;
+  background: linear-gradient(to bottom, #0b0f14, #05070a);
   color: #e6e6e6;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
+/* Top Bar */
 .topbar {
   display: flex;
   justify-content: space-between;
-  padding: 10px 20px;
-  background: #111827;
-  border-bottom: 1px solid #222;
+  align-items: center;
+  padding: 12px 24px;
+  background: rgba(17, 24, 39, 0.9);
+  border-bottom: 1px solid #2d3748;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
 
 .topbar h1 {
   margin: 0;
-  font-size: 18px;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  color: #60a5fa;
 }
 
 .topbar nav button {
-  margin-left: 10px;
+  margin-left: 12px;
+  padding: 8px 16px;
+  background: #1e40af;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
 
+.topbar nav button:hover {
+  background: #2563eb;
+  transform: translateY(-2px);
+}
+
+/* Main Layout */
 .layout {
   display: grid;
-  grid-template-columns: 220px 1fr 320px;
-  height: calc(100vh - 100px);
+  grid-template-columns: 240px 1fr 340px;
+  height: calc(100vh - 60px); /* Adjust for topbar height */
+  gap: 1px;
+  background: #1a202c;
 }
 
+/* Panels */
 .panel {
-  padding: 10px;
-  border-right: 1px solid #222;
+  padding: 16px;
+  background: #111827;
+  border-right: 1px solid #2d3748;
   overflow-y: auto;
+  scrollbar-width: thin;
+  scrollbar-color: #4a5568 #111827;
 }
 
+.panel::-webkit-scrollbar {
+  width: 8px;
+}
+
+.panel::-webkit-scrollbar-track {
+  background: #111827;
+}
+
+.panel::-webkit-scrollbar-thumb {
+  background: #4a5568;
+  border-radius: 4px;
+}
+
+.panel h2 {
+  margin-top: 0;
+  font-size: 16px;
+  color: #93c5fd;
+  border-bottom: 1px solid #2d3748;
+  padding-bottom: 8px;
+}
+
+/* Editor */
 #editor {
   width: 100%;
-  height: 300px;
+  height: 400px;
   background: #0f172a;
-  color: #fff;
-  border: 1px solid #333;
-  padding: 10px;
+  color: #e6e6e6;
+  border: 1px solid #2d3748;
+  border-radius: 8px;
+  padding: 16px;
+  font-family: 'Courier New', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  resize: vertical;
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3);
+  transition: border-color 0.3s ease;
 }
 
+#editor:focus {
+  outline: none;
+  border-color: #60a5fa;
+}
+
+/* Editor Tools */
 .editor-tools button {
-  margin-top: 10px;
+  margin-top: 12px;
   width: 100%;
+  padding: 12px;
+  background: #1e40af;
+  border: none;
+  border-radius: 6px;
+  color: #fff;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.editor-tools button:hover {
+  background: #2563eb;
 }
 
 #audioUpload {
-  margin-top: 10px;
+  margin-top: 12px;
+  width: 100%;
 }
 
+/* Console */
 #console {
-  height: 100px;
+  height: 120px;
   background: #05070a;
-  border-top: 1px solid #222;
-  padding: 5px 10px;
-  font-size: 12px;
+  border-top: 1px solid #2d3748;
+  padding: 12px;
+  font-size: 13px;
+  line-height: 1.4;
+  overflow-y: auto;
+  font-family: 'Courier New', monospace;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1200px) {
+  .layout {
+    grid-template-columns: 200px 1fr 300px;
+  }
+}
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  .panel {
+    border-right: none;
+    border-bottom: 1px solid #2d3748;
+  }
+}
+
+/* General Buttons and Inputs */
+button, input, textarea {
+  transition: all 0.3s ease;
+}
+
+button:active {
+  transform: scale(0.98);
 }
