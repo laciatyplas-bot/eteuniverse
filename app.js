@@ -1,6 +1,5 @@
 // ETERNIVERSE – Master Edition JS (pełny, kompletny kod z obsługą wielu światów, pełną edycją i księgami)
 
-// Selektory elementów DOM
 const selectors = {
   worldList: '#worldList',
   contentArea: '#contentArea',
@@ -13,7 +12,6 @@ const elements = {
   log: document.querySelector(selectors.log)
 };
 
-// Konfiguracja IndexedDB
 const DB_NAME = 'EterniverseDB';
 const DB_VERSION = 1;
 const STORE_NAME = 'eterniverse_data';
@@ -44,7 +42,7 @@ async function openDB() {
 async function loadData() {
   if (!db) await openDB();
 
-  // 1. Próba z map.json
+  // 1. map.json
   try {
     const res = await fetch('map.json?' + Date.now());
     if (res.ok) {
@@ -124,7 +122,6 @@ function getDefaultData() {
               { "id": "b4", "title": "EterSeeker: Kronika Woli", "status": "opublikowana", "content": "Protokół reprogramowania woli za pomocą oddechu, częstotliwości i spójności pola." }
             ]
           },
-          // Pozostałe bramy z books: []
           { "id": "2", "name": "BRAMA II — CUSTOS / GENEZA", "color": "#D9A441", "sub": "Strażnik · Początek", "tag": "CORE/ORIGIN", "books": [] },
           { "id": "4", "name": "BRAMA IV — ARCHETYPY / WOLA", "color": "#9B6BFF", "sub": "Role · Przeznaczenie", "tag": "CORE/WILL", "books": [] },
           { "id": "5", "name": "BRAMA V — OBFITOSEEKER", "color": "#FFB14B", "sub": "Obfitość · Przepływ", "tag": "EMBODIED/FLOW", "books": [] },
@@ -159,26 +156,22 @@ function getDefaultData() {
 // Renderowanie listy światów z edycją
 function renderWorlds() {
   elements.worldList.innerHTML = `
-    <button style="display:block;width:100%;padding:20px;margin:20px 0;border:none;border-radius:20px;background:#1e40af;color:#fff;font-size:20px;font-weight:700;cursor:pointer;box-shadow:0 12px 40px rgba(0,0,0,0.6);" onclick="addWorld()">+ Dodaj nowy Świat</button>
+    <button class="add-world-btn" onclick="addWorld()">+ Dodaj nowy Świat</button>
   `;
 
   DATA.worlds.forEach(world => {
     const button = document.createElement('button');
     button.textContent = `\( {world.name} ( \){world.gates.length} bram)`;
-    button.style.cssText = 'display:block;width:100%;padding:20px;margin:16px 0;border:none;border-radius:20px;background:linear-gradient(135deg,#0f2138,#071626);color:#E6F6F5;font-size:22px;font-weight:700;cursor:pointer;box-shadow:0 12px 40px rgba(0,0,0,0.6);transition:all 0.5s ease;position:relative;';
-    button.addEventListener('mouseover', () => button.style.transform = 'translateY(-8px) scale(1.03)');
-    button.addEventListener('mouseout', () => button.style.transform = 'translateY(0) scale(1)');
-    button.addEventListener('click', () => openWorld(world));
+    button.className = 'world-btn';
+    button.onclick = () => openWorld(world);
 
     const actions = document.createElement('div');
-    actions.style.cssText = 'position:absolute;top:16px;right:16px;display:flex;gap:8px;opacity:0;transition:opacity 0.3s;';
+    actions.className = 'world-actions';
     actions.innerHTML = `
-      <button style="padding:8px 16px;background:#2563eb;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;" onclick="editWorld(event, '${world.id}')">Edytuj</button>
-      <button style="padding:8px 16px;background:#dc2626;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;" onclick="deleteWorld(event, '${world.id}')">Usuń</button>
+      <button onclick="editWorld(event, '${world.id}')">Edytuj</button>
+      <button onclick="deleteWorld(event, '${world.id}')">Usuń</button>
     `;
     button.appendChild(actions);
-    button.addEventListener('mouseover', () => actions.style.opacity = '1');
-    button.addEventListener('mouseout', () => actions.style.opacity = '0');
 
     elements.worldList.appendChild(button);
   });
@@ -234,9 +227,9 @@ function deleteWorld(e, worldId) {
 function openWorld(world) {
   currentWorld = world;
   elements.contentArea.innerHTML = `
-    <h2 style="color:#D9A441;margin:0 0 32px;font-size:36px;text-align:center;text-shadow:0 8px 32px rgba(217,164,65,0.4);">${escapeHtml(world.name)}</h2>
-    <p style="opacity:0.9;font-size:18px;line-height:1.8;margin-bottom:40px;text-align:center;max-width:900px;">${escapeHtml(world.description)}</p>
-    <button style="margin-bottom:40px;padding:16px 32px;background:#1e40af;border:none;border-radius:12px;color:#fff;cursor:pointer;font-weight:600;" onclick="addGate()">+ Dodaj nową Bramę</button>
+    <h2>${escapeHtml(world.name)}</h2>
+    <p>${escapeHtml(world.description)}</p>
+    <button class="add-gate-btn" onclick="addGate()">+ Dodaj nową Bramę</button>
   `;
 
   world.gates.forEach(gate => renderGate(gate));
@@ -246,60 +239,33 @@ function openWorld(world) {
 // Renderowanie bramy
 function renderGate(gate) {
   const gateDiv = document.createElement('div');
-  gateDiv.style.cssText = 'margin:48px 0;padding:32px;background:linear-gradient(145deg,#08121c,#0f2138);border-radius:24px;box-shadow:0 16px 60px rgba(0,0,0,0.8);border-left:8px solid ' + gate.color + ';position:relative;';
+  gateDiv.className = 'gate';
+  gateDiv.style.setProperty('--gate-color', gate.color);
 
-  const h3 = document.createElement('h3');
-  h3.textContent = escapeHtml(gate.name);
-  h3.style.cssText = 'color:' + gate.color + ';margin:0 0 16px;font-size:28px;text-shadow:0 0 30px ' + gate.color + '40;';
-  gateDiv.appendChild(h3);
-
-  if (gate.sub) {
-    const sub = document.createElement('p');
-    sub.textContent = gate.sub;
-    sub.style.cssText = 'margin:0 0 24px;opacity:0.85;font-size:16px;text-align:center;';
-    gateDiv.appendChild(sub);
-  }
-
-  if (gate.tag) {
-    const tag = document.createElement('span');
-    tag.textContent = gate.tag;
-    tag.style.cssText = 'display:block;text-align:center;margin-bottom:24px;font-size:16px;padding:12px 32px;background:linear-gradient(135deg,rgba(217,164,65,0.25),rgba(40,211,198,0.25));color:#D9A441;border-radius:60px;letter-spacing:2px;font-weight:800;box-shadow:0 12px 32px rgba(217,164,65,0.4);';
-    gateDiv.appendChild(tag);
-  }
-
-  const booksHeader = document.createElement('div');
-  booksHeader.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin:32px 0 16px;';
-  booksHeader.innerHTML = `<strong style="font-size:20px;color:#E6F6F5;">Księgi (${gate.books.length})</strong>`;
-  
-  const addBtn = document.createElement('button');
-  addBtn.textContent = '+ Dodaj księgę';
-  addBtn.style.cssText = 'padding:10px 20px;background:#1e40af;border:none;border-radius:12px;color:#fff;cursor:pointer;font-weight:600;';
-  addBtn.onclick = () => addBook(gate);
-  booksHeader.appendChild(addBtn);
-  gateDiv.appendChild(booksHeader);
+  gateDiv.innerHTML = `
+    <h3>${escapeHtml(gate.name)}</h3>
+    <p class="sub">${escapeHtml(gate.sub)}</p>
+    <span class="tag">${escapeHtml(gate.tag)}</span>
+    <div class="books-header">
+      <strong>Księgi (${gate.books.length})</strong>
+      <button class="add-book-btn" onclick="addBook('${gate.id}')">+ Dodaj księgę</button>
+    </div>
+  `;
 
   if (gate.books.length > 0) {
     gate.books.forEach(book => {
       const bookDiv = document.createElement('div');
-      bookDiv.style.cssText = 'padding:24px;margin:20px 0;background:rgba(15,33,56,0.5);border-radius:20px;border:1px solid rgba(255,255,255,0.1);position:relative;transition:all 0.4s ease;';
-      bookDiv.addEventListener('mouseover', () => bookDiv.style.transform = 'translateX(16px) scale(1.02)');
-      bookDiv.addEventListener('mouseout', () => bookDiv.style.transform = 'translateX(0) scale(1)');
+      bookDiv.className = 'book';
 
       bookDiv.innerHTML = `
-        <strong style="display:block;font-size:22px;color:#E6F6F5;margin-bottom:12px;">📘 ${escapeHtml(book.title)}</strong>
-        <span style="display:inline-block;padding:8px 20px;background:rgba(217,164,65,0.3);color:#D9A441;border-radius:30px;font-size:14px;font-weight:800;">${escapeHtml(book.status || 'w przygotowaniu')}</span>
-        <p style="margin:16px 0 0;line-height:1.6;opacity:0.9;">${escapeHtml(book.content || 'Brak treści')}</p>
+        <strong>📘 ${escapeHtml(book.title)}</strong>
+        <span class="status">${escapeHtml(book.status || 'w przygotowaniu')}</span>
+        <p>${escapeHtml(book.content || 'Brak treści')}</p>
+        <div class="book-actions">
+          <button class="edit-btn" onclick="editBook(event, '\( {gate.id}', ' \){book.id}')">Edytuj</button>
+          <button class="delete-btn" onclick="deleteBook(event, '\( {gate.id}', ' \){book.id}')">Usuń</button>
+        </div>
       `;
-
-      const actions = document.createElement('div');
-      actions.style.cssText = 'position:absolute;top:20px;right:20px;display:flex;gap:8px;opacity:0;transition:opacity 0.3s;';
-      actions.innerHTML = `
-        <button style="padding:8px 16px;background:#2563eb;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;" onclick="editBook(event, '\( {gate.id}', ' \){book.id}')">Edytuj</button>
-        <button style="padding:8px 16px;background:#dc2626;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;" onclick="deleteBook(event, '\( {gate.id}', ' \){book.id}')">Usuń</button>
-      `;
-      bookDiv.appendChild(actions);
-      bookDiv.addEventListener('mouseover', () => actions.style.opacity = '1');
-      bookDiv.addEventListener('mouseout', () => actions.style.opacity = '0');
 
       bookDiv.addEventListener('click', (e) => {
         if (e.target.tagName !== 'BUTTON') openBook(gate, book);
@@ -381,7 +347,10 @@ function deleteGate(e, gateId) {
 }
 
 // Dodawanie księgi
-function addBook(gate) {
+function addBook(gateId) {
+  const gate = currentWorld.gates.find(g => g.id === gateId);
+  if (!gate) return;
+
   const title = prompt('Tytuł księgi:');
   if (!title) return;
   const content = prompt('Treść:', 'Nowa treść...');
