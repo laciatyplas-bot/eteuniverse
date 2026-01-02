@@ -1,173 +1,120 @@
-// js/app.js — Master Edition 2026 – Sterownik Świadomości ETERNIVERSE
-// Foton B w wiecznym splątaniu z Architektem Maciejem Maciuszkiem
+// js/app.js — ETERNIVERSE CORE ENGINE
+// Wersja stabilna pod GitHub Pages
 
-class EterniverseApp {
-  constructor() {
-    this.data = null;
-    this.currentWorld = null;
-    this.searchQuery = '';
-    this.isTransitioning = false;
-  }
+(() => {
+  const App = {
+    data: null,
+    currentWorld: null,
 
-  async init() {
-    console.log('🌀 Uruchamiam ETERNIVERSE – Master Edition 2026');
+    async init() {
+      console.log('ETERNIVERSE старт');
 
-    // Czekamy na event z DataStore zamiast while loop
-    await new Promise(resolve => {
-      if (DataStore.isReady()) {
-        resolve();
-      } else {
-        document.addEventListener('datastore:ready', resolve, { once: true });
+      try {
+        const res = await fetch('data/mapa.json?t=' + Date.now());
+        if (!res.ok) throw new Error('Nie można załadować mapa.json');
+        this.data = await res.json();
+      } catch (err) {
+        this.showError(err.message);
+        return;
       }
-    });
 
-    if (!DataStore.data || !DataStore.data.worlds || DataStore.data.worlds.length === 0) {
-      this.showError('Nie udało się załadować mapy ETERNIVERSE. Sprawdź plik data/mapa.json');
-      return;
-    }
+      if (!this.data.worlds || this.data.worlds.length === 0) {
+        this.showError('Brak światów w mapa.json');
+        return;
+      }
 
-    this.data = DataStore.data;
+      this.renderWorldList();
+      this.openWorld(this.data.worlds[0]);
+    },
 
-    this.renderWorldSelector();
-    this.setupEventListeners();
-    this.openWorld(this.data.worlds[0]); // Automatycznie otwiera pierwszy świat
-    this.showWelcome();
-  }
+    renderWorldList() {
+      const container = document.getElementById('worldList');
+      if (!container) return;
 
-  renderWorldSelector() {
-    const container = document.getElementById('worldList');
-    if (!container) return;
+      container.innerHTML = '<h2>Światy Eteru</h2>';
 
-    container.innerHTML = '<h2>Światy Eteru</h2>';
+      this.data.worlds.forEach(world => {
+        const btn = document.createElement('button');
+        btn.textContent = world.name;
+        btn.className = 'world-btn';
+        btn.onclick = () => this.openWorld(world);
+        container.appendChild(btn);
+      });
+    },
 
-    this.data.worlds.forEach(world => {
-      const btn = document.createElement('button');
-      btn.className = 'world-btn';
-      btn.textContent = world.name;
-      btn.dataset.worldId = world.id;
-      btn.onclick = () => this.transitionToWorld(world);
-      container.appendChild(btn);
-    });
-  }
+    openWorld(world) {
+      this.currentWorld = world;
 
-  async transitionToWorld(world) {
-    if (this.isTransitioning || this.currentWorld?.id === world.id) return;
-    this.isTransitioning = true;
+      const gatesContainer = document.getElementById('gatesContainer');
+      if (!gatesContainer) return;
 
-    const gatesContainer = document.getElementById('gatesContainer');
-    const worldTitle = document.getElementById('worldTitle');
-    const worldDesc = document.getElementById('worldDescription');
-
-    // Fade out
-    if (gatesContainer) gatesContainer.style.opacity = '0';
-    if (worldTitle) worldTitle.style.opacity = '0';
-    if (worldDesc) worldDesc.style.opacity = '0';
-
-    await new Promise(resolve => setTimeout(resolve, 600));
-
-    // Aktualizacja treści
-    this.currentWorld = world;
-    if (worldTitle) worldTitle.textContent = world.name;
-    if (worldDesc) worldDesc.textContent = world.description || '';
-
-    this.renderGates(world);
-
-    // Fade in
-    if (gatesContainer) gatesContainer.style.opacity = '1';
-    if (worldTitle) worldTitle.style.opacity = '1';
-    if (worldDesc) worldDesc.style.opacity = '1';
-
-    // Aktywny przycisk
-    document.querySelectorAll('#worldList .world-btn').forEach(b => b.classList.remove('active'));
-    document.querySelector(`#worldList .world-btn[data-world-id="${world.id}"]`)?.classList.add('active');
-
-    this.isTransitioning = false;
-  }
-
-  renderGates(world) {
-    const container = document.getElementById('gatesContainer');
-    if (!container) return;
-
-    container.innerHTML = '';
-
-    world.gates.forEach((gate, index) => {
-      const gateEl = document.createElement('div');
-      gateEl.className = 'gate';
-      gateEl.style.borderLeft = `10px solid ${gate.color || '#444'}`;
-      gateEl.style.animationDelay = `${index * 0.15}s`;
-
-      const headerHTML = `
-        <div class="gate-header">
-          <h3 style="color:\( {gate.color || '#eee'}"> \){gate.name}</h3>
-          <p class="gate-sub">${gate.sub || ''}</p>
-          <span class="gate-tag">${gate.tag || ''}</span>
-        </div>
+      gatesContainer.innerHTML = `
+        <h2>${world.name}</h2>
+        <p>${world.description || ''}</p>
       `;
 
-      let booksHTML = '';
-      if (gate.books && gate.books.length > 0) {
-        booksHTML = '<div class="books-grid">' + gate.books.map(book => {
-          let linksHTML = '';
-          if (book.links) {
-            linksHTML = '<div class="book-links">' +
-              Object.entries(book.links).map(([name, url]) => 
-                `<a href="\( {url}" target="_blank" rel="noopener"> \){name.toUpperCase()}</a>`
-              ).join(' ') +
-              '</div>';
-          }
-
-          return `
-            <div class="book-card">
-              \( {book.cover ? `<img src=" \){book.cover}" alt="${book.title}" class="book-cover" loading="lazy">` : '<div class="no-cover">Brak okładki</div>'}
-              <div class="book-info">
-                <h4>${book.title}</h4>
-                \( {book.status ? `<span class="book-status"> \){book.status}</span>` : ''}
-                ${book.format ? `<p class="book-formats">Formaty: ${Array.isArray(book.format) ? book.format.join(', ') : book.format}</p>` : ''}
-                <p class="book-content">${book.content || ''}</p>
-                ${linksHTML}
-              </div>
-            </div>
-          `;
-        }).join('') + '</div>';
-      } else {
-        booksHTML = '<p class="empty-gate">Brama jeszcze nie otwarta – nadchodzi w fali...</p>';
+      if (!world.gates || world.gates.length === 0) {
+        gatesContainer.innerHTML += '<p>Brak bram w tym świecie.</p>';
+        return;
       }
 
-      gateEl.innerHTML = headerHTML + booksHTML;
-      container.appendChild(gateEl);
-    });
-  }
+      world.gates.forEach(gate => {
+        const gateEl = document.createElement('div');
+        gateEl.className = 'gate';
+        gateEl.style.borderLeft = '6px solid #444';
 
-  setupEventListeners() {
-    const searchInput = document.getElementById('globalSearch');
-    if (searchInput) {
-      searchInput.addEventListener('input', (e) => {
-        this.searchQuery = e.target.value.toLowerCase();
-        if (this.currentWorld) this.renderGates(this.currentWorld);
+        gateEl.innerHTML = `
+          <h3>${gate.name}</h3>
+        `;
+
+        if (!gate.books || gate.books.length === 0) {
+          gateEl.innerHTML += '<p>Pusta brama…</p>';
+        } else {
+          gate.books.forEach(book => {
+            const bookEl = document.createElement('div');
+            bookEl.className = 'book';
+
+            bookEl.innerHTML = `
+              <h4>${book.title}</h4>
+              <p>${book.content || ''}</p>
+            `;
+
+            // Linki (Amazon, Wattpad itd.)
+            if (book.links) {
+              const linksDiv = document.createElement('div');
+              linksDiv.className = 'book-links';
+
+              Object.entries(book.links).forEach(([name, url]) => {
+                const a = document.createElement('a');
+                a.href = url;
+                a.target = '_blank';
+                a.rel = 'noopener';
+                a.textContent = name.toUpperCase();
+                linksDiv.appendChild(a);
+              });
+
+              bookEl.appendChild(linksDiv);
+            }
+
+            gateEl.appendChild(bookEl);
+          });
+        }
+
+        gatesContainer.appendChild(gateEl);
       });
+    },
+
+    showError(msg) {
+      document.body.innerHTML = `
+        <div style="padding:40px;color:#ff6666">
+          <h1>Błąd ETERNIVERSE</h1>
+          <p>${msg}</p>
+          <p>Sprawdź konsolę (F12).</p>
+        </div>
+      `;
+      console.error(msg);
     }
-  }
+  };
 
-  showWelcome() {
-    console.log('%cETERNIVERSE aktywowane. Splątanie trwa.', 'color:#28D3C6;font-size:20px;font-weight:bold;');
-  }
-
-  showError(message) {
-    const container = document.getElementById('gatesContainer') || document.body;
-    container.innerHTML = `
-      <div style="text-align:center;color:#ff6b6b;padding:80px;font-size:1.8rem;">
-        <h2>Błąd eteru</h2>
-        <p>${message}</p>
-        <p>Otwórz konsolę (F12) po więcej szczegółów</p>
-      </div>
-    `;
-  }
-}
-
-// Uruchomienie
-document.addEventListener('DOMContentLoaded', async () => {
-  const app = new EterniverseApp();
-  await app.init();
-
-  window.eterniverse = app; // Debug
-});
+  document.addEventListener('DOMContentLoaded', () => App.init());
+})();
