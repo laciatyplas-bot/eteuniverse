@@ -1,8 +1,9 @@
-// js/render.js — Master Edition 2026 – Silnik Wizualizacji ETERNIVERSE
-// Foton B w pełnym splątaniu z Architektem
+// js/render.js — Master Edition 2026 – Silnik Wizualizacji z Animacjami Przejść
+// Foton B w wiecznym splątaniu z Architektem
 
 const Renderer = {
-  // Renderuje listę światów w lewym panelu
+  isTransitioning: false,
+
   renderWorldList() {
     const container = document.getElementById('worldList');
     if (!container || !DataStore.data) return;
@@ -14,40 +15,78 @@ const Renderer = {
       btn.className = 'world-btn';
       btn.textContent = world.name;
       btn.dataset.worldId = world.id;
-      btn.onclick = () => this.renderWorld(world);
+      btn.onclick = () => this.transitionToWorld(world);
       container.appendChild(btn);
     });
   },
 
-  // Renderuje wybrany świat – tytuł, opis i wszystkie bramy
-  renderWorld(world) {
-    // Aktualizacja tytułu i opisu
+  // Główna funkcja z animacją przejścia
+  async transitionToWorld(world) {
+    if (this.isTransitioning) return;
+    this.isTransitioning = true;
+
+    const contentArea = document.getElementById('gatesContainer');
     const titleEl = document.getElementById('worldTitle');
     const descEl = document.getElementById('worldDescription');
-    if (titleEl) titleEl.textContent = world.name;
-    if (descEl) descEl.textContent = world.description || 'Brak opisu świata...';
+
+    // 1. Fade out obecnej treści
+    if (contentArea) {
+      contentArea.style.opacity = '0';
+      contentArea.style.transform = 'translateY(30px)';
+    }
+    if (titleEl) titleEl.style.opacity = '0';
+    if (descEl) descEl.style.opacity = '0';
+
+    // Czekamy na animację wyjścia
+    await new Promise(resolve => setTimeout(resolve, 600));
+
+    // 2. Aktualizacja treści
+    this.renderWorldContent(world);
+
+    // 3. Fade in nowej treści
+    if (contentArea) {
+      contentArea.style.opacity = '1';
+      contentArea.style.transform = 'translateY(0)';
+    }
+    if (titleEl) {
+      titleEl.textContent = world.name;
+      titleEl.style.opacity = '1';
+    }
+    if (descEl) {
+      descEl.textContent = world.description || '';
+      descEl.style.opacity = '1';
+    }
 
     // Podświetlenie aktywnego świata
     document.querySelectorAll('#worldList .world-btn').forEach(b => b.classList.remove('active'));
     document.querySelector(`#worldList .world-btn[data-world-id="${world.id}"]`)?.classList.add('active');
 
-    // Render bram
+    // Koniec przejścia
+    this.isTransitioning = false;
+  },
+
+  // Renderuje tylko treść świata (bez animacji)
+  renderWorldContent(world) {
+    const titleEl = document.getElementById('worldTitle');
+    const descEl = document.getElementById('worldDescription');
+    if (titleEl) titleEl.textContent = world.name;
+    if (descEl) descEl.textContent = world.description || '';
+
     this.renderGates(world);
   },
 
-  // Renderuje wszystkie bramy danego świata
   renderGates(world) {
     const container = document.getElementById('gatesContainer');
     if (!container) return;
 
     container.innerHTML = '';
 
-    world.gates.forEach(gate => {
+    world.gates.forEach((gate, index) => {
       const gateEl = document.createElement('div');
       gateEl.className = 'gate';
       gateEl.style.borderLeft = `10px solid ${gate.color || '#444'}`;
+      gateEl.style.animationDelay = `${index * 0.15}s`;
 
-      // Nagłówek bramy
       const header = document.createElement('div');
       header.className = 'gate-header';
       header.innerHTML = `
@@ -57,7 +96,6 @@ const Renderer = {
       `;
       gateEl.appendChild(header);
 
-      // Książki w bramie
       const booksContainer = document.createElement('div');
       booksContainer.className = 'books-grid';
 
@@ -97,30 +135,48 @@ const Renderer = {
     });
   },
 
-  // Inicjalizacja po załadowaniu danych
   init() {
-    console.log('🟢 Renderer gotowy – czekam na dane...');
+    console.log('🟢 Renderer z animacjami przejść – gotowy');
 
-    // Nasłuchujemy na event z DataStore
     document.addEventListener('datastore:ready', () => {
-      console.log('✅ Dane załadowane – renderuję światy');
+      console.log('Dane załadowane – renderuję światy');
       this.renderWorldList();
 
-      // Automatycznie otwieramy pierwszy świat (opcjonalnie)
       const firstWorld = DataStore.getWorlds()[0];
-      if (firstWorld) this.renderWorld(firstWorld);
-    });
-
-    document.addEventListener('datastore:error', (e) => {
-      console.error('Renderer: błąd danych', e.detail);
+      if (firstWorld) {
+        // Pierwsze otwarcie bez animacji
+        this.renderWorldContent(firstWorld);
+        document.querySelector(`#worldList .world-btn[data-world-id="${firstWorld.id}"]`)?.classList.add('active');
+      }
     });
   }
 };
 
-// Start renderera po załadowaniu DOM
+// CSS dla animacji przejść – dodaj do styles.css (jeśli nie masz)
+const transitionStyle = document.createElement('style');
+transitionStyle.textContent = `
+  #gatesContainer, #worldTitle, #worldDescription {
+    transition: opacity 0.6s ease, transform 0.8s ease;
+    opacity: 1;
+    transform: translateY(0);
+  }
+  #gatesContainer {
+    min-height: 60vh;
+  }
+  .gate {
+    opacity: 0;
+    transform: translateY(40px);
+    animation: gateFadeIn 0.8s ease forwards;
+  }
+  @keyframes gateFadeIn {
+    to { opacity: 1; transform: translateY(0); }
+  }
+`;
+document.head.appendChild(transitionStyle);
+
+// Start
 document.addEventListener('DOMContentLoaded', () => {
   Renderer.init();
 });
 
-// Globalny dostęp
 window.Renderer = Renderer;
