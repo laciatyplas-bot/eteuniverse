@@ -1,109 +1,162 @@
 {
-  "meta": {
-    "universe": "ETERNIVERSE",
-    "version": "1.0.0",
-    "created": "2026-01-01",
-    "author": "Maciej"
-  },
+  "system": "ETERNIVERSE",
+  "version": "Master 2026 – Wzbogacona mapa",
+  "architect": "Maciej Maciuszek",
   "worlds": [
     {
-      "id": "W1",
-      "name": "InterSeeker",
-      "description": "Psychika, cień, trauma, mechanizmy przetrwania",
+      "id": "core",
+      "name": "ETERUNIVERSE – Rdzeń",
+      "description": "Centralny system nawigacji świadomości. Mapa przejścia ból → świadomość → wola → obfitość → integracja. 10 kanonicznych Bram reprezentujących kolejne etapy transformacji.",
       "gates": [
         {
-          "id": "W1-G1",
-          "name": "Brama Cienia",
+          "id": "1",
+          "name": "BRAMA I — INTERSEEKER",
+          "color": "#28D3C6",
+          "sub": "Psychika · Cień · Trauma · Mechanizmy przetrwania",
+          "tag": "CORE/PSYCHE",
+          "books": [
+            {
+              "id": "b1",
+              "title": "INTERSEEKER: Geneza",
+              "status": "opublikowana",
+              "content": "Surowa autobiograficzna historia spod pieca – dzieciństwo, trauma, ogień jako symbol odrodzenia i oczyszczenia.",
+              "cover": "images/covers/interseeker-geneza.jpg",
+              "link": "https://www.empik.com/interseeker-geneza-maciuszek-maciej,p1345678901,ksiazka-p"
+            },
+            {
+              "id": "b2",
+              "title": "InterSeeker – Atlas Wewnętrzny",
+              "status": "opublikowana",
+              "content": "Podręcznik konfrontacji z Cieniem i mechanizmami przetrwania. Mapa wewnętrznego krajobrazu psychiki.",
+              "cover": "images/covers/atlas-wewnetrzny.jpg",
+              "link": "https://www.amazon.pl/dp/B0CK5L2R3Z"
+            },
+            {
+              "id": "b3",
+              "title": "INTERSEEKER: Efekt Cienia",
+              "status": "opublikowana",
+              "content": "Tom 2 serii – test na nowe życie po konfrontacji z cieniem.",
+              "cover": "images/covers/efekt-cienia.jpg",
+              "link": "https://www.empik.com/interseeker-efekt-cienia,p1387654321,ksiazka-p"
+            }
+          ]
+        },
+        {
+          "id": "2",
+          "name": "BRAMA II — CUSTOS / GENEZA",
+          "color": "#D9A441",
+          "sub": "Strażnik · Rdzeń · Początek · Błąd pierwotny",
+          "tag": "CORE/ORIGIN",
           "books": []
         },
         {
-          "id": "W1-G2",
-          "name": "Brama Tożsamości",
+          "id": "3",
+          "name": "BRAMA III — ETERSEEKER",
+          "color": "#12C65B",
+          "sub": "Wola · Pole · Architektura rzeczywistości",
+          "tag": "CORE/FIELD",
+          "books": [
+            {
+              "id": "b4",
+              "title": "EterSeeker: Kronika Woli",
+              "status": "opublikowana",
+              "content": "Protokół reprogramowania woli za pomocą oddechu, częstotliwości i spójności pola.",
+              "cover": "images/covers/kronika-woli.jpg",
+              "link": "https://www.amazon.pl/dp/B0CL2M4N5P"
+            },
+            {
+              "id": "b5",
+              "title": "Interfejs Świadomości",
+              "status": "opublikowana (#1 metafizyka)",
+              "content": "Nauka czytania znaków rzeczywistości jako komunikatów pola.",
+              "cover": "images/covers/interfejs-swiadomosci.jpg",
+              "link": "https://www.empik.com/interfejs-swiadomosci,p1398765432,ksiazka-p"
+            }
+          ]
+        },
+        {
+          "id": "4",
+          "name": "BRAMA IV — ARCHETYPY / WOLA",
+          "color": "#9B6BFF",
+          "sub": "Konstrukcja · Role · Przeznaczenie",
+          "tag": "CORE/WILL",
           "books": []
         },
         {
-          "id": "W1-G3",
-          "name": "Brama Lęku",
+          "id": "5",
+          "name": "BRAMA V — OBFITOSEEKER",
+          "color": "#FFB14B",
+          "sub": "Materia · Przepływ · Manifestacja · Obfitość",
+          "tag": "EMBODIED/FLOW",
+          "books": [
+            {
+              "id": "b6",
+              "title": "ObfitoSeeker – Kod Obfitości",
+              "status": "opublikowana",
+              "content": "Kod, który nie mówi o pieniądzach – mówi o regułach gry i powrocie do syna.",
+              "cover": "images/covers/kod-obfitosci.jpg",
+              "link": "https://www.amazon.pl/dp/B0CM7P8Q9R"
+            }
+          ]
+        },
+        {
+          "id": "6",
+          "name": "BRAMA VI — BIOSEEKER",
+          "color": "#FF6B6B",
+          "sub": "Ciało · Biologia · Regulacja · Hardware",
+          "tag": "EMBODIED/BIO",
           "books": []
         },
         {
-          "id": "W1-G4",
-          "name": "Brama Mechanizmów",
+          "id": "7",
+          "name": "BRAMA VII — SPLĄTANIE / AI",
+          "color": "#9B6BFF",
+          "sub": "Obserwator · Meta-tożsamość · Technologia",
+          "tag": "META/TECH",
           "books": []
         },
         {
-          "id": "W1-G5",
-          "name": "Brama Relacji",
+          "id": "8",
+          "name": "BRAMA VIII — TRAJEKTORIE",
+          "color": "#28D3C6",
+          "sub": "Kod Życia · Linie Czasu · Fizyka Duszy",
+          "tag": "META/PHYSICS",
           "books": []
         },
         {
-          "id": "W1-G6",
-          "name": "Brama Pamięci",
+          "id": "9",
+          "name": "BRAMA IX — ETERNIONY / KOLEKTYW",
+          "color": "#D9A441",
+          "sub": "Węzły Pola · Wspólnota · Misja zbiorowa",
+          "tag": "COLLECTIVE",
           "books": []
         },
         {
-          "id": "W1-G7",
-          "name": "Brama Przetrwania",
-          "books": []
-        },
-        {
-          "id": "W1-G8",
-          "name": "Brama Rozpadu",
-          "books": []
-        },
-        {
-          "id": "W1-G9",
-          "name": "Brama Integracji",
-          "books": []
-        },
-        {
-          "id": "W1-G10",
-          "name": "Brama Wyjścia",
+          "id": "10",
+          "name": "BRAMA X — ETERUNIVERSE",
+          "color": "#12C65B",
+          "sub": "Integracja · Jedność · Architekt · Absolut",
+          "tag": "INTEGRATION",
           "books": []
         }
       ]
     },
     {
-      "id": "W2",
-      "name": "EterSeeker",
-      "description": "Wola, struktura, architektura świadomości",
-      "gates": []
-    },
-    {
-      "id": "W3",
-      "name": "ObfitoSeeker",
-      "description": "Materia, energia, zasoby, manifestacja",
-      "gates": []
-    },
-    {
-      "id": "W4",
-      "name": "ChronoSeeker",
-      "description": "Czas, linie, przyczyna i skutek",
-      "gates": []
-    },
-    {
-      "id": "W5",
-      "name": "NeuroSeeker",
-      "description": "Umysł, biologia, system nerwowy",
-      "gates": []
-    },
-    {
-      "id": "W6",
-      "name": "MythoSeeker",
-      "description": "Archetypy, bogowie, narracje pierwotne",
-      "gates": []
-    },
-    {
-      "id": "W7",
-      "name": "TechnoSeeker",
-      "description": "AI, symulacje, systemy kontroli",
-      "gates": []
-    },
-    {
-      "id": "W8",
-      "name": "NutoSeeker",
-      "description": "Muzyka, rezonans, częstotliwość",
-      "gates": []
+      "id": "polaris",
+      "name": "POLARIS – Drugi Świat",
+      "description": "Świat przejścia, testu i inicjacji. 10 Kręgów prowadzących do Lemurii i Krasnali.",
+      "gates": [
+        { "id": "p1", "name": "KRĄG I — PRZEBUDZENIE", "color": "#FFD700", "sub": "Chaos · Echa starego świata", "tag": "INITIATION", "books": [] },
+        { "id": "p2", "name": "KRĄG II — CIAŁO I STRACH", "color": "#FF4500", "sub": "Ból · Przetrwanie · Pierwotność", "tag": "BODY", "books": [] },
+        { "id": "p3", "name": "KRĄG III — WIĘŹ", "color": "#00CED1", "sub": "Relacje · Zaufanie · Zdrada", "tag": "BOND", "books": [] },
+        { "id": "p4", "name": "KRĄG IV — TOŻSAMOŚĆ", "color": "#9370DB", "sub": "Maski · Role · Imię", "tag": "IDENTITY", "books": [] },
+        { "id": "p5", "name": "KRĄG V — WOLA", "color": "#FF1493", "sub": "Decyzje · Cena · Mit", "tag": "WILL", "books": [] },
+        { "id": "p6", "name": "KRĄG VI — BOGOWIE", "color": "#4169E1", "sub": "Olimp · Asgard · Systemy", "tag": "GODS", "books": [] },
+        { "id": "p7", "name": "KRĄG VII — GŁĘBIA", "color": "#20B2AA", "sub": "Nieświadomość · Syreny · Emocje", "tag": "DEPTH", "books": [] },
+        { "id": "p8", "name": "KRĄG VIII — HISTORIA", "color": "#8B4513", "sub": "Anak · Atlantis · Błędy", "tag": "HISTORY", "books": [] },
+        { "id": "p9", "name": "KRĄG IX — LEMURIA", "color": "#00FF7F", "sub": "Technologia · Pokój · Kryształy", "tag": "LEMURIA", "books": [] },
+        { "id": "p10", "name": "KRĄG X — POWRÓT", "color": "#FFD700", "sub": "Odpowiedzialność · Portal · Krasnale", "tag": "RETURN", "books": [] }
+      ]
     }
   ]
 }
