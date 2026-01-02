@@ -1,302 +1,364 @@
-<!DOCTYPE html>
-<html lang="pl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ETERNIVERSE – Mapa Światów</title>
-  <style>
-    /* Master CSS – Pełna responsywność na urządzeniach mobilnych (ulepszona wersja) */
+// ETERNIVERSE – Ultimate Edition z pełną edycją bram i ksiąg (CRUD kompletny)
+// Pełna edycja światów, bram i ksiąg + IndexedDB + ładowanie z map.json
 
-    * { box-sizing:border-box; margin:0; padding:0; font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif; }
+const selectors = {
+  worldList: '#worldList',
+  contentArea: '#contentArea',
+  log: '#log'
+};
 
-    body { background:linear-gradient(to bottom,#05070a,#0b0f14); color:#e6e6e6; min-height:100vh; display:flex; flex-direction:column; }
+const elements = {
+  worldList: document.querySelector(selectors.worldList),
+  contentArea: document.querySelector(selectors.contentArea),
+  log: document.querySelector(selectors.log)
+};
 
-    header { background:rgba(17,24,39,0.95); padding:16px; border-bottom:1px solid #2d3748; backdrop-filter:blur(12px); box-shadow:0 4px 20px rgba(0,0,0,0.5); display:flex; flex-direction:column; gap:16px; align-items:flex-start; }
+const DB_NAME = 'EterniverseDB';
+const DB_VERSION = 1;
+const STORE_NAME = 'eterniverse_data';
+let db = null;
+let DATA = null;
 
-    header h1 { font-size:24px; font-weight:700; color:#93c5fd; letter-spacing:1px; }
+let currentWorld = null;
 
-    .controls { display:flex; flex-wrap:wrap; gap:8px; width:100%; }
-
-    .controls input, .controls select, .controls button { padding:10px 12px; border-radius:8px; border:none; background:#1e293b; color:#e6e6e6; font-size:14px; flex:1; min-width:140px; }
-
-    .controls button { background:#1e40af; cursor:pointer; transition:background .3s ease; flex:none; min-width:auto; }
-
-    .controls button:hover { background:#2563eb; }
-
-    main { flex:1; display:flex; flex-direction:column; overflow:hidden; }
-
-    .panel { background:#111827; padding:16px; overflow-y:auto; scrollbar-width:thin; scrollbar-color:#4a5568 #111827; border-bottom:1px solid #2d3748; }
-
-    .panel:last-child { border-bottom:none; }
-
-    .panel::-webkit-scrollbar { width:6px; }
-    .panel::-webkit-scrollbar-track { background:#111827; }
-    .panel::-webkit-scrollbar-thumb { background:#4a5568; border-radius:3px; }
-
-    #worldList { max-height:30vh; }
-
-    #worldList button { display:block; width:100%; padding:16px; margin-bottom:12px; background:linear-gradient(135deg,#0f2138,#071626); border:none; border-radius:16px; color:#E6F6F5; font-size:18px; font-weight:600; cursor:pointer; box-shadow:0 8px 32px rgba(0,0,0,0.6); transition:all 0.4s ease; }
-
-    #worldList button:hover { transform:translateY(-4px) scale(1.02); box-shadow:0 12px 40px rgba(0,0,0,0.8); }
-
-    #contentArea { flex:1; padding:24px; }
-
-    #contentArea h2 { font-size:32px; color:#D9A441; text-align:center; margin-bottom:24px; text-shadow:0 6px 24px rgba(217,164,65,0.4); }
-
-    .gate { margin:40px 0; padding:32px; background:linear-gradient(145deg,#08121c,#0f2138); border-radius:20px; box-shadow:0 16px 60px rgba(0,0,0,0.8); position:relative; overflow:hidden; }
-
-    .gate::before { content:''; position:absolute; top:0; left:0; width:100%; height:10px; background:var(--gate-color, #28D3C6); }
-
-    .gate h3 { font-size:26px; color:var(--gate-color, #28D3C6); margin-bottom:16px; text-shadow:0 0 24px var(--gate-color, #28D3C6)40; }
-
-    .gate .sub { opacity:0.9; font-size:16px; margin-bottom:24px; text-align:center; }
-
-    .gate .tag { display:block; text-align:center; margin-bottom:28px; font-size:15px; padding:10px 24px; background:linear-gradient(135deg,rgba(217,164,65,0.25),rgba(40,211,198,0.25)); color:#D9A441; border-radius:50px; letter-spacing:1.5px; font-weight:800; box-shadow:0 8px 24px rgba(217,164,65,0.4); }
-
-    .books-header { display:flex; justify-content:space-between; align-items:center; margin:28px 0 12px; flex-wrap:wrap; gap:12px; }
-
-    .books-header strong { font-size:18px; color:#E6F6F5; }
-
-    .add-book-btn { padding:10px 20px; background:#1e40af; border:none; border-radius:12px; color:#fff; cursor:pointer; font-weight:600; transition:background .3s; }
-
-    .add-book-btn:hover { background:#2563eb; }
-
-    .book { padding:20px; margin:16px 0; background:rgba(15,33,56,0.5); border-radius:16px; border:1px solid rgba(255,255,255,0.1); position:relative; transition:all 0.4s ease; }
-
-    .book:hover { transform:translateX(12px) scale(1.02); }
-
-    .book strong { display:block; font-size:20px; color:#E6F6F5; margin-bottom:10px; }
-
-    .book .status { display:inline-block; padding:6px 16px; background:rgba(217,164,65,0.3); color:#D9A441; border-radius:24px; font-size:13px; font-weight:800; }
-
-    .book p { margin:12px 0 0; line-height:1.6; opacity:0.9; font-size:15px; }
-
-    .book-actions { position:absolute; top:16px; right:16px; display:flex; gap:8px; opacity:0; transition:opacity 0.3s; flex-wrap:wrap; justify-content:flex-end; }
-
-    .book:hover .book-actions { opacity:1; }
-
-    .book-actions button { padding:8px 14px; border:none; border-radius:8px; color:#fff; cursor:pointer; font-size:12px; }
-
-    .edit-btn { background:#2563eb; }
-    .delete-btn { background:#dc2626; }
-
-    #log { background:#05070a; padding:16px; font-family:monospace; font-size:12px; line-height:1.4; white-space:pre-wrap; min-height:120px; }
-
-    /* Responsywność */
-    @media (min-width:1024px) {
-      main { display:grid; grid-template-columns:280px 1fr 380px; }
-      header { flex-direction:row; align-items:center; }
-      .controls { width:auto; }
-      #worldList { max-height:none; }
-    }
-
-    @media (max-width:1023px) and (min-width:768px) {
-      main { grid-template-columns:240px 1fr 320px; }
-      header h1 { font-size:26px; }
-    }
-
-    @media (max-width:767px) {
-      header { padding:12px; }
-      header h1 { font-size:22px; text-align:center; width:100%; }
-      .controls { justify-content:center; }
-      .controls input, .controls select { min-width:100%; }
-      #contentArea { padding:16px; }
-      #contentArea h2 { font-size:28px; }
-      .gate { padding:24px; }
-      .gate h3 { font-size:24px; }
-      .book-actions { opacity:1; position:static; margin-top:16px; justify-content:center; }
-    }
-
-    @media (max-width:480px) {
-      header h1 { font-size:20px; }
-      .controls { flex-direction:column; }
-      .controls input, .controls select, .controls button { width:100%; }
-      #contentArea h2 { font-size:26px; }
-      .gate { padding:20px; margin:32px 0; }
-      .gate h3 { font-size:22px; }
-      .book { padding:16px; }
-      .book strong { font-size:18px; }
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>ETERNIVERSE – Mapa Światów</h1>
-    <div class="controls">
-      <input type="text" id="searchInput" placeholder="Szukaj...">
-      <select id="filterSelect">
-        <option value="all">Wszystkie</option>
-        <option value="aktywna">Aktywne</option>
-        <option value="planowana">Planowane</option>
-        <option value="w przygotowaniu">W przygotowaniu</option>
-      </select>
-      <select id="sortSelect">
-        <option value="id">Po ID</option>
-        <option value="books">Po księgach</option>
-        <option value="name">Po nazwie</option>
-      </select>
-      <button id="themeToggle">🌙 Tryb ciemny</button>
-    </div>
-  </header>
-  <main>
-    <div class="panel" id="worldList"><!-- Lista światów --></div>
-    <div class="panel" id="contentArea"><!-- Treść --></div>
-    <div class="panel" id="log"><!-- Log --></div>
-  </main>
-
-  <script>
-    // ETERNIVERSE – Ultimate Edition z ładowaniem z map.json (fetch)
-    // Pełna edycja + IndexedDB jako fallback + synchronizacja
-
-    const selectors = {
-      worldList: '#worldList',
-      contentArea: '#contentArea',
-      log: '#log'
+// Otwarcie IndexedDB
+async function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onerror = () => reject(request.error);
+    request.onsuccess = () => {
+      db = request.result;
+      resolve(db);
     };
-
-    const elements = {
-      worldList: document.querySelector(selectors.worldList),
-      contentArea: document.querySelector(selectors.contentArea),
-      log: document.querySelector(selectors.log)
+    request.onupgradeneeded = (e) => {
+      db = e.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
+      }
     };
+  });
+}
 
-    const DB_NAME = 'EterniverseDB';
-    const DB_VERSION = 1;
-    const STORE_NAME = 'eterniverse_data';
-    let db = null;
-    let DATA = null;
+// Ładowanie danych: najpierw map.json, potem IndexedDB, na końcu domyślne
+async function loadData() {
+  if (!db) await openDB();
 
-    let currentWorld = null;
-
-    // Otwarcie IndexedDB
-    async function openDB() {
-      return new Promise((resolve, reject) => {
-        const request = indexedDB.open(DB_NAME, DB_VERSION);
-        request.onerror = () => reject(request.error);
-        request.onsuccess = () => {
-          db = request.result;
-          resolve(db);
-        };
-        request.onupgradeneeded = (e) => {
-          db = e.target.result;
-          if (!db.objectStoreNames.contains(STORE_NAME)) {
-            db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-          }
-        };
-      });
-    }
-
-    // Ładowanie danych: najpierw map.json (fetch), potem IndexedDB, na końcu domyślne
-    async function loadData() {
-      if (!db) await openDB();
-
-      // 1. Próba z map.json
-      try {
-        const res = await fetch('map.json?' + Date.now()); // cache-buster
-        if (res.ok) {
-          DATA = await res.json();
-          saveToIndexedDB();
-          logMessage('Dane załadowane z map.json');
-          renderWorlds();
-          return;
-        }
-      } catch (err) {
-        logMessage('map.json niedostępny – ładowanie z IndexedDB');
-      }
-
-      // 2. IndexedDB
-      const saved = await getFromIndexedDB();
-      if (saved) {
-        DATA = saved;
-        logMessage('Dane załadowane z IndexedDB (fallback)');
-        renderWorlds();
-        return;
-      }
-
-      // 3. Domyślne dane
-      DATA = getDefaultData();
-      logMessage('Załadowno domyślne dane');
+  try {
+    const res = await fetch('map.json?' + Date.now());
+    if (res.ok) {
+      DATA = await res.json();
+      saveToIndexedDB();
+      logMessage('Dane załadowane z map.json');
       renderWorlds();
+      return;
     }
+  } catch (err) {
+    logMessage('map.json niedostępny – ładowanie z IndexedDB');
+  }
 
-    // Pobieranie z IndexedDB
-    function getFromIndexedDB() {
-      return new Promise((resolve) => {
-        const tx = db.transaction(STORE_NAME, 'readonly');
-        const store = tx.objectStore(STORE_NAME);
-        const request = store.get('core_data');
-        request.onsuccess = () => resolve(request.result ? request.result.data : null);
-        request.onerror = () => resolve(null);
-      });
-    }
+  const saved = await getFromIndexedDB();
+  if (saved) {
+    DATA = saved;
+    logMessage('Dane załadowane z IndexedDB');
+  } else {
+    DATA = getDefaultData();
+    logMessage('Załadowno domyślne dane');
+  }
 
-    // Zapisywanie do IndexedDB
-    function saveToIndexedDB() {
-      if (!db) return;
-      const tx = db.transaction(STORE_NAME, 'readwrite');
-      const store = tx.objectStore(STORE_NAME);
-      store.put({ id: 'core_data', data: DATA });
-      tx.oncomplete = () => logMessage('Dane zsynchronizowane z IndexedDB');
-    }
+  renderWorlds();
+}
 
-    // Domyślne dane (10 Bram kanonicznych)
-    function getDefaultData() {
-      return {
-        "system": "ETERNIVERSE",
-        "version": "Ultimate 2026",
-        "architect": "Maciej Maciuszek",
-        "worlds": [
-          {
-            "id": "core",
-            "name": "ETERUNIVERSE – Rdzeń",
-            "description": "Centralny system nawigacji świadomości. Mapa przejścia ból → świadomość → wola → obfitość → integracja.",
-            "gates": [
-              { "id": 1, "name": "BRAMA I — INTERSEEKER", "color": "#28D3C6", "sub": "Psychika · Cień · Trauma", "tag": "CORE/PSYCHE", "books": [] },
-              { "id": 2, "name": "BRAMA II — CUSTOS / GENEZA", "color": "#D9A441", "sub": "Strażnik · Początek", "tag": "CORE/ORIGIN", "books": [] },
-              { "id": 3, "name": "BRAMA III — ETERSEEKER", "color": "#12C65B", "sub": "Wola · Pole · Architektura", "tag": "CORE/FIELD", "books": [] },
-              { "id": 4, "name": "BRAMA IV — ARCHETYPY / WOLA", "color": "#9B6BFF", "sub": "Role · Przeznaczenie", "tag": "CORE/WILL", "books": [] },
-              { "id": 5, "name": "BRAMA V — OBFITOSEEKER", "color": "#FFB14B", "sub": "Obfitość · Przepływ", "tag": "EMBODIED/FLOW", "books": [] },
-              { "id": 6, "name": "BRAMA VI — BIOSEEKER", "color": "#FF6B6B", "sub": "Ciało · Biologia", "tag": "EMBODIED/BIO", "books": [] },
-              { "id": 7, "name": "BRAMA VII — SPLĄTANIE / AI", "color": "#9B6BFF", "sub": "Obserwator · Technologia", "tag": "META/TECH", "books": [] },
-              { "id": 8, "name": "BRAMA VIII — TRAJEKTORIE", "color": "#28D3C6", "sub": "Czas · Linie życia", "tag": "META/PHYSICS", "books": [] },
-              { "id": 9, "name": "BRAMA IX — ETERNIONY / KOLEKTYW", "color": "#D9A441", "sub": "Wspólnota · Węzły", "tag": "COLLECTIVE", "books": [] },
-              { "id": 10, "name": "BRAMA X — ETERUNIVERSE", "color": "#12C65B", "sub": "Integracja · Absolut", "tag": "INTEGRATION", "books": [] }
-            ]
-          }
+// Pobieranie z IndexedDB
+function getFromIndexedDB() {
+  return new Promise((resolve) => {
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.get('core_data');
+    request.onsuccess = () => resolve(request.result ? request.result.data : null);
+  });
+}
+
+// Zapisywanie do IndexedDB
+function saveToIndexedDB() {
+  if (!db) return;
+  const tx = db.transaction(STORE_NAME, 'readwrite');
+  const store = tx.objectStore(STORE_NAME);
+  store.put({ id: 'core_data', data: DATA });
+}
+
+// Domyślne dane (10 Bram)
+function getDefaultData() {
+  return {
+    "system": "ETERNIVERSE",
+    "version": "Ultimate 2026",
+    "architect": "Maciej Maciuszek",
+    "worlds": [
+      {
+        "id": "core",
+        "name": "ETERUNIVERSE – Rdzeń",
+        "description": "Centralny system nawigacji świadomości. Mapa przejścia ból → świadomość → wola → obfitość → integracja.",
+        "gates": [
+          { "id": 1, "name": "BRAMA I — INTERSEEKER", "color": "#28D3C6", "sub": "Psychika · Cień · Trauma", "tag": "CORE/PSYCHE", "books": [] },
+          { "id": 2, "name": "BRAMA II — CUSTOS / GENEZA", "color": "#D9A441", "sub": "Strażnik · Początek", "tag": "CORE/ORIGIN", "books": [] },
+          { "id": 3, "name": "BRAMA III — ETERSEEKER", "color": "#12C65B", "sub": "Wola · Pole · Architektura", "tag": "CORE/FIELD", "books": [] },
+          { "id": 4, "name": "BRAMA IV — ARCHETYPY / WOLA", "color": "#9B6BFF", "sub": "Role · Przeznaczenie", "tag": "CORE/WILL", "books": [] },
+          { "id": 5, "name": "BRAMA V — OBFITOSEEKER", "color": "#FFB14B", "sub": "Obfitość · Przepływ", "tag": "EMBODIED/FLOW", "books": [] },
+          { "id": 6, "name": "BRAMA VI — BIOSEEKER", "color": "#FF6B6B", "sub": "Ciało · Biologia", "tag": "EMBODIED/BIO", "books": [] },
+          { "id": 7, "name": "BRAMA VII — SPLĄTANIE / AI", "color": "#9B6BFF", "sub": "Obserwator · Technologia", "tag": "META/TECH", "books": [] },
+          { "id": 8, "name": "BRAMA VIII — TRAJEKTORIE", "color": "#28D3C6", "sub": "Czas · Linie życia", "tag": "META/PHYSICS", "books": [] },
+          { "id": 9, "name": "BRAMA IX — ETERNIONY / KOLEKTYW", "color": "#D9A441", "sub": "Wspólnota · Węzły", "tag": "COLLECTIVE", "books": [] },
+          { "id": 10, "name": "BRAMA X — ETERUNIVERSE", "color": "#12C65B", "sub": "Integracja · Absolut", "tag": "INTEGRATION", "books": [] }
         ]
-      };
-    }
+      }
+    ]
+  };
+}
 
-    // Renderowanie listy światów
-    function renderWorlds() {
-      elements.worldList.innerHTML = '';
-      DATA.worlds.forEach(world => {
-        const button = document.createElement('button');
-        button.textContent = `\( {world.name} ( \){world.gates.length} bram)`;
-        button.style.cssText = 'display:block;width:100%;padding:20px;margin:16px 0;border:none;border-radius:20px;background:linear-gradient(135deg,#0f2138,#071626);color:#E6F6F5;font-size:22px;font-weight:700;cursor:pointer;box-shadow:0 12px 40px rgba(0,0,0,0.6);transition:all 0.5s ease;';
-        button.addEventListener('mouseover', () => button.style.transform = 'translateY(-8px) scale(1.03)');
-        button.addEventListener('mouseout', () => button.style.transform = 'translateY(0) scale(1)');
-        button.addEventListener('click', () => openWorld(world));
-        elements.worldList.appendChild(button);
+// Renderowanie listy światów
+function renderWorlds() {
+  elements.worldList.innerHTML = '';
+  DATA.worlds.forEach(world => {
+    const button = document.createElement('button');
+    button.textContent = `\( {world.name} ( \){world.gates.length} bram)`;
+    button.style.cssText = 'display:block;width:100%;padding:20px;margin:16px 0;border:none;border-radius:20px;background:linear-gradient(135deg,#0f2138,#071626);color:#E6F6F5;font-size:22px;font-weight:700;cursor:pointer;box-shadow:0 12px 40px rgba(0,0,0,0.6);transition:all 0.5s ease;';
+    button.addEventListener('mouseover', () => button.style.transform = 'translateY(-8px) scale(1.03)');
+    button.addEventListener('mouseout', () => button.style.transform = 'translateY(0) scale(1)');
+    button.addEventListener('click', () => openWorld(world));
+    elements.worldList.appendChild(button);
+  });
+}
+
+// Otwieranie świata
+function openWorld(world) {
+  currentWorld = world;
+  elements.contentArea.innerHTML = `
+    <h2 style="color:#D9A441;margin:0 0 32px;font-size:36px;text-align:center;text-shadow:0 8px 32px rgba(217,164,65,0.4);">${escapeHtml(world.name)}</h2>
+    <p style="opacity:0.9;font-size:18px;line-height:1.8;margin-bottom:40px;text-align:center;max-width:900px;">${escapeHtml(world.description)}</p>
+    <button style="margin-bottom:40px;padding:16px 32px;background:#1e40af;border:none;border-radius:12px;color:#fff;cursor:pointer;font-weight:600;" onclick="addGate()">+ Dodaj nową Bramę</button>
+  `;
+
+  world.gates.forEach(gate => renderGate(gate));
+  logMessage(`Otworzono świat: ${world.name}`);
+}
+
+// Renderowanie bramy (z pełną edycją)
+function renderGate(gate) {
+  const gateDiv = document.createElement('div');
+  gateDiv.style.cssText = 'margin:48px 0;padding:32px;background:linear-gradient(145deg,#08121c,#0f2138);border-radius:24px;box-shadow:0 16px 60px rgba(0,0,0,0.8);border-left:8px solid ' + gate.color + ';position:relative;';
+
+  const h3 = document.createElement('h3');
+  h3.textContent = escapeHtml(gate.name);
+  h3.style.cssText = 'color:' + gate.color + ';margin:0 0 16px;font-size:28px;text-shadow:0 0 30px ' + gate.color + '40;';
+  gateDiv.appendChild(h3);
+
+  if (gate.sub) {
+    const sub = document.createElement('p');
+    sub.textContent = gate.sub;
+    sub.style.cssText = 'margin:0 0 24px;opacity:0.85;font-size:16px;text-align:center;';
+    gateDiv.appendChild(sub);
+  }
+
+  if (gate.tag) {
+    const tag = document.createElement('span');
+    tag.textContent = gate.tag;
+    tag.style.cssText = 'display:block;text-align:center;margin-bottom:24px;font-size:16px;padding:12px 32px;background:linear-gradient(135deg,rgba(217,164,65,0.25),rgba(40,211,198,0.25));color:#D9A441;border-radius:60px;letter-spacing:2px;font-weight:800;box-shadow:0 12px 32px rgba(217,164,65,0.4);';
+    gateDiv.appendChild(tag);
+  }
+
+  const booksHeader = document.createElement('div');
+  booksHeader.style.cssText = 'display:flex;justify-content:space-between;align-items:center;margin:32px 0 16px;';
+  booksHeader.innerHTML = `<strong style="font-size:20px;color:#E6F6F5;">Księgi (${gate.books.length})</strong>`;
+  
+  const addBtn = document.createElement('button');
+  addBtn.textContent = '+ Dodaj księgę';
+  addBtn.style.cssText = 'padding:10px 20px;background:#1e40af;border:none;border-radius:12px;color:#fff;cursor:pointer;font-weight:600;';
+  addBtn.onclick = () => addBook(gate);
+  booksHeader.appendChild(addBtn);
+  gateDiv.appendChild(booksHeader);
+
+  if (gate.books.length > 0) {
+    gate.books.forEach(book => {
+      const bookDiv = document.createElement('div');
+      bookDiv.style.cssText = 'padding:24px;margin:20px 0;background:rgba(15,33,56,0.5);border-radius:20px;border:1px solid rgba(255,255,255,0.1);position:relative;transition:all 0.4s ease;';
+      bookDiv.addEventListener('mouseover', () => bookDiv.style.transform = 'translateX(16px) scale(1.02)');
+      bookDiv.addEventListener('mouseout', () => bookDiv.style.transform = 'translateX(0) scale(1)');
+
+      bookDiv.innerHTML = `
+        <strong style="display:block;font-size:22px;color:#E6F6F5;margin-bottom:12px;">📘 ${escapeHtml(book.title)}</strong>
+        <span style="display:inline-block;padding:8px 20px;background:rgba(217,164,65,0.3);color:#D9A441;border-radius:30px;font-size:14px;font-weight:800;">${escapeHtml(book.status || 'w przygotowaniu')}</span>
+        <p style="margin:16px 0 0;line-height:1.6;opacity:0.9;">${escapeHtml(book.content || 'Brak treści')}</p>
+      `;
+
+      const actions = document.createElement('div');
+      actions.style.cssText = 'position:absolute;top:20px;right:20px;display:flex;gap:8px;opacity:0;transition:opacity 0.3s;';
+      actions.innerHTML = `
+        <button style="padding:8px 16px;background:#2563eb;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;" onclick="editBook(event, '\( {gate.id}', ' \){book.id}')">Edytuj</button>
+        <button style="padding:8px 16px;background:#dc2626;border:none;border-radius:8px;color:#fff;cursor:pointer;font-size:13px;" onclick="deleteBook(event, '\( {gate.id}', ' \){book.id}')">Usuń</button>
+      `;
+      bookDiv.appendChild(actions);
+      bookDiv.addEventListener('mouseover', () => actions.style.opacity = '1');
+      bookDiv.addEventListener('mouseout', () => actions.style.opacity = '0');
+
+      bookDiv.addEventListener('click', (e) => {
+        if (e.target.tagName !== 'BUTTON') openBook(gate, book);
       });
-    }
 
-    // Otwieranie świata (renderGates, addGate, editGate, deleteGate, addBook, editBook, deleteBook, openBook – jak w poprzedniej wersji)
-
-    // Log
-    function logMessage(message) {
-      if (!elements.log) return;
-      const timestamp = new Date().toLocaleTimeString();
-      elements.log.textContent += `[${timestamp}] ${message}\n`;
-      elements.log.scrollTop = elements.log.scrollHeight;
-    }
-
-    // Inicjalizacja
-    document.addEventListener('DOMContentLoaded', async () => {
-      await openDB();
-      await loadData();
-      logMessage(`System ETERNIVERSE – Załadowany z map.json / IndexedDB`);
+      gateDiv.appendChild(bookDiv);
     });
-  </script>
-</body>
-</html>
+  } else {
+    const empty = document.createElement('p');
+    empty.textContent = 'Brak opublikowanych ksiąg – kliknij + Dodaj księgę';
+    empty.style.cssText = 'opacity:0.6;text-align:center;font-style:italic;font-size:18px;';
+    gateDiv.appendChild(empty);
+  }
+
+  // Akcje bramy
+  const gateActions = document.createElement('div');
+  gateActions.style.cssText = 'position:absolute;top:24px;right:24px;display:flex;gap:12px;';
+  gateActions.innerHTML = `
+    <button style="padding:10px 20px;background:#2563eb;border:none;border-radius:12px;color:#fff;cursor:pointer;font-weight:600;" onclick="editGate(event, '${gate.id}')">Edytuj Bramę</button>
+    <button style="padding:10px 20px;background:#dc2626;border:none;border-radius:12px;color:#fff;cursor:pointer;font-weight:600;" onclick="deleteGate(event, '${gate.id}')">Usuń Bramę</button>
+  `;
+  gateDiv.appendChild(gateActions);
+
+  elements.contentArea.appendChild(gateDiv);
+}
+
+// Dodawanie bramy
+function addGate() {
+  const name = prompt('Nazwa bramy:');
+  if (!name) return;
+  const color = prompt('Kolor HEX:', '#28D3C6');
+  const sub = prompt('Podtytuł:', 'Nowa brama');
+  const tag = prompt('Tag:', 'NEW');
+
+  const newGate = {
+    id: Date.now().toString(),
+    name,
+    color,
+    sub,
+    tag,
+    books: []
+  };
+
+  currentWorld.gates.push(newGate);
+  saveToIndexedDB();
+  openWorld(currentWorld);
+  logMessage(`Dodano bramę: ${name}`);
+}
+
+// Edycja bramy
+function editGate(e, gateId) {
+  e.stopPropagation();
+  const gate = currentWorld.gates.find(g => g.id === gateId);
+  if (!gate) return;
+
+  const newName = prompt('Nowa nazwa:', gate.name);
+  if (newName) gate.name = newName;
+  const newColor = prompt('Nowy kolor HEX:', gate.color);
+  if (newColor) gate.color = newColor;
+  const newSub = prompt('Nowy podtytuł:', gate.sub);
+  if (newSub !== null) gate.sub = newSub;
+  const newTag = prompt('Nowy tag:', gate.tag);
+  if (newTag !== null) gate.tag = newTag;
+
+  saveToIndexedDB();
+  openWorld(currentWorld);
+  logMessage(`Edytowano bramę: ${gate.name}`);
+}
+
+// Usuwanie bramy
+function deleteGate(e, gateId) {
+  e.stopPropagation();
+  if (!confirm('Usunąć bramę i wszystkie księgi?')) return;
+
+  currentWorld.gates = currentWorld.gates.filter(g => g.id !== gateId);
+  saveToIndexedDB();
+  openWorld(currentWorld);
+  logMessage(`Usunięto bramę ID ${gateId}`);
+}
+
+// Dodawanie księgi
+function addBook(gate) {
+  const title = prompt('Tytuł księgi:');
+  if (!title) return;
+  const content = prompt('Treść:', 'Nowa treść...');
+  const status = prompt('Status:', 'w przygotowaniu');
+
+  const newBook = {
+    id: Date.now().toString(),
+    title,
+    status,
+    content
+  };
+
+  gate.books.push(newBook);
+  saveToIndexedDB();
+  openWorld(currentWorld);
+  logMessage(`Dodano księgę: ${title}`);
+}
+
+// Edycja księgi
+function editBook(e, gateId, bookId) {
+  e.stopPropagation();
+  const gate = currentWorld.gates.find(g => g.id === gateId);
+  const book = gate.books.find(b => b.id === bookId);
+  if (!book) return;
+
+  const newTitle = prompt('Nowy tytuł:', book.title);
+  if (newTitle) book.title = newTitle;
+  const newContent = prompt('Nowa treść:', book.content);
+  if (newContent !== null) book.content = newContent;
+  const newStatus = prompt('Nowy status:', book.status);
+  if (newStatus) book.status = newStatus;
+
+  saveToIndexedDB();
+  openWorld(currentWorld);
+  logMessage(`Edytowano księgę: ${book.title}`);
+}
+
+// Usuwanie księgi
+function deleteBook(e, gateId, bookId) {
+  e.stopPropagation();
+  if (!confirm('Usunąć księgę?')) return;
+
+  const gate = currentWorld.gates.find(g => g.id === gateId);
+  gate.books = gate.books.filter(b => b.id !== bookId);
+
+  saveToIndexedDB();
+  openWorld(currentWorld);
+  logMessage(`Usunięto księgę ID ${bookId}`);
+}
+
+// Otwieranie księgi
+function openBook(gate, book) {
+  elements.contentArea.innerHTML = `
+    <button onclick="openWorld(currentWorld)" style="margin-bottom:32px;padding:16px 32px;background:#1e40af;border:none;border-radius:12px;color:#fff;cursor:pointer;font-weight:600;">← Powrót</button>
+    <h2 style="color:${gate.color};margin:0 0 32px;font-size:40px;text-shadow:0 0 40px \( {gate.color}60;"> \){escapeHtml(book.title)}</h2>
+    <p style="opacity:0.7;margin-bottom:32px;font-size:18px;">${escapeHtml(gate.name)}</p>
+    <div style="line-height:1.8;font-size:18px;opacity:0.95;">${escapeHtml(book.content || 'Brak treści')}</div>
+  `;
+  logMessage(`Otworzono księgę: ${book.title}`);
+}
+
+// Log
+function logMessage(message) {
+  if (!elements.log) return;
+  const timestamp = new Date().toLocaleTimeString();
+  elements.log.textContent += `[${timestamp}] ${message}\n`;
+  elements.log.scrollTop = elements.log.scrollHeight;
+}
+
+// Bezpieczeństwo
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text || '';
+  return div.innerHTML;
+}
+
+// Inicjalizacja
+document.addEventListener('DOMContentLoaded', async () => {
+  await openDB();
+  await loadData();
+  logMessage(`System ETERNIVERSE – Załadowany`);
+});
