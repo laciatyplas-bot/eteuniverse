@@ -1,64 +1,169 @@
-<!DOCTYPE html>
-<html>
+<!doctype html>
+<html lang="pl">
 <head>
-    <title>Wola Bot - Stabilna v2.1</title>
-    <meta name="viewport" content="width=device-width">
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: system-ui, -apple-system, sans-serif;
-            background: #1a1a2e;
-            color: white;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .card {
-            background: rgba(255,255,255,0.05);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }
-        h1 { font-size: 2.5em; margin-bottom: 20px; background: linear-gradient(45deg, #ff6b6b, #4ecdc4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .status { background: rgba(0,255,0,0.2); padding: 15px; border-radius: 10px; margin: 20px 0; font-size: 1.1em; }
-        .buttons { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
-        button { 
-            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
-            color: white; border: none; padding: 15px 30px;
-            border-radius: 50px; font-size: 16px; cursor: pointer;
-            transition: all 0.3s; font-weight: 600;
-            box-shadow: 0 10px 20px rgba(255,107,107,0.3);
-        }
-        button:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255,107,107,0.4); }
-        .footer { margin-top: 30px; opacity: 0.8; font-size: 0.9em; }
-        @media (max-width: 600px) { .buttons { flex-direction: column; } button { width: 100%; } }
-    </style>
+  <meta charset="utf-8">
+  <title>ETERNIVERSE – Brama</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{margin:0;font-family:system-ui,sans-serif;background:#050814;color:#E9F4FF;}
+    header{
+      padding:12px 16px;
+      border-bottom:1px solid #20324A;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      background:#050814;
+    }
+    h1{margin:0;font-size:18px;}
+    a{color:#D9A441;text-decoration:none;font-size:13px;}
+    main{max-width:960px;margin:0 auto;padding:16px;}
+    .meta{color:#9BB0D4;font-size:12px;margin-bottom:10px;}
+    .book{border:1px solid #20324A;border-radius:10px;padding:10px 12px;margin-bottom:8px;background:#0A1727;}
+    .book strong{display:block;}
+    .book small{color:#9BB0D4;font-size:11px;}
+    .status{display:inline-block;padding:2px 6px;border-radius:999px;font-size:10px;margin-right:4px;margin-top:4px;}
+    .idea{background:#3b3b5a;}
+    .draft{background:#9BB0D433;}
+    .writing{background:#FFB14B33;}
+    .ready{background:#D9A44133;}
+    .published{background:#12C65B33;}
+    textarea,input,select,button{
+      font:inherit;padding:6px 8px;border-radius:6px;border:1px solid #20324A;background:#050814;color:#E9F4FF;
+    }
+    textarea{width:100%;min-height:60px;margin-top:4px;}
+    button{cursor:pointer;background:#D9A441;color:#050814;border:none;font-weight:600;margin-top:6px;}
+    .small{font-size:11px;color:#9BB0D4;margin-top:8px;}
+  </style>
 </head>
 <body>
-    <div class="card">
-        <h1>🚀 Wola Bot v2.1</h1>
-        <div class="status">
-            ✅ Status: <strong>Online</strong> | Użytkowników: <strong>420+</strong> | Komend: <strong>69</strong>
-        </div>
-        <div class="buttons">
-            <button onclick="deployDev()">⚡ Deploy Dev</button>
-            <button onclick="addMona()">🛡️ Dodaj Mona</button>
-            <button onclick="restartBot()">🔄 Restart Bot</button>
-        </div>
-        <div class="footer">Warszawa Wola District Bot | laciatyplas-bot</div>
-    </div>
+<header>
+  <div>
+    <a href="index.html">← Mapa 4 Bram</a>
+    <h1 id="gateTitle">Brama</h1>
+  </div>
+  <div id="gateAxis" class="meta"></div>
+</header>
 
-    <script>
-        function deployDev() { alert('🚀 Deploy z dev brancha... Gotowe!'); }
-        function addMona() { alert('🛡️ Mona exploit analyzer dodany! Użyj: !mona heap'); }
-        function restartBot() { alert('🔄 Bot zrestartowany. Status: Online'); }
-    </script>
+<main>
+  <section>
+    <h2>Twoje tytuły w tej Bramie</h2>
+    <div id="bookList"></div>
+  </section>
+
+  <section style="margin-top:16px;">
+    <h2>Dodaj / edytuj tytuł</h2>
+    <label>Tytuł</label><br>
+    <input id="titleInput" style="width:100%;"><br>
+    <label>Status</label><br>
+    <select id="statusInput">
+      <option value="idea">Idea</option>
+      <option value="writing">Writing</option>
+      <option value="draft">Draft</option>
+      <option value="ready">Ready</option>
+      <option value="published">Published</option>
+    </select>
+    <label>Notatki</label><br>
+    <textarea id="notesInput" placeholder="Szkic fabuły, sceny, skojarzenia..."></textarea>
+    <button id="saveBtn">Zapisz</button>
+    <div class="small">
+      Dane zapisują się lokalnie w pamięci przeglądarki (działa offline).  
+      Raz na jakiś czas wyeksportujemy całość do pliku JSON.
+    </div>
+  </section>
+</main>
+
+<script>
+  // ---- USTAWIENIA BRAM ŚWIATA 1 ----
+  const GATES = {
+    1: { name:'BRAMA 1 – INTERSEEKER', axis:'Psychika · Cień · Trauma · Archetyp' },
+    2: { name:'BRAMA 2 – ETERSEEKER', axis:'Światło · Wola · Pole · Mitologia Eteru' },
+    3: { name:'BRAMA 3 – OBFITOSEEKER', axis:'Materia · Przepływ · Transformacja · Ciało' },
+    4: { name:'BRAMA 4 – KNOT / PROTOKÓŁ SPLĄTANIA', axis:'Technologia · Kwant · Obserwator' }
+  };
+
+  // ---- ODCZYT PARAMETRU gate Z ADRESU ----
+  const params = new URLSearchParams(location.search);
+  const gateId = Number(params.get('gate') || 1);
+
+  const gate = GATES[gateId] || GATES[1];
+  document.getElementById('gateTitle').textContent = gate.name;
+  document.getElementById('gateAxis').textContent = gate.axis;
+
+  // ---- DANE W LOCALSTORAGE (OSOBNA PRZESTRZEŃ DLA KAŻDEJ BRAMY) ----
+  const STORAGE_KEY = 'eterniverse-world1-gate-' + gateId;
+
+  function loadBooks(){
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if(!raw) return [];
+      return JSON.parse(raw);
+    }catch(e){
+      return [];
+    }
+  }
+  function saveBooks(list){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
+  }
+
+  let books = loadBooks();
+  let editingIndex = -1;
+
+  const listEl = document.getElementById('bookList');
+  const titleInput = document.getElementById('titleInput');
+  const statusInput = document.getElementById('statusInput');
+  const notesInput = document.getElementById('notesInput');
+  const saveBtn = document.getElementById('saveBtn');
+
+  saveBtn.onclick = () => {
+    const title = titleInput.value.trim();
+    if(!title){ alert('Podaj tytuł.'); return; }
+    const payload = {
+      title,
+      status: statusInput.value,
+      notes: notesInput.value.trim()
+    };
+    if(editingIndex === -1){
+      books.push(payload);
+    }else{
+      books[editingIndex] = payload;
+    }
+    saveBooks(books);
+    clearForm();
+    renderBooks();
+  };
+
+  function clearForm(){
+    editingIndex = -1;
+    titleInput.value = '';
+    notesInput.value = '';
+    statusInput.value = 'idea';
+  }
+
+  function renderBooks(){
+    listEl.innerHTML = '';
+    if(!books.length){
+      listEl.textContent = 'Brak tytułów – zacznij od pierwszego.';
+      return;
+    }
+    books.forEach((b,idx)=>{
+      const div = document.createElement('div');
+      div.className = 'book';
+      div.innerHTML = `
+        <strong>${b.title}</strong>
+        <span class="status ${b.status}">${b.status}</span>
+        <small>${b.notes || ''}</small>
+      `;
+      div.onclick = () => {
+        editingIndex = idx;
+        titleInput.value = b.title;
+        statusInput.value = b.status;
+        notesInput.value = b.notes || '';
+      };
+      listEl.appendChild(div);
+    });
+  }
+
+  renderBooks();
+</script>
 </body>
 </html>
