@@ -1,195 +1,64 @@
 <!DOCTYPE html>
-<html lang="pl">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="ETERNIVERSE — zaawansowany panel redakcyjny universum EterSeeker. Master Edition 2026 z AI, timeline, search i collab."/>
-  <title>ETERNIVERSE — Master Panel · 2026</title>
-
-  <link rel="stylesheet" href="styles.css">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700;900&family=Roboto+Mono:wght@300;400;500&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <link rel="icon" href="favicon.ico">
-
-  <!-- BELLA SAFE EMBED -->
-  <style>
-    #bellaTab iframe {
-      width: 100%;
-      height: calc(100vh - 170px);
-      border: none;
-      border-radius: 18px;
-      background: #000;
-      box-shadow: 0 0 40px rgba(40,211,198,0.35);
-    }
-  </style>
+    <title>Wola Bot - Stabilna v2.1</title>
+    <meta name="viewport" content="width=device-width">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: system-ui, -apple-system, sans-serif;
+            background: #1a1a2e;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+        h1 { font-size: 2.5em; margin-bottom: 20px; background: linear-gradient(45deg, #ff6b6b, #4ecdc4); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .status { background: rgba(0,255,0,0.2); padding: 15px; border-radius: 10px; margin: 20px 0; font-size: 1.1em; }
+        .buttons { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+        button { 
+            background: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+            color: white; border: none; padding: 15px 30px;
+            border-radius: 50px; font-size: 16px; cursor: pointer;
+            transition: all 0.3s; font-weight: 600;
+            box-shadow: 0 10px 20px rgba(255,107,107,0.3);
+        }
+        button:hover { transform: translateY(-3px); box-shadow: 0 15px 30px rgba(255,107,107,0.4); }
+        .footer { margin-top: 30px; opacity: 0.8; font-size: 0.9em; }
+        @media (max-width: 600px) { .buttons { flex-direction: column; } button { width: 100%; } }
+    </style>
 </head>
-
 <body>
-
-<!-- ================= HEADER ================= -->
-<header class="global-header">
-  <div class="header-grid">
-    <div class="logo-section">
-      <h1>ETERNIVERSE</h1>
-      <span class="edition-badge">MASTER 2026</span>
+    <div class="card">
+        <h1>🚀 Wola Bot v2.1</h1>
+        <div class="status">
+            ✅ Status: <strong>Online</strong> | Użytkowników: <strong>420+</strong> | Komend: <strong>69</strong>
+        </div>
+        <div class="buttons">
+            <button onclick="deployDev()">⚡ Deploy Dev</button>
+            <button onclick="addMona()">🛡️ Dodaj Mona</button>
+            <button onclick="restartBot()">🔄 Restart Bot</button>
+        </div>
+        <div class="footer">Warszawa Wola District Bot | laciatyplas-bot</div>
     </div>
 
-    <div class="search-section">
-      <div class="search-box">
-        <input type="text" id="globalSearch" placeholder="🔍 Szukaj tytułów, światów, tagów, autorów...">
-        <button id="aiAssistantBtn" class="ai-btn">🤖 AI Helper</button>
-      </div>
-    </div>
-
-    <div class="user-controls">
-      <div class="status-indicators">
-        <span id="syncStatus" class="status-dot online"></span>
-        <span id="autosaveStatus">Autozapis: aktywny</span>
-      </div>
-      <div class="header-actions">
-        <button id="undoBtn">↶</button>
-        <button id="redoBtn">↷</button>
-        <button id="publishBtn" class="btn-primary">🚀 Publikuj</button>
-      </div>
-    </div>
-  </div>
-</header>
-
-<!-- ================= TAB SYSTEM ================= -->
-<nav class="tab-nav">
-  <button class="tab-btn active" data-tab="map">🗺️ Mapa Światów</button>
-  <button class="tab-btn" data-tab="editor">✍️ Edytor</button>
-  <button class="tab-btn" data-tab="timeline">📊 Timeline</button>
-  <button class="tab-btn" data-tab="analytics">📈 Analiza</button>
-  <button class="tab-btn" data-tab="universe">🌌 Universum</button>
-  <button class="tab-btn" data-tab="ai">🤖 AI Studio</button>
-  <button class="tab-btn" data-tab="bella">🧠 Bella</button>
-</nav>
-
-<!-- ================= MAIN ================= -->
-<div class="main-container">
-
-<!-- ===== MAP TAB ===== -->
-<div id="mapTab" class="tab-content active">
-  <div class="sidebar">
-    <div class="filter-panel">
-      <h4>Filtry</h4>
-      <select id="worldFilter"></select>
-      <select id="statusFilter"></select>
-      <input type="range" min="0" max="5">
-    </div>
-    <div class="world-list-mini">
-      <h4>Światy</h4>
-      <div id="miniWorldList"></div>
-    </div>
-  </div>
-
-  <div class="map-main">
-    <div class="map-controls-advanced">
-      <button id="addWorldBtn">➕ Nowy Świat</button>
-      <button id="connectGatesBtn">🔗 Połącz Bramy</button>
-      <div class="zoom-controls">
-        <button id="zoomIn">＋</button>
-        <button id="zoomOut">－</button>
-        <button id="resetZoom">⟳</button>
-      </div>
-    </div>
-
-    <div id="interactiveMap" class="interactive-map">
-      <canvas id="mapCanvas"></canvas>
-      <div id="worldList" class="world-grid-overlay"></div>
-      <div id="gatesContainer"></div>
-    </div>
-  </div>
-</div>
-
-<!-- ===== EDITOR TAB ===== -->
-<div id="editorTab" class="tab-content">
-  <div class="editor-split">
-    <div class="editor-form-container">
-      <h2 id="activeBookTitle">Nowa książka</h2>
-      <div id="editor-content" contenteditable="true" class="rich-editor"></div>
-    </div>
-    <div class="preview-pane">
-      <iframe id="livePreview"></iframe>
-    </div>
-  </div>
-</div>
-
-<!-- ===== TIMELINE ===== -->
-<div id="timelineTab" class="tab-content">
-  <canvas id="timelineCanvas"></canvas>
-</div>
-
-<!-- ===== ANALYTICS ===== -->
-<div id="analyticsTab" class="tab-content">
-  <canvas id="chartCanvas"></canvas>
-</div>
-
-<!-- ===== UNIVERSE ===== -->
-<div id="universeTab" class="tab-content">
-  Universum Builder…
-</div>
-
-<!-- ===== AI STUDIO ===== -->
-<div id="aiTab" class="tab-content">
-  <textarea id="aiPrompt"></textarea>
-  <button id="generateContent">Generuj</button>
-  <div id="aiOutput"></div>
-</div>
-
-<!-- ===== 🧠 BELLA ===== -->
-<div id="bellaTab" class="tab-content">
-  <iframe src="bella.html" title="Bella AI — ETERNIVERSE"></iframe>
-</div>
-
-</div>
-
-<!-- ================= TAB LOGIC ================= -->
-<script>
-  const tabButtons = document.querySelectorAll('.tab-btn');
-  const tabs = {
-    map: document.getElementById('mapTab'),
-    editor: document.getElementById('editorTab'),
-    timeline: document.getElementById('timelineTab'),
-    analytics: document.getElementById('analyticsTab'),
-    universe: document.getElementById('universeTab'),
-    ai: document.getElementById('aiTab'),
-    bella: document.getElementById('bellaTab')
-  };
-
-  tabButtons.forEach(btn => {
-    btn.onclick = () => {
-      tabButtons.forEach(b => b.classList.remove('active'));
-      Object.values(tabs).forEach(t => t.classList.remove('active'));
-      btn.classList.add('active');
-      tabs[btn.dataset.tab].classList.add('active');
-    };
-  });
-
-  // BELLA → EDITOR bridge (gotowe na przyszłość)
-  window.addEventListener('message', e => {
-    if (e.data?.type === 'BELLA_EXPORT') {
-      document.getElementById('editor-content').innerText = e.data.payload;
-    }
-  });
-</script>
-
-<!-- ================= CORE MODULES ================= -->
-<script src="js/core.js"></script>
-<script src="js/tabs.js"></script>
-<script src="js/map3d.js"></script>
-<script src="js/editor-rich.js"></script>
-<script src="js/ai-integration.js"></script>
-<script src="js/analytics.js"></script>
-<script src="js/timeline.js"></script>
-<script src="js/search.js"></script>
-<script src="js/export-advanced.js"></script>
-<script src="js/sync-github.js"></script>
-<script src="js/preview-live.js"></script>
-<script src="js/notifications.js"></script>
-<script src="js/hotkeys.js"></script>
-<script src="js/data.js"></script>
-<script src="js/app.js"></script>
-
+    <script>
+        function deployDev() { alert('🚀 Deploy z dev brancha... Gotowe!'); }
+        function addMona() { alert('🛡️ Mona exploit analyzer dodany! Użyj: !mona heap'); }
+        function restartBot() { alert('🔄 Bot zrestartowany. Status: Online'); }
+    </script>
 </body>
 </html>
