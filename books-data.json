@@ -1,0 +1,31 @@
+{
+  "worlds": [
+    {
+      "id": 1,
+      "name": "ETERNIVERSE CORE",
+      "icon": "🌌",
+      "color": "#3b82f6",
+      "gates": [
+        {
+          "id": 1,
+          "name": "BRAMA I — INTERSEEKER",
+          "subtitle": "Psychika · Cień · Trauma",
+          "tag": "CORE / PSYCHE",
+          "color": "#8b5cf6",
+          "books": [
+            {
+              "id": 1,
+              "title": "INTERSEEKER: Geneza",
+              "cover": "https://raw.githubusercontent.com/laciatyplas-bot/eteuniverse/main/covers/interseeker.jpg",
+              "status": "published",
+              "isPremium": false,
+              "chapters": 12,
+              "wordCount": 85000,
+              "desc": "Atlas Wewnętrzny Ludzkiej Psychiki"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
