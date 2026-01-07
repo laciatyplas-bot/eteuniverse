@@ -128,6 +128,7 @@ section {
     cursor: pointer;
     padding: 0.5rem;
     transition: transform 0.2s ease;
+    color: var(--white);
 }
 
 .btn-search:hover {
@@ -1047,6 +1048,15 @@ section {
     color: var(--gray-light);
 }
 
+.blog-author {
+    font-weight: 600;
+}
+
+.blog-date,
+.blog-reading {
+    color: var(--gray);
+}
+
 /* ==========================================
    NEWSLETTER SECTION
    ========================================== */
@@ -1101,17 +1111,6 @@ section {
     color: rgba(255, 255, 255, 0.7);
 }
 
-.btn-newsletter {
-    padding: 1rem 2rem;
-    background: var(--white);
-    color: var(--primary);
-    border: none;
-    border-radius: 0.75rem;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-newsletter:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 10px
+.newsletter-input:focus {
+    outline: none;
+    background:
