@@ -180,8 +180,7 @@ export default function EterniverseCMS() {
   };
 
   const generateHTMLExport = () => {
-    const html = `
-<!-- ETERNIVERSE - Automatycznie wygenerowane dane -->
+    const html = `<!-- ETERNIVERSE - Automatycznie wygenerowane dane -->
 <script>
 window.ETERNIVERSE_DATA = ${JSON.stringify({ worlds, books }, null, 2)};
 
@@ -191,8 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
     eterniverseApp.loadFromCMS(window.ETERNIVERSE_DATA);
   }
 });
-</script>
-    `.trim();
+</script>`;
     
     setExportCode(html);
     setShowExportModal(true);
@@ -614,155 +612,151 @@ document.addEventListener('DOMContentLoaded', function() {
           <div className="bg-slate-800 rounded-xl p-6 max-w-md w-full border border-white/10 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold">
-                {editingBook?.title ? 'Edytuj
-                  <invoke name="artifacts">
-<parameter name="command">update</parameter>
-<parameter name="id">eterniverse-cms-complete</parameter>
-<parameter name="old_str">              <h3 className="text-xl font-bold">
-                {editingBook?.title ? 'Edytuj</parameter>
-<parameter name="new_str">              <h3 className="text-xl font-bold">
                 {editingBook?.title ? 'Edytuj Książkę' : 'Nowa Książka'}
               </h3>
               <button onClick={() => setShowBookModal(false)} className="p-2 hover:bg-slate-700 rounded">
                 <X size={20} />
               </button>
             </div>
-                  <div className="space-y-4">
-          <div>
-            <label className="block text-sm font-bold mb-2">Tytuł</label>
-            <input
-              type="text"
-              value={editingBook?.title || ''}
-              onChange={(e) => setEditingBook({...editingBook, title: e.target.value})}
-              className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
-              placeholder="np. INTERSEEKER: Geneza"
-            />
-          </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-bold mb-2">Świat</label>
-              <select
-                value={editingBook?.worldId || worlds[0]?.id}
-                onChange={(e) => setEditingBook({...editingBook, worldId: parseInt(e.target.value)})}
-                className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">Tytuł</label>
+                <input
+                  type="text"
+                  value={editingBook?.title || ''}
+                  onChange={(e) => setEditingBook({...editingBook, title: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
+                  placeholder="np. INTERSEEKER: Geneza"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold mb-2">Świat</label>
+                  <select
+                    value={editingBook?.worldId || worlds[0]?.id}
+                    onChange={(e) => setEditingBook({...editingBook, worldId: parseInt(e.target.value)})}
+                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
+                  >
+                    {worlds.map(world => (
+                      <option key={world.id} value={world.id}>
+                        {world.icon} {world.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold mb-2">Część</label>
+                  <input
+                    type="number"
+                    value={editingBook?.part || 1}
+                    onChange={(e) => setEditingBook({...editingBook, part: parseInt(e.target.value)})}
+                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
+                    min="1"
+                    max="20"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold mb-2">Okładka (emoji)</label>
+                  <input
+                    type="text"
+                    value={editingBook?.cover || ''}
+                    onChange={(e) => setEditingBook({...editingBook, cover: e.target.value})}
+                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-center text-3xl"
+                    placeholder="📖"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold mb-2">Rozdziały</label>
+                  <input
+                    type="number"
+                    value={editingBook?.chapters || 0}
+                    onChange={(e) => setEditingBook({...editingBook, chapters: parseInt(e.target.value)})}
+                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
+                    min="0"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold mb-2">Status</label>
+                <select
+                  value={editingBook?.status || 'planned'}
+                  onChange={(e) => setEditingBook({...editingBook, status: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
+                >
+                  <option value="published">✅ Opublikowana</option>
+                  <option value="in-progress">⏳ W trakcie pisania</option>
+                  <option value="planned">📝 Planowana</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold mb-2">Opis</label>
+                <textarea
+                  value={editingBook?.description || ''}
+                  onChange={(e) => setEditingBook({...editingBook, description: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
+                  rows="3"
+                  placeholder="Krótki opis książki..."
+                />
+              </div>
+
+              <button
+                onClick={saveBook}
+                className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-bold transition"
               >
-                {worlds.map(world => (
-                  <option key={world.id} value={world.id}>
-                    {world.icon} {world.name}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">Część</label>
-              <input
-                type="number"
-                value={editingBook?.part || 1}
-                onChange={(e) => setEditingBook({...editingBook, part: parseInt(e.target.value)})}
-                className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
-                min="1"
-                max="20"
-              />
+                <Save size={20} />
+                Zapisz Książkę
+              </button>
             </div>
           </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-bold mb-2">Okładka (emoji)</label>
-              <input
-                type="text"
-                value={editingBook?.cover || ''}
-                onChange={(e) => setEditingBook({...editingBook, cover: e.target.value})}
-                className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-center text-3xl"
-                placeholder="📖"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-bold mb-2">Rozdziały</label>
-              <input
-                type="number"
-                value={editingBook?.chapters || 0}
-                onChange={(e) => setEditingBook({...editingBook, chapters: parseInt(e.target.value)})}
-                className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
-                min="0"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-bold mb-2">Status</label>
-            <select
-              value={editingBook?.status || 'planned'}
-              onChange={(e) => setEditingBook({...editingBook, status: e.target.value})}
-              className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
-            >
-              <option value="published">✅ Opublikowana</option>
-              <option value="in-progress">⏳ W trakcie pisania</option>
-              <option value="planned">📝 Planowana</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-bold mb-2">Opis</label>
-            <textarea
-              value={editingBook?.description || ''}
-              onChange={(e) => setEditingBook({...editingBook, description: e.target.value})}
-              className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
-              rows="3"
-              placeholder="Krótki opis książki..."
-            />
-          </div>
-
-          <button
-            onClick={saveBook}
-            className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-bold transition"
-          >
-            <Save size={20} />
-            Zapisz Książkę
-          </button>
         </div>
-      </div>
+      )}
+
+      {showExportModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50 p-4 md:p-6">
+          <div className="bg-slate-800 rounded-xl p-6 max-w-2xl w-full border border-white/10 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold">Eksport do HTML</h3>
+              <button onClick={() => setShowExportModal(false)} className="p-2 hover:bg-slate-700 rounded">
+                <X size={20} />
+              </button>
+            </div>
+
+            <p className="text-slate-400 mb-4">
+              Skopiuj poniższy kod i wklej go przed zamknięciem tagu <code className="bg-slate-900 px-2 py-1 rounded">&lt;/body&gt;</code> w pliku <strong>index.html</strong>
+            </p>
+
+            <div className="bg-slate-900 rounded-lg p-4 mb-4 relative">
+              <pre className="text-sm text-green-400 overflow-x-auto whitespace-pre-wrap">
+                <code>{exportCode}</code>
+              </pre>
+              <button
+                onClick={copyToClipboard}
+                className="absolute top-2 right-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-sm"
+              >
+                Kopiuj
+              </button>
+            </div>
+
+            <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4">
+              <h4 className="font-bold mb-2">📝 Instrukcja:</h4>
+              <ol className="list-decimal list-inside space-y-1 text-sm text-slate-300">
+                <li>Skopiuj powyższy kod (przycisk "Kopiuj")</li>
+                <li>Otwórz plik <code className="bg-slate-900 px-2 py-1 rounded">index.html</code></li>
+                <li>Znajdź tag <code className="bg-slate-900 px-2 py-1 rounded">&lt;/body&gt;</code> na końcu pliku</li>
+                <li>Wklej skopiowany kod PRZED tym tagiem</li>
+                <li>Zapisz plik i odśwież stronę</li>
+              </ol>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
-  )}
-
-  {showExportModal && (
-    <div className="fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50 p-4 md:p-6">
-      <div className="bg-slate-800 rounded-xl p-6 max-w-2xl w-full border border-white/10 max-h-[90vh] overflow-y-auto">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-xl font-bold">Eksport do HTML</h3>
-          <button onClick={() => setShowExportModal(false)} className="p-2 hover:bg-slate-700 rounded">
-            <X size={20} />
-          </button>
-        </div>
-
-        <p className="text-slate-400 mb-4">
-          Skopiuj poniższy kod i wklej go przed zamknięciem tagu <code className="bg-slate-900 px-2 py-1 rounded">&lt;/body&gt;</code> w pliku <strong>index.html</strong>
-        </p>
-
-        <div className="bg-slate-900 rounded-lg p-4 mb-4 relative">
-          <pre className="text-sm text-green-400 overflow-x-auto">
-            <code>{exportCode}</code>
-          </pre>
-          <button
-            onClick={copyToClipboard}
-            className="absolute top-2 right-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-sm"
-          >
-            Kopiuj
-          </button>
-        </div>
-
-        <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4">
-          <h4 className="font-bold mb-2">📝 Instrukcja:</h4>
-          <ol className="list-decimal list-inside space-y-1 text-sm text-slate-300">
-            <li>Skopiuj powyższy kod (przycisk "Kopiuj")</li>
-            <li>Otwórz plik <code className="bg-slate-900 px-2 py-1 rounded">index.html</code></li>
-            <li>Znajdź tag <code className="bg-slate-900 px-2 py-1 rounded">&lt;/body&gt;</code> na końcu pliku</li>
-            <li>Wklej skopiowany kod PRZED tym tagiem</li>
-            <li>Zapisz plik i odśwież stronę</li>
-          </ol>
-        </div>
-      </div>
-    </div>
-  )}
-</div>
+  );
+}
