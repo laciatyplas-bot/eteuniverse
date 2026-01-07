@@ -1,0 +1,680 @@
+import React, { useState, useEffect } from 'react';
+import { Plus, Edit2, Trash2, Save, X, Book, Globe, Layers, Eye, Download, Upload } from 'lucide-react';
+
+export default function EterniverseCMS() {
+  const [activeTab, setActiveTab] = useState('dashboard');
+  const [worlds, setWorlds] = useState([]);
+  const [books, setBooks] = useState([]);
+  const [editingWorld, setEditingWorld] = useState(null);
+  const [editingBook, setEditingBook] = useState(null);
+  const [showWorldModal, setShowWorldModal] = useState(false);
+  const [showBookModal, setShowBookModal] = useState(false);
+
+  // Initialize with storage
+  useEffect(() => {
+    loadData();
+  }, []);
+
+  const loadData = async () => {
+    try {
+      const worldsData = await window.storage.get('eterniverse-worlds');
+      const booksData = await window.storage.get('eterniverse-books');
+      
+      if (worldsData) setWorlds(JSON.parse(worldsData.value));
+      if (booksData) setBooks(JSON.parse(booksData.value));
+    } catch (error) {
+      // Initialize with default data
+      const defaultWorlds = [
+        { id: 1, name: 'ETERNIVERSE CORE', icon: '🌌', color: '#3b82f6', description: 'Główny wszechświat Eterniverse', parts: 10 },
+        { id: 2, name: 'POLARIS', icon: '⭐', color: '#8b5cf6', description: 'Gwiazdy wewnętrznej mądrości', parts: 10 },
+        { id: 3, name: 'COSMOS EXPLORERS', icon: '🚀', color: '#10b981', description: 'Przełamywanie granic', parts: 10 },
+        { id: 4, name: 'PSYCHE', icon: '🧠', color: '#ec4899', description: 'Lustrzane odbicie gatunków literackich', parts: 10 },
+      ];
+      
+      const defaultBooks = [
+        { id: 1, title: 'INTERSEEKER: Geneza', worldId: 1, part: 1, status: 'published', chapters: 12, cover: '📘', description: 'Początek transformacji' },
+        { id: 2, title: 'ARCHETYP SEEKER', worldId: 1, part: 1, status: 'published', chapters: 10, cover: '👑', description: 'Odkryj swoje archetypy' },
+        { id: 3, title: 'WolaSeeker', worldId: 1, part: 2, status: 'published', chapters: 8, cover: '⚡', description: 'Moc świadomej woli' },
+      ];
+      
+      setWorlds(defaultWorlds);
+      setBooks(defaultBooks);
+      saveWorlds(defaultWorlds);
+      saveBooks(defaultBooks);
+    }
+  };
+
+  const saveWorlds = async (data) => {
+    try {
+      await window.storage.set('eterniverse-worlds', JSON.stringify(data));
+    } catch (error) {
+      console.error('Error saving worlds:', error);
+    }
+  };
+
+  const saveBooks = async (data) => {
+    try {
+      await window.storage.set('eterniverse-books', JSON.stringify(data));
+    } catch (error) {
+      console.error('Error saving books:', error);
+    }
+  };
+
+  const addWorld = () => {
+    setEditingWorld({
+      id: Date.now(),
+      name: '',
+      icon: '🌍',
+      color: '#3b82f6',
+      description: '',
+      parts: 10
+    });
+    setShowWorldModal(true);
+  };
+
+  const saveWorld = () => {
+    if (!editingWorld.name) return;
+    
+    const updated = worlds.find(w => w.id === editingWorld.id)
+      ? worlds.map(w => w.id === editingWorld.id ? editingWorld : w)
+      : [...worlds, editingWorld];
+    
+    setWorlds(updated);
+    saveWorlds(updated);
+    setShowWorldModal(false);
+    setEditingWorld(null);
+  };
+
+  const deleteWorld = (id) => {
+    if (!confirm('Czy na pewno usunąć ten świat?')) return;
+    const updated = worlds.filter(w => w.id !== id);
+    setWorlds(updated);
+    saveWorlds(updated);
+  };
+
+  const addBook = () => {
+    setEditingBook({
+      id: Date.now(),
+      title: '',
+      worldId: worlds[0]?.id || 1,
+      part: 1,
+      status: 'planned',
+      chapters: 0,
+      cover: '📖',
+      description: ''
+    });
+    setShowBookModal(true);
+  };
+
+  const saveBook = () => {
+    if (!editingBook.title) return;
+    
+    const updated = books.find(b => b.id === editingBook.id)
+      ? books.map(b => b.id === editingBook.id ? editingBook : b)
+      : [...books, editingBook];
+    
+    setBooks(updated);
+    saveBooks(updated);
+    setShowBookModal(false);
+    setEditingBook(null);
+  };
+
+  const deleteBook = (id) => {
+    if (!confirm('Czy na pewno usunąć tę książkę?')) return;
+    const updated = books.filter(b => b.id !== id);
+    setBooks(updated);
+    saveBooks(updated);
+  };
+
+  const exportData = () => {
+    const data = {
+      worlds,
+      books,
+      exportDate: new Date().toISOString()
+    };
+    const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `eterniverse-backup-${Date.now()}.json`;
+    a.click();
+  };
+
+  const importData = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const data = JSON.parse(event.target.result);
+        if (data.worlds) {
+          setWorlds(data.worlds);
+          saveWorlds(data.worlds);
+        }
+        if (data.books) {
+          setBooks(data.books);
+          saveBooks(data.books);
+        }
+        alert('Import zakończony sukcesem! ✅');
+      } catch (error) {
+        alert('Błąd importu: ' + error.message);
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  const getBooksByWorld = (worldId) => books.filter(b => b.worldId === worldId);
+  const getBooksByPart = (worldId, part) => books.filter(b => b.worldId === worldId && b.part === part);
+
+  const stats = {
+    totalWorlds: worlds.length,
+    totalBooks: books.length,
+    publishedBooks: books.filter(b => b.status === 'published').length,
+    inProgressBooks: books.filter(b => b.status === 'in-progress').length,
+    plannedBooks: books.filter(b => b.status === 'planned').length
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
+      {/* Header */}
+      <header className="bg-slate-900/50 backdrop-blur border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <span className="text-4xl">✨</span>
+              <div>
+                <h1 className="text-2xl font-bold">ETERNIVERSE CMS</h1>
+                <p className="text-sm text-slate-400">Panel Zarządzania Treścią</p>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={exportData}
+                className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition"
+              >
+                <Download size={18} />
+                Export
+              </button>
+              <label className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition cursor-pointer">
+                <Upload size={18} />
+                Import
+                <input type="file" accept=".json" onChange={importData} className="hidden" />
+              </label>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Navigation */}
+      <nav className="bg-slate-900/30 border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex gap-6">
+            {[
+              { id: 'dashboard', label: 'Dashboard', icon: <Layers size={18} /> },
+              { id: 'worlds', label: 'Światy', icon: <Globe size={18} /> },
+              { id: 'books', label: 'Książki', icon: <Book size={18} /> },
+              { id: 'preview', label: 'Podgląd', icon: <Eye size={18} /> }
+            ].map(tab => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex items-center gap-2 px-4 py-3 border-b-2 transition ${
+                  activeTab === tab.id
+                    ? 'border-blue-500 text-blue-400'
+                    : 'border-transparent text-slate-400 hover:text-white'
+                }`}
+              >
+                {tab.icon}
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </nav>
+
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Dashboard */}
+        {activeTab === 'dashboard' && (
+          <div className="space-y-6">
+            <h2 className="text-3xl font-bold">Dashboard</h2>
+            
+            {/* Stats */}
+            <div className="grid grid-cols-5 gap-4">
+              <div className="bg-slate-800/50 backdrop-blur rounded-xl p-6 border border-white/10">
+                <div className="text-4xl mb-2">🌍</div>
+                <div className="text-3xl font-bold">{stats.totalWorlds}</div>
+                <div className="text-sm text-slate-400">Światów</div>
+              </div>
+              <div className="bg-slate-800/50 backdrop-blur rounded-xl p-6 border border-white/10">
+                <div className="text-4xl mb-2">📚</div>
+                <div className="text-3xl font-bold">{stats.totalBooks}</div>
+                <div className="text-sm text-slate-400">Książek Ogółem</div>
+              </div>
+              <div className="bg-green-800/30 backdrop-blur rounded-xl p-6 border border-green-500/30">
+                <div className="text-4xl mb-2">✅</div>
+                <div className="text-3xl font-bold">{stats.publishedBooks}</div>
+                <div className="text-sm text-slate-400">Opublikowanych</div>
+              </div>
+              <div className="bg-yellow-800/30 backdrop-blur rounded-xl p-6 border border-yellow-500/30">
+                <div className="text-4xl mb-2">⏳</div>
+                <div className="text-3xl font-bold">{stats.inProgressBooks}</div>
+                <div className="text-sm text-slate-400">W Trakcie</div>
+              </div>
+              <div className="bg-blue-800/30 backdrop-blur rounded-xl p-6 border border-blue-500/30">
+                <div className="text-4xl mb-2">📝</div>
+                <div className="text-3xl font-bold">{stats.plannedBooks}</div>
+                <div className="text-sm text-slate-400">Planowanych</div>
+              </div>
+            </div>
+
+            {/* Worlds Overview */}
+            <div className="bg-slate-800/50 backdrop-blur rounded-xl p-6 border border-white/10">
+              <h3 className="text-xl font-bold mb-4">Przegląd Światów</h3>
+              <div className="space-y-3">
+                {worlds.map(world => {
+                  const worldBooks = getBooksByWorld(world.id);
+                  return (
+                    <div key={world.id} className="flex items-center justify-between p-4 bg-slate-900/50 rounded-lg">
+                      <div className="flex items-center gap-4">
+                        <span className="text-4xl">{world.icon}</span>
+                        <div>
+                          <h4 className="font-bold text-lg">{world.name}</h4>
+                          <p className="text-sm text-slate-400">{worldBooks.length} książek w {world.parts} częściach</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        {[...Array(10)].map((_, i) => {
+                          const partBooks = getBooksByPart(world.id, i + 1);
+                          return (
+                            <div
+                              key={i}
+                              className={`w-8 h-8 rounded flex items-center justify-center text-xs font-bold ${
+                                partBooks.length > 0
+                                  ? 'bg-blue-600'
+                                  : 'bg-slate-700'
+                              }`}
+                              title={`Część ${i + 1}: ${partBooks.length} książek`}
+                            >
+                              {i + 1}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Worlds Tab */}
+        {activeTab === 'worlds' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-bold">Zarządzanie Światami</h2>
+              <button
+                onClick={addWorld}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition"
+              >
+                <Plus size={18} />
+                Dodaj Świat
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {worlds.map(world => (
+                <div
+                  key={world.id}
+                  className="bg-slate-800/50 backdrop-blur rounded-xl p-6 border border-white/10"
+                  style={{ borderLeftColor: world.color, borderLeftWidth: '4px' }}
+                >
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-center gap-3">
+                      <span className="text-5xl">{world.icon}</span>
+                      <div>
+                        <h3 className="text-xl font-bold">{world.name}</h3>
+                        <p className="text-sm text-slate-400">{world.parts} części</p>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          setEditingWorld(world);
+                          setShowWorldModal(true);
+                        }}
+                        className="p-2 hover:bg-slate-700 rounded transition"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                      <button
+                        onClick={() => deleteWorld(world.id)}
+                        className="p-2 hover:bg-red-600 rounded transition"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-slate-300 mb-4">{world.description}</p>
+                  <div className="text-sm text-slate-400">
+                    📚 {getBooksByWorld(world.id).length} książek
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Books Tab */}
+        {activeTab === 'books' && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-3xl font-bold">Zarządzanie Książkami</h2>
+              <button
+                onClick={addBook}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition"
+              >
+                <Plus size={18} />
+                Dodaj Książkę
+              </button>
+            </div>
+
+            <div className="grid grid-cols-3 gap-4">
+              {books.map(book => {
+                const world = worlds.find(w => w.id === book.worldId);
+                return (
+                  <div key={book.id} className="bg-slate-800/50 backdrop-blur rounded-xl overflow-hidden border border-white/10">
+                    <div className="aspect-[2/3] bg-gradient-to-br from-blue-900/50 to-purple-900/50 flex items-center justify-center text-6xl">
+                      {book.cover}
+                    </div>
+                    <div className="p-4">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-lg">{world?.icon}</span>
+                        <span className="text-xs text-slate-400">{world?.name} • Część {book.part}</span>
+                      </div>
+                      <h3 className="font-bold text-lg mb-2">{book.title}</h3>
+                      <p className="text-sm text-slate-400 mb-3">{book.description}</p>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className={`px-2 py-1 rounded text-xs font-bold ${
+                          book.status === 'published' ? 'bg-green-600' :
+                          book.status === 'in-progress' ? 'bg-yellow-600' :
+                          'bg-blue-600'
+                        }`}>
+                          {book.status === 'published' ? '✅ Opublikowana' :
+                           book.status === 'in-progress' ? '⏳ W trakcie' :
+                           '📝 Planowana'}
+                        </span>
+                        <span className="text-xs text-slate-400">{book.chapters} rozdz.</span>
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingBook(book);
+                            setShowBookModal(true);
+                          }}
+                          className="flex-1 py-2 bg-slate-700 hover:bg-slate-600 rounded transition text-sm"
+                        >
+                          Edytuj
+                        </button>
+                        <button
+                          onClick={() => deleteBook(book.id)}
+                          className="px-3 py-2 bg-red-600 hover:bg-red-700 rounded transition"
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Preview Tab */}
+        {activeTab === 'preview' && (
+          <div className="space-y-6">
+            <h2 className="text-3xl font-bold">Podgląd Struktury</h2>
+            
+            {worlds.map(world => {
+              const worldBooks = getBooksByWorld(world.id);
+              return (
+                <div key={world.id} className="bg-slate-800/50 backdrop-blur rounded-xl p-6 border border-white/10">
+                  <div className="flex items-center gap-4 mb-6">
+                    <span className="text-5xl">{world.icon}</span>
+                    <div>
+                      <h3 className="text-2xl font-bold">{world.name}</h3>
+                      <p className="text-slate-400">{world.description}</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    {[...Array(world.parts)].map((_, i) => {
+                      const partBooks = getBooksByPart(world.id, i + 1);
+                      return (
+                        <div key={i} className="bg-slate-900/50 rounded-lg p-4">
+                          <h4 className="font-bold mb-3 flex items-center justify-between">
+                            <span>Część {i + 1}</span>
+                            <span className="text-sm text-slate-400">{partBooks.length} książek</span>
+                          </h4>
+                          {partBooks.length > 0 ? (
+                            <div className="grid grid-cols-4 gap-3">
+                              {partBooks.map(book => (
+                                <div key={book.id} className="bg-slate-800 rounded-lg p-3 text-sm">
+                                  <div className="text-3xl mb-2">{book.cover}</div>
+                                  <div className="font-bold truncate">{book.title}</div>
+                                  <div className="text-xs text-slate-400">{book.chapters} rozdz.</div>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="text-center text-slate-500 py-4 text-sm">
+                              Brak książek w tej części
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+      </main>
+
+      {/* World Modal */}
+      {showWorldModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50 p-6">
+          <div className="bg-slate-800 rounded-xl p-6 max-w-md w-full border border-white/10">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold">
+                {editingWorld?.name ? 'Edytuj Świat' : 'Nowy Świat'}
+              </h3>
+              <button onClick={() => setShowWorldModal(false)} className="p-2 hover:bg-slate-700 rounded">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">Nazwa</label>
+                <input
+                  type="text"
+                  value={editingWorld?.name || ''}
+                  onChange={(e) => setEditingWorld({...editingWorld, name: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
+                  placeholder="np. ETERNIVERSE CORE"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold mb-2">Ikona (emoji)</label>
+                  <input
+                    type="text"
+                    value={editingWorld?.icon || ''}
+                    onChange={(e) => setEditingWorld({...editingWorld, icon: e.target.value})}
+                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-center text-3xl"
+                    placeholder="🌍"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold mb-2">Kolor</label>
+                  <input
+                    type="color"
+                    value={editingWorld?.color || '#3b82f6'}
+                    onChange={(e) => setEditingWorld({...editingWorld, color: e.target.value})}
+                    className="w-full h-11 bg-slate-900 border border-white/10 rounded-lg cursor-pointer"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold mb-2">Liczba części</label>
+                <input
+                  type="number"
+                  value={editingWorld?.parts || 10}
+                  onChange={(e) => setEditingWorld({...editingWorld, parts: parseInt(e.target.value)})}
+                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
+                  min="1"
+                  max="20"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold mb-2">Opis</label>
+                <textarea
+                  value={editingWorld?.description || ''}
+                  onChange={(e) => setEditingWorld({...editingWorld, description: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
+                  rows="3"
+                  placeholder="Krótki opis świata..."
+                />
+              </div>
+
+              <button
+                onClick={saveWorld}
+                className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-bold transition"
+              >
+                <Save size={20} />
+                Zapisz Świat
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Book Modal */}
+      {showBookModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50 p-6">
+          <div className="bg-slate-800 rounded-xl p-6 max-w-md w-full border border-white/10 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="text-xl font-bold">
+                {editingBook?.title ? 'Edytuj Książkę' : 'Nowa Książka'}
+              </h3>
+              <button onClick={() => setShowBookModal(false)} className="p-2 hover:bg-slate-700 rounded">
+                <X size={20} />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-bold mb-2">Tytuł</label>
+                <input
+                  type="text"
+                  value={editingBook?.title || ''}
+                  onChange={(e) => setEditingBook({...editingBook, title: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
+                  placeholder="np. INTERSEEKER: Geneza"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold mb-2">Świat</label>
+                  <select
+                    value={editingBook?.worldId || worlds[0]?.id}
+                    onChange={(e) => setEditingBook({...editingBook, worldId: parseInt(e.target.value)})}
+                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
+                  >
+                    {worlds.map(world => (
+                      <option key={world.id} value={world.id}>
+                        {world.icon} {world.name}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-bold mb-2">Część</label>
+                  <input
+                    type="number"
+                    value={editingBook?.part || 1}
+                    onChange={(e) => setEditingBook({...editingBook, part: parseInt(e.target.value)})}
+                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
+                    min="1"
+                    max="10"
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-bold mb-2">Okładka (emoji)</label>
+                  <input
+                    type="text"
+                    value={editingBook?.cover || ''}
+                    onChange={(e) => setEditingBook({...editingBook, cover: e.target.value})}
+                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-center text-3xl"
+                    placeholder="📖"
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-bold mb-2">Rozdziały</label>
+                  <input
+                    type="number"
+                    value={editingBook?.chapters || 0}
+                    onChange={(e) => setEditingBook({...editingBook, chapters: parseInt(e.target.value)})}
+                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
+                    min="0"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-bold mb-2">Status</label>
+                <select
+                  value={editingBook?.status || 'planned'}
+                  onChange={(e) => setEditingBook({...editingBook, status: e.target.value})}
+                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
+                >
+                 <option value="published">✅ Op</parameter>
+<parameter name="new_str">                  <option value="published">✅ Opublikowana</option>
+                  <option value="in-progress">⏳ W trakcie pisania</option>
+                  <option value="planned">📝 Planowana</option>
+                </select>
+              </div>
+            <div>
+            <label className="block text-sm font-bold mb-2">Opis</label>
+            <textarea
+              value={editingBook?.description || ''}
+              onChange={(e) => setEditingBook({...editingBook, description: e.target.value})}
+              className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
+              rows="3"
+              placeholder="Krótki opis książki..."
+            />
+          </div>
+
+          <button
+            onClick={saveBook}
+            className="w-full flex items-center justify-center gap-2 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg font-bold transition"
+          >
+            <Save size={20} />
+            Zapisz Książkę
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+</div>
