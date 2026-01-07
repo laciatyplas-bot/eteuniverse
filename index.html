@@ -1,627 +1,371 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Eterniverse - Wydawnictwo książek transformacyjnych i rozwojowych. Odkryj światy INTERSEEKER, ARCHETYP SEEKER i więcej.">
-    <title>Eterniverse - Wydawnictwo Książek Transformacyjnych</title>
-    <link rel="stylesheet" href="css/desktop.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ETERNIVERSE - Author Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: system-ui, -apple-system, sans-serif; }
+  </style>
 </head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar" id="navbar">
-        <div class="container nav-container">
-            <div class="nav-logo">
-                <a href="#home">
-                    <span class="logo-icon">✨</span>
-                    <span class="logo-text">ETERNIVERSE</span>
-                </a>
-            </div>
-            
-            <ul class="nav-menu" id="nav-menu">
-                <li><a href="#home" class="nav-link active">Strona Główna</a></li>
-                <li><a href="#catalog" class="nav-link">Katalog</a></li>
-                <li><a href="#worlds" class="nav-link">Światy</a></li>
-                <li><a href="#about" class="nav-link">O Nas</a></li>
-                <li><a href="#blog" class="nav-link">Blog</a></li>
-                <li><a href="#contact" class="nav-link">Kontakt</a></li>
-            </ul>
+<body class="bg-gradient-to-br from-slate-950 via-blue-950 to-purple-950 text-white min-h-screen">
+  
+  <div id="app"></div>
 
-            <div class="nav-actions">
-                <button class="btn-search" id="search-btn">
-                    <span class="icon">🔍</span>
-                </button>
-                <button class="btn-secondary">Zaloguj się</button>
-                <button class="btn-primary">Darmowa Próbka</button>
-            </div>
+  <script type="module">
+    // Import React z CDN
+    import React, { useState, useEffect } from 'https://esm.sh/react@18';
+    import ReactDOM from 'https://esm.sh/react-dom@18/client';
 
-            <button class="mobile-menu-toggle" id="mobile-toggle">
-                <span></span>
-                <span></span>
-                <span></span>
+    // Icons (Lucide React)
+    const BookOpen = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>;
+    const Edit3 = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>;
+    const Trash2 = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>;
+    const Plus = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
+    const Crown = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="m2 4 3 12h14l3-12-6 7-4-7-4 7-6-7zm3 16h14"/></svg>;
+    const Eye = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>;
+    const Heart = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>;
+
+    function App() {
+      const [books, setBooks] = useState([
+        {
+          id: 1,
+          title: 'INTERSEEKER: Geneza',
+          world: 'ETERNIVERSE CORE',
+          gate: 'BRAMA I',
+          status: 'published',
+          cover: '📘',
+          isPremium: false,
+          stats: { reads: 45230, likes: 8920, comments: 2340 },
+          chapters: 12,
+          wordCount: 85000,
+          images: 8,
+          desc: 'Atlas Wewnętrzny Ludzkiej Psychiki'
+        },
+        {
+          id: 2,
+          title: 'WolaSeeker – Kwant Woli',
+          world: 'ETERNIVERSE CORE',
+          gate: 'BRAMA III',
+          status: 'published',
+          cover: '⚡',
+          isPremium: false,
+          stats: { reads: 38450, likes: 7340, comments: 1920 },
+          chapters: 10,
+          wordCount: 68000,
+          images: 6,
+          desc: 'Kwantowa natura ludzkiej woli'
+        },
+        {
+          id: 3,
+          title: 'ARCHETYP SEEKER',
+          world: 'ETERNIVERSE CORE',
+          gate: 'BRAMA IV',
+          status: 'published',
+          cover: '👑',
+          isPremium: true,
+          stats: { reads: 12340, likes: 2840, comments: 890 },
+          chapters: 15,
+          wordCount: 92000,
+          images: 13,
+          desc: 'System Archetypów Eteru'
+        }
+      ]);
+
+      const [editingBook, setEditingBook] = useState(null);
+
+      const openEditModal = (book) => {
+        setEditingBook({...book});
+      };
+
+      const closeEditModal = () => {
+        setEditingBook(null);
+      };
+
+      const saveBook = () => {
+        setBooks(books.map(b => b.id === editingBook.id ? {...editingBook} : b));
+        alert(`✅ Książka "${editingBook.title}" zapisana!`);
+        closeEditModal();
+      };
+
+      const deleteBook = (bookId) => {
+        if (window.confirm('Czy na pewno usunąć książkę?')) {
+          setBooks(books.filter(b => b.id !== bookId));
+          alert('✅ Książka usunięta!');
+        }
+      };
+
+      const addNewBook = () => {
+        const newBook = {
+          id: Date.now(),
+          title: 'Nowa Książka',
+          world: 'ETERNIVERSE CORE',
+          gate: 'BRAMA I',
+          status: 'draft',
+          cover: '📖',
+          isPremium: false,
+          stats: { reads: 0, likes: 0, comments: 0 },
+          chapters: 0,
+          wordCount: 0,
+          images: 0,
+          desc: ''
+        };
+        setBooks([...books, newBook]);
+        openEditModal(newBook);
+      };
+
+      return (
+        <div className="p-6 max-w-7xl mx-auto">
+          {/* Header */}
+          <div className="mb-8 flex items-center justify-between">
+            <div>
+              <h1 className="text-4xl font-bold mb-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                ✍️ ETERNIVERSE
+              </h1>
+              <p className="text-slate-400">Author Dashboard</p>
+            </div>
+            <button 
+              onClick={addNewBook}
+              className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 px-6 py-3 rounded-lg font-semibold flex items-center gap-2 transition"
+            >
+              <Plus />
+              Nowa Książka
             </button>
-        </div>
-    </nav>
+          </div>
 
-    <!-- Search Overlay -->
-    <div class="search-overlay" id="search-overlay">
-        <div class="search-container">
-            <button class="search-close" id="search-close">✕</button>
-            <input type="text" class="search-input" placeholder="Szukaj książek, autorów, tematów...">
-            <div class="search-suggestions">
-                <div class="search-suggestion">INTERSEEKER: Geneza</div>
-                <div class="search-suggestion">ARCHETYP SEEKER</div>
-                <div class="search-suggestion">Wewnętrzny kompas</div>
-                <div class="search-suggestion">Transformacja świadomości</div>
+          {/* Books Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {books.map(book => (
+              <div key={book.id} className="bg-slate-800/50 backdrop-blur rounded-2xl p-6 border-2 border-slate-700 hover:border-blue-500 transition">
+                {/* Cover */}
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="text-5xl">{book.cover}</div>
+                  <div className="flex-1">
+                    <div className="flex items-start gap-2 mb-1">
+                      <h3 className="font-bold text-lg flex-1">{book.title}</h3>
+                      {book.isPremium && <Crown className="text-yellow-400" />}
+                    </div>
+                    <p className="text-xs text-slate-400 mb-2">{book.world}</p>
+                    <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
+                      book.status === 'published' ? 'bg-green-500/20 text-green-400' :
+                      book.status === 'draft' ? 'bg-yellow-500/20 text-yellow-400' :
+                      'bg-blue-500/20 text-blue-400'
+                    }`}>
+                      {book.status.toUpperCase()}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-2 mb-4">
+                  <div className="bg-slate-700/30 p-2 rounded text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Eye className="w-3 h-3 text-blue-400" />
+                      <span className="text-xs font-semibold">{book.stats.reads.toLocaleString()}</span>
+                    </div>
+                    <p className="text-xs text-slate-500">Reads</p>
+                  </div>
+                  <div className="bg-slate-700/30 p-2 rounded text-center">
+                    <div className="flex items-center justify-center gap-1 mb-1">
+                      <Heart className="w-3 h-3 text-pink-400" />
+                      <span className="text-xs font-semibold">{book.stats.likes.toLocaleString()}</span>
+                    </div>
+                    <p className="text-xs text-slate-500">Likes</p>
+                  </div>
+                  <div className="bg-slate-700/30 p-2 rounded text-center">
+                    <span className="text-xs font-semibold block mb-1">{book.chapters}</span>
+                    <p className="text-xs text-slate-500">Chapters</p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2">
+                  <button 
+                    onClick={() => openEditModal(book)}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 py-2 rounded-lg font-semibold text-sm transition flex items-center justify-center gap-1"
+                  >
+                    <Edit3 />
+                    Edit
+                  </button>
+                  <button 
+                    onClick={() => deleteBook(book.id)}
+                    className="bg-red-600/20 hover:bg-red-600/30 p-2 rounded-lg transition"
+                  >
+                    <Trash2 className="text-red-400" />
+                  </button>
+                </div>
+              </div>
+            ))}
+
+            {/* Add New Card */}
+            <div 
+              onClick={addNewBook}
+              className="border-2 border-dashed border-slate-600 rounded-2xl p-6 flex flex-col items-center justify-center hover:border-blue-500 hover:bg-slate-800/30 transition cursor-pointer min-h-[300px]"
+            >
+              <Plus className="w-12 h-12 text-slate-400 mb-4" />
+              <p className="font-semibold text-lg mb-2">Utwórz Nową Książkę</p>
+              <p className="text-sm text-slate-400 text-center">Rozpocznij nowe dzieło</p>
             </div>
-        </div>
-    </div>
+          </div>
 
-    <!-- Hero Section -->
-    <section id="home" class="hero">
-        <div class="hero-background"></div>
-        <div class="container hero-container">
-            <div class="hero-content">
-                <span class="hero-badge">Nowa Era Literatury</span>
-                <h1 class="hero-title">
-                    Odkryj Światy
-                    <span class="gradient-text">Eterniverse</span>
-                </h1>
-                <p class="hero-description">
-                    Wydawnictwo książek transformacyjnych, które prowadzą Cię 
-                    w głąb własnej świadomości i otwierają drzwi do nowych wymiarów poznania.
-                </p>
-                <div class="hero-buttons">
-                    <button class="btn-hero-primary">
-                        Rozpocznij Przygodę
-                        <span class="btn-icon">→</span>
+          {/* Edit Modal */}
+          {editingBook && (
+            <div className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+              <div className="bg-slate-900 rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border-2 border-blue-500">
+                {/* Modal Header */}
+                <div className="sticky top-0 bg-slate-900 border-b border-slate-800 p-6 flex items-center justify-between">
+                  <h2 className="text-2xl font-bold flex items-center gap-2">
+                    <Edit3 />
+                    Edytuj Książkę
+                  </h2>
+                  <button onClick={closeEditModal} className="text-slate-400 hover:text-white transition text-2xl">
+                    ✕
+                  </button>
+                </div>
+
+                {/* Modal Body */}
+                <div className="p-6 space-y-6">
+                  {/* Cover */}
+                  <div>
+                    <label className="block text-sm font-semibold mb-3">Okładka</label>
+                    <div className="flex items-center gap-4">
+                      <div className="w-32 h-48 bg-gradient-to-br from-blue-900/50 to-purple-900/50 rounded-xl flex items-center justify-center text-6xl">
+                        {editingBook.cover}
+                      </div>
+                      <div>
+                        <button className="bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-lg font-semibold transition mb-2">
+                          Upload Okładki
+                        </button>
+                        <p className="text-xs text-slate-400">Rekomendowane: 1600x2560px</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Title */}
+                  <div>
+                    <label htmlFor="book-title" className="block text-sm font-semibold mb-2">Tytuł</label>
+                    <input
+                      id="book-title"
+                      type="text"
+                      value={editingBook.title}
+                      onChange={(e) => setEditingBook({...editingBook, title: e.target.value})}
+                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none"
+                    />
+                  </div>
+
+                  {/* World & Gate */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label htmlFor="book-world" className="block text-sm font-semibold mb-2">Świat</label>
+                      <select
+                        id="book-world"
+                        value={editingBook.world}
+                        onChange={(e) => setEditingBook({...editingBook, world: e.target.value})}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none"
+                      >
+                        <option>ETERNIVERSE CORE</option>
+                        <option>POLARIS</option>
+                        <option>COSMOS EXPLORERS</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label htmlFor="book-gate" className="block text-sm font-semibold mb-2">Brama</label>
+                      <select
+                        id="book-gate"
+                        value={editingBook.gate}
+                        onChange={(e) => setEditingBook({...editingBook, gate: e.target.value})}
+                        className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none"
+                      >
+                        <option>BRAMA I</option>
+                        <option>BRAMA II</option>
+                        <option>BRAMA III</option>
+                        <option>BRAMA IV</option>
+                        <option>BRAMA V</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Status */}
+                  <div>
+                    <label className="block text-sm font-semibold mb-2">Status</label>
+                    <div className="flex gap-3">
+                      {['draft', 'published', 'archived'].map(status => (
+                        <button
+                          key={status}
+                          onClick={() => setEditingBook({...editingBook, status})}
+                          className={`flex-1 py-3 rounded-lg font-semibold transition ${
+                            editingBook.status === status
+                              ? status === 'published' ? 'bg-green-600' :
+                                status === 'draft' ? 'bg-yellow-600' : 'bg-slate-600'
+                              : 'bg-slate-800 hover:bg-slate-700'
+                          }`}
+                        >
+                          {status.charAt(0).toUpperCase() + status.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Premium Toggle */}
+                  <div className="flex items-center justify-between bg-slate-800/50 rounded-lg p-4">
+                    <div className="flex items-center gap-3">
+                      <Crown className="text-yellow-400" />
+                      <div>
+                        <p className="font-semibold">Premium Book</p>
+                        <p className="text-xs text-slate-400">Wymaga subskrypcji</p>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setEditingBook({...editingBook, isPremium: !editingBook.isPremium})}
+                      className={`relative w-14 h-7 rounded-full transition ${
+                        editingBook.isPremium ? 'bg-yellow-600' : 'bg-slate-700'
+                      }`}
+                    >
+                      <div className={`absolute top-1 left-1 w-5 h-5 bg-white rounded-full transition-transform ${
+                        editingBook.isPremium ? 'translate-x-7' : ''
+                      }`}></div>
                     </button>
-                    <button class="btn-hero-secondary">
-                        <span class="play-icon">▶</span>
-                        Zobacz Film
-                    </button>
+                  </div>
+
+                  {/* Description */}
+                  <div>
+                    <label htmlFor="book-desc" className="block text-sm font-semibold mb-2">Opis</label>
+                    <textarea
+                      id="book-desc"
+                      value={editingBook.desc || ''}
+                      onChange={(e) => setEditingBook({...editingBook, desc: e.target.value})}
+                      className="w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-3 focus:border-blue-500 focus:outline-none resize-none"
+                      rows="4"
+                    />
+                  </div>
                 </div>
-                <div class="hero-stats">
-                    <div class="stat-item">
-                        <div class="stat-number">50+</div>
-                        <div class="stat-label">Książek</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">100K+</div>
-                        <div class="stat-label">Czytelników</div>
-                    </div>
-                    <div class="stat-item">
-                        <div class="stat-number">12</div>
-                        <div class="stat-label">Światów</div>
-                    </div>
+
+                {/* Modal Footer */}
+                <div className="sticky bottom-0 bg-slate-900 border-t border-slate-800 p-6 flex gap-3">
+                  <button
+                    onClick={closeEditModal}
+                    className="flex-1 bg-slate-700 hover:bg-slate-600 py-3 rounded-lg font-semibold transition"
+                  >
+                    Anuluj
+                  </button>
+                  <button
+                    onClick={saveBook}
+                    className="flex-1 bg-blue-600 hover:bg-blue-700 py-3 rounded-lg font-semibold transition"
+                  >
+                    💾 Zapisz
+                  </button>
                 </div>
+              </div>
             </div>
-            <div class="hero-visual">
-                <div class="floating-book book-1">📘</div>
-                <div class="floating-book book-2">👑</div>
-                <div class="floating-book book-3">⚡</div>
-                <div class="hero-circle"></div>
-            </div>
+          )}
         </div>
-        <div class="scroll-indicator">
-            <span>Scroll</span>
-            <div class="scroll-line"></div>
-        </div>
-    </section>
+      );
+    }
 
-    <!-- Featured Books -->
-    <section class="featured-section">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-badge">Bestsellery</span>
-                <h2 class="section-title">Najczęściej Czytane</h2>
-                <p class="section-description">
-                    Najbardziej transformujące pozycje z naszej biblioteki
-                </p>
-            </div>
-
-            <div class="featured-grid">
-                <div class="featured-card featured-large">
-                    <div class="featured-image">
-                        <span class="book-emoji">📘</span>
-                        <div class="featured-overlay">
-                            <button class="btn-read">Czytaj Teraz</button>
-                        </div>
-                    </div>
-                    <div class="featured-content">
-                        <span class="book-category">SERIA GŁÓWNA</span>
-                        <h3 class="book-title">INTERSEEKER: Geneza</h3>
-                        <p class="book-description">
-                            Odkryj początki największej transformacji świadomości. 
-                            Pierwsza książka serii, która zmieni Twoje spojrzenie na rzeczywistość.
-                        </p>
-                        <div class="book-meta">
-                            <span class="meta-item">🕐 8h czytania</span>
-                            <span class="meta-item">⭐ 4.9/5</span>
-                            <span class="meta-item">📚 12 rozdziałów</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="featured-card">
-                    <div class="featured-image">
-                        <span class="book-emoji">👑</span>
-                        <span class="premium-badge">PREMIUM</span>
-                    </div>
-                    <div class="featured-content">
-                        <span class="book-category">ARCHETYPY</span>
-                        <h3 class="book-title">ARCHETYP SEEKER</h3>
-                        <p class="book-description">
-                            Zgłęb tajemnice archetypów i odkryj swojego wewnętrznego przewodnika.
-                        </p>
-                        <button class="btn-card">Dowiedz się więcej</button>
-                    </div>
-                </div>
-
-                <div class="featured-card">
-                    <div class="featured-image">
-                        <span class="book-emoji">⚡</span>
-                    </div>
-                    <div class="featured-content">
-                        <span class="book-category">ROZWÓJ</span>
-                        <h3 class="book-title">WolaSeeker</h3>
-                        <p class="book-description">
-                            Wzmocnij swoją wolę i odkryj moc świadomego działania.
-                        </p>
-                        <button class="btn-card">Dowiedz się więcej</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Catalog Section -->
-    <section id="catalog" class="catalog-section">
-        <div class="container">
-            <div class="section-header centered">
-                <span class="section-badge">Odkrywaj</span>
-                <h2 class="section-title">Pełny Katalog Książek</h2>
-            </div>
-
-            <div class="catalog-filters">
-                <button class="filter-btn active" data-filter="all">Wszystkie</button>
-                <button class="filter-btn" data-filter="seeker">SEEKER</button>
-                <button class="filter-btn" data-filter="philosophy">Filozofia</button>
-                <button class="filter-btn" data-filter="transformation">Transformacja</button>
-                <button class="filter-btn" data-filter="premium">Premium</button>
-            </div>
-
-            <div class="catalog-grid" id="catalog-grid">
-                <!-- Books will be loaded by JavaScript -->
-            </div>
-
-            <div class="catalog-cta">
-                <button class="btn-load-more">Załaduj Więcej Książek</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Worlds Section -->
-    <section id="worlds" class="worlds-section">
-        <div class="container">
-            <div class="section-header centered">
-                <span class="section-badge">Universa</span>
-                <h2 class="section-title">Eksploruj Nasze Światy</h2>
-                <p class="section-description">
-                    Każdy świat to unikalna podróż przez różne wymiary świadomości
-                </p>
-            </div>
-
-            <div class="worlds-grid">
-                <div class="world-card" style="--world-color: #3b82f6">
-                    <div class="world-icon">🌌</div>
-                    <h3 class="world-title">ETERNIVERSE CORE</h3>
-                    <p class="world-description">
-                        Główny wszechświat zawierający fundamentalne nauki o świadomości i transformacji.
-                    </p>
-                    <div class="world-stats">
-                        <span>25 książek</span>
-                        <span>•</span>
-                        <span>50K+ czytelników</span>
-                    </div>
-                    <button class="btn-world">Eksploruj Świat</button>
-                </div>
-
-                <div class="world-card" style="--world-color: #8b5cf6">
-                    <div class="world-icon">⭐</div>
-                    <h3 class="world-title">POLARIS</h3>
-                    <p class="world-description">
-                        Przewodnik po gwiazdach wewnętrznej mądrości i intuicyjnego poznania.
-                    </p>
-                    <div class="world-stats">
-                        <span>18 książek</span>
-                        <span>•</span>
-                        <span>32K+ czytelników</span>
-                    </div>
-                    <button class="btn-world">Eksploruj Świat</button>
-                </div>
-
-                <div class="world-card" style="--world-color: #10b981">
-                    <div class="world-icon">🚀</div>
-                    <h3 class="world-title">COSMOS EXPLORERS</h3>
-                    <p class="world-description">
-                        Dla tych, którzy pragną przełamać granice i odkrywać nowe horyzonty.
-                    </p>
-                    <div class="world-stats">
-                        <span>22 książki</span>
-                        <span>•</span>
-                        <span>41K+ czytelników</span>
-                    </div>
-                    <button class="btn-world">Eksploruj Świat</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- About Section -->
-    <section id="about" class="about-section">
-        <div class="container">
-            <div class="about-grid">
-                <div class="about-content">
-                    <span class="section-badge">O Nas</span>
-                    <h2 class="section-title">Tworzymy Mosty Między Światami</h2>
-                    <p class="about-text">
-                        Eterniverse to więcej niż wydawnictwo - to ruch transformacyjny, 
-                        który łączy czyteli z całego świata w podróży ku głębszemu zrozumieniu siebie i rzeczywistości.
-                    </p>
-                    <p class="about-text">
-                        Nasza misja to tworzenie książek, które nie tylko informują, 
-                        ale przede wszystkim transformują. Każda pozycja w naszym katalogu 
-                        została stworzona z intencją bycia praktycznym narzędziem rozwoju osobistego.
-                    </p>
-                    <div class="about-features">
-                        <div class="feature-item">
-                            <span class="feature-icon">✨</span>
-                            <div class="feature-content">
-                                <h4>Autorskie Treści</h4>
-                                <p>Oryginalne książki pisane przez ekspertów transformacji</p>
-                            </div>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-icon">🌍</span>
-                            <div class="feature-content">
-                                <h4>Globalna Społeczność</h4>
-                                <p>Ponad 100,000 czytelników w 45 krajach</p>
-                            </div>
-                        </div>
-                        <div class="feature-item">
-                            <span class="feature-icon">📖</span>
-                            <div class="feature-content">
-                                <h4>Interaktywne Doświadczenia</h4>
-                                <p>Audiobooki, ćwiczenia i materiały dodatkowe</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="about-visual">
-                    <div class="stats-card">
-                        <div class="stat-large">
-                            <div class="stat-number">2019</div>
-                            <div class="stat-label">Rok Założenia</div>
-                        </div>
-                    </div>
-                    <div class="stats-card">
-                        <div class="stat-large">
-                            <div class="stat-number">50+</div>
-                            <div class="stat-label">Opublikowanych Książek</div>
-                        </div>
-                    </div>
-                    <div class="stats-card">
-                        <div class="stat-large">
-                            <div class="stat-number">4.8★</div>
-                            <div class="stat-label">Średnia Ocena</div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Team Section -->
-    <section class="team-section">
-        <div class="container">
-            <div class="section-header centered">
-                <span class="section-badge">Zespół</span>
-                <h2 class="section-title">Poznaj Naszą Redakcję</h2>
-            </div>
-
-            <div class="team-grid">
-                <div class="team-card">
-                    <div class="team-avatar">👤</div>
-                    <h3 class="team-name">Maciej Maciuszek</h3>
-                    <p class="team-role">Założyciel & Główny Autor</p>
-                    <p class="team-bio">
-                        Architekt koncepcji INTERSEEKER i twórca filozofii Wewnętrznego Kompasu.
-                    </p>
-                    <div class="team-social">
-                        <a href="#" class="social-link">🔗</a>
-                        <a href="#" class="social-link">✉️</a>
-                    </div>
-                </div>
-
-                <div class="team-card">
-                    <div class="team-avatar">👤</div>
-                    <h3 class="team-name">Anna Kowalska</h3>
-                    <p class="team-role">Redaktor Naczelna</p>
-                    <p class="team-bio">
-                        Odpowiada za jakość merytoryczną i spójność wszystkich publikacji.
-                    </p>
-                    <div class="team-social">
-                        <a href="#" class="social-link">🔗</a>
-                        <a href="#" class="social-link">✉️</a>
-                    </div>
-                </div>
-
-                <div class="team-card">
-                    <div class="team-avatar">👤</div>
-                    <h3 class="team-name">Piotr Nowak</h3>
-                    <p class="team-role">Creative Director</p>
-                    <p class="team-bio">
-                        Tworzy wizualną tożsamość i doświadczenia czytelnicze.
-                    </p>
-                    <div class="team-social">
-                        <a href="#" class="social-link">🔗</a>
-                        <a href="#" class="social-link">✉️</a>
-                    </div>
-                </div>
-
-                <div class="team-card">
-                    <div class="team-avatar">👤</div>
-                    <h3 class="team-name">Maria Wiśniewska</h3>
-                    <p class="team-role">Community Manager</p>
-                    <p class="team-bio">
-                        Buduje i wspiera globalną społeczność czytelników Eterniverse.
-                    </p>
-                    <div class="team-social">
-                        <a href="#" class="social-link">🔗</a>
-                        <a href="#" class="social-link">✉️</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Blog Section -->
-    <section id="blog" class="blog-section">
-        <div class="container">
-            <div class="section-header">
-                <div>
-                    <span class="section-badge">Blog & Aktualności</span>
-                    <h2 class="section-title">Najnowsze Wpisy</h2>
-                </div>
-                <button class="btn-secondary">Zobacz Wszystkie</button>
-            </div>
-
-            <div class="blog-grid">
-                <article class="blog-card featured-post">
-                    <div class="blog-image">
-                        <span class="blog-emoji">✨</span>
-                        <span class="blog-badge">FEATURED</span>
-                    </div>
-                    <div class="blog-content">
-                        <span class="blog-category">TRANSFORMACJA</span>
-                        <h3 class="blog-title">Jak Odkryć Swój Wewnętrzny Kompas</h3>
-                        <p class="blog-excerpt">
-                            Praktyczny przewodnik po pierwszych krokach w odkrywaniu 
-                            swojej autentycznej natury i wewnętrznego systemu nawigacji...
-                        </p>
-                        <div class="blog-meta">
-                            <span class="blog-author">Maciej Maciuszek</span>
-                            <span class="blog-date">15 Stycznia 2025</span>
-                            <span class="blog-reading">8 min</span>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="blog-card">
-                    <div class="blog-image">
-                        <span class="blog-emoji">🌟</span>
-                    </div>
-                    <div class="blog-content">
-                        <span class="blog-category">NOWOŚCI</span>
-                        <h3 class="blog-title">Nowa Książka: ObfitoSeeker</h3>
-                        <p class="blog-excerpt">
-                            Zapowiedź najnowszej pozycji z serii SEEKER, która zagłębi się w tematykę obfitości...
-                        </p>
-                        <div class="blog-meta">
-                            <span class="blog-date">10 Stycznia 2025</span>
-                        </div>
-                    </div>
-                </article>
-
-                <article class="blog-card">
-                    <div class="blog-image">
-                        <span class="blog-emoji">📚</span>
-                    </div>
-                    <div class="blog-content">
-                        <span class="blog-category">SPOŁECZNOŚĆ</span>
-                        <h3 class="blog-title">100,000 Czytelników Milestone!</h3>
-                        <p class="blog-excerpt">
-                            Dziękujemy całej społeczności za niesamowitą podróż. Oto co przygotowaliśmy...
-                        </p>
-                        <div class="blog-meta">
-                            <span class="blog-date">5 Stycznia 2025</span>
-                        </div>
-                    </div>
-                </article>
-            </div>
-        </div>
-    </section>
-
-    <!-- Newsletter Section -->
-    <section class="newsletter-section">
-        <div class="container">
-            <div class="newsletter-card">
-                <div class="newsletter-content">
-                    <span class="newsletter-icon">📬</span>
-                    <h2 class="newsletter-title">Dołącz do Naszej Społeczności</h2>
-                    <p class="newsletter-description">
-                        Otrzymuj ekskluzywne treści, wczesny dostęp do nowych książek 
-                        i praktyczne wskazówki transformacyjne wprost do swojej skrzynki.
-                    </p>
-                </div>
-                <form class="newsletter-form">
-                    <input type="email" class="newsletter-input" placeholder="Twój adres email">
-                    <button type="submit" class="btn-newsletter">Zapisz się</button>
-                </form>
-                <p class="newsletter-note">
-                    Dołącz do <strong>50,000+</strong> subskrybentów. Anuluj w dowolnym momencie.
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Contact Section -->
-    <section id="contact" class="contact-section">
-        <div class="container">
-            <div class="contact-grid">
-                <div class="contact-info">
-                    <span class="section-badge">Kontakt</span>
-                    <h2 class="section-title">Skontaktuj się z Nami</h2>
-                    <p class="contact-description">
-                        Masz pytania? Chcesz zostać autorem? A może chcesz po prostu podzielić się swoją historią transformacji? Jesteśmy tutaj dla Ciebie.
-                    </p>
-
-                    <div class="contact-methods">
-                        <div class="contact-method">
-                            <span class="contact-icon">📧</span>
-                            <div>
-                                <h4>Email</h4>
-                                <a href="mailto:kontakt@eterniverse.pl">kontakt@eterniverse.pl</a>
-                            </div>
-                        </div>
-                        <div class="contact-method">
-                            <span class="contact-icon">📱</span>
-                            <div>
-                                <h4>Telefon</h4>
-                                <a href="tel:+48123456789">+48 123 456 789</a>
-                            </div>
-                        </div>
-                        <div class="contact-method">
-                            <span class="contact-icon">📍</span>
-                            <div>
-                                <h4>Adres</h4>
-                                <p>ul. Kosmiczna 42<br>00-001 Warszawa, Polska</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="social-links">
-                        <a href="#" class="social-link-large">Facebook</a>
-                        <a href="#" class="social-link-large">Instagram</a>
-                        <a href="#" class="social-link-large">Twitter</a>
-                        <a href="#" class="social-link-large">LinkedIn</a>
-                    </div>
-                </div>
-
-                <form class="contact-form">
-                    <div class="form-group">
-                        <label for="name">Imię i Nazwisko</label>
-                        <input type="text" id="name" name="name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" name="email" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="subject">Temat</label>
-                        <select id="subject" name="subject">
-                            <option>Pytanie ogólne</option>
-                            <option>Współpraca autorska</option>
-                            <option>Wsparcie techniczne</option>
-                            <option>Feedback</option>
-                            <option>Inne</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Wiadomość</label>
-                        <textarea id="message" name="message" rows="5" required></textarea>
-                    </div>
-                    <button type="submit" class="btn-submit">Wyślij Wiadomość</button>
-                </form>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="footer-about">
-                    <div class="footer-logo">
-                        <span class="logo-icon">✨</span>
-                        <span class="logo-text">ETERNIVERSE</span>
-                    </div>
-                    <p class="footer-description">
-                        Wydawnictwo książek transformacyjnych, które otwierają drzwi do nowych wymiarów świadomości.
-                    </p>
-                    <div class="footer-social">
-                        <a href="#" class="footer-social-link">📘</a>
-                        <a href="#" class="footer-social-link">📷</a>
-                        <a href="#" class="footer-social-link">🐦</a>
-                        <a href="#" class="footer-social-link">💼</a>
-                    </div>
-                </div>
-
-                <div class="footer-links">
-                    <h4 class="footer-title">Firma</h4>
-                    <ul>
-                        <li><a href="#about">O Nas</a></li>
-                        <li><a href="#team">Zespół</a></li>
-                        <li><a href="#careers">Kariera</a></li>
-                        <li><a href="#press">Dla Prasy</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-links">
-                    <h4 class="footer-title">Produkty</h4>
-                    <ul>
-                        <li><a href="#catalog">Katalog Książek</a></li>
-                        <li><a href="#worlds">Światy</a></li>
-                        <li><a href="#audiobooks">Audiobooki</a></li>
-                        <li><a href="#premium">Premium</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-links">
-                    <h4 class="footer-title">Wsparcie</h4>
-                    <ul>
-                        <li><a href="#help">Centrum Pomocy</a></li>
-                        <li><a href="#faq">FAQ</a></li>
-                        <li><a href="#contact">Kontakt</a></li>
-                        <li><a href="#feedback">Feedback</a></li>
-                    </ul>
-                </div>
-
-                <div class="footer-links">
-                    <h4 class="footer-title">Prawne</h4>
-                    <ul>
-                        <li><a href="#privacy">Polityka Prywatności</a></li>
-                        <li><a href="#terms">Regulamin</a></li>
-                        <li><a href="#cookies">Cookies</a></li>
-                        <li><a href="#licenses">Licencje</a></li>
-                    </ul>
-                </div>
-            </div>
-
-            <div class="footer-bottom">
-                <p>&copy; 2025 Eterniverse. Wszystkie prawa zastrzeżone.</p>
-                <p>Stworzone z ❤️ w Warszawie</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Back to Top Button -->
-    <button class="back-to-top" id="back-to-top">↑</button>
-
-    <script src="js/desktop.js"></script>
+    // Render app
+    ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+  </script>
 </body>
 </html>
