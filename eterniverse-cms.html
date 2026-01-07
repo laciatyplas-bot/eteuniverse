@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Edit2, Trash2, Save, X, Book, Globe, Layers, Eye, Download, Upload } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Book, Globe, Layers, Eye, Download, Upload, RefreshCw, Code } from 'lucide-react';
 
 export default function EterniverseCMS() {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -9,8 +9,9 @@ export default function EterniverseCMS() {
   const [editingBook, setEditingBook] = useState(null);
   const [showWorldModal, setShowWorldModal] = useState(false);
   const [showBookModal, setShowBookModal] = useState(false);
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportCode, setExportCode] = useState('');
 
-  // Initialize with storage
   useEffect(() => {
     loadData();
   }, []);
@@ -23,18 +24,19 @@ export default function EterniverseCMS() {
       if (worldsData) setWorlds(JSON.parse(worldsData.value));
       if (booksData) setBooks(JSON.parse(booksData.value));
     } catch (error) {
-      // Initialize with default data
       const defaultWorlds = [
-        { id: 1, name: 'ETERNIVERSE CORE', icon: '🌌', color: '#3b82f6', description: 'Główny wszechświat Eterniverse', parts: 10 },
-        { id: 2, name: 'POLARIS', icon: '⭐', color: '#8b5cf6', description: 'Gwiazdy wewnętrznej mądrości', parts: 10 },
-        { id: 3, name: 'COSMOS EXPLORERS', icon: '🚀', color: '#10b981', description: 'Przełamywanie granic', parts: 10 },
+        { id: 1, name: 'ETERNIVERSE CORE', icon: '🌌', color: '#3b82f6', description: 'Główny wszechświat zawierający fundamentalne nauki o świadomości', parts: 10 },
+        { id: 2, name: 'POLARIS', icon: '⭐', color: '#8b5cf6', description: 'Przewodnik po gwiazdach wewnętrznej mądrości', parts: 10 },
+        { id: 3, name: 'COSMOS EXPLORERS', icon: '🚀', color: '#10b981', description: 'Dla tych, którzy przełamują granice', parts: 10 },
         { id: 4, name: 'PSYCHE', icon: '🧠', color: '#ec4899', description: 'Lustrzane odbicie gatunków literackich', parts: 10 },
       ];
       
       const defaultBooks = [
-        { id: 1, title: 'INTERSEEKER: Geneza', worldId: 1, part: 1, status: 'published', chapters: 12, cover: '📘', description: 'Początek transformacji' },
-        { id: 2, title: 'ARCHETYP SEEKER', worldId: 1, part: 1, status: 'published', chapters: 10, cover: '👑', description: 'Odkryj swoje archetypy' },
-        { id: 3, title: 'WolaSeeker', worldId: 1, part: 2, status: 'published', chapters: 8, cover: '⚡', description: 'Moc świadomej woli' },
+        { id: 1, title: 'INTERSEEKER: Geneza', worldId: 1, part: 1, status: 'published', chapters: 12, cover: '📘', description: 'Odkryj początki największej transformacji świadomości' },
+        { id: 2, title: 'ARCHETYP SEEKER', worldId: 1, part: 1, status: 'published', chapters: 10, cover: '👑', description: 'Zgłęb tajemnice archetypów' },
+        { id: 3, title: 'WolaSeeker', worldId: 1, part: 2, status: 'published', chapters: 8, cover: '⚡', description: 'Wzmocnij swoją wolę' },
+        { id: 4, title: 'CieńSeeker', worldId: 1, part: 2, status: 'in-progress', chapters: 6, cover: '🌑', description: 'Odkryj ukryte aspekty' },
+        { id: 5, title: 'ObfitoSeeker', worldId: 1, part: 3, status: 'planned', chapters: 0, cover: '💎', description: 'Manifestacja obfitości' },
       ];
       
       setWorlds(defaultWorlds);
@@ -73,7 +75,10 @@ export default function EterniverseCMS() {
   };
 
   const saveWorld = () => {
-    if (!editingWorld.name) return;
+    if (!editingWorld.name) {
+      alert('Podaj nazwę świata!');
+      return;
+    }
     
     const updated = worlds.find(w => w.id === editingWorld.id)
       ? worlds.map(w => w.id === editingWorld.id ? editingWorld : w)
@@ -86,13 +91,17 @@ export default function EterniverseCMS() {
   };
 
   const deleteWorld = (id) => {
-    if (!confirm('Czy na pewno usunąć ten świat?')) return;
+    if (!confirm('Czy na pewno usunąć ten świat? Wszystkie książki tego świata pozostaną.')) return;
     const updated = worlds.filter(w => w.id !== id);
     setWorlds(updated);
     saveWorlds(updated);
   };
 
   const addBook = () => {
+    if (worlds.length === 0) {
+      alert('Najpierw dodaj przynajmniej jeden świat!');
+      return;
+    }
     setEditingBook({
       id: Date.now(),
       title: '',
@@ -107,7 +116,10 @@ export default function EterniverseCMS() {
   };
 
   const saveBook = () => {
-    if (!editingBook.title) return;
+    if (!editingBook.title) {
+      alert('Podaj tytuł książki!');
+      return;
+    }
     
     const updated = books.find(b => b.id === editingBook.id)
       ? books.map(b => b.id === editingBook.id ? editingBook : b)
@@ -130,7 +142,8 @@ export default function EterniverseCMS() {
     const data = {
       worlds,
       books,
-      exportDate: new Date().toISOString()
+      exportDate: new Date().toISOString(),
+      version: '1.0.0'
     };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -138,6 +151,7 @@ export default function EterniverseCMS() {
     a.href = url;
     a.download = `eterniverse-backup-${Date.now()}.json`;
     a.click();
+    URL.revokeObjectURL(url);
   };
 
   const importData = (e) => {
@@ -148,20 +162,45 @@ export default function EterniverseCMS() {
     reader.onload = (event) => {
       try {
         const data = JSON.parse(event.target.result);
-        if (data.worlds) {
+        if (data.worlds && Array.isArray(data.worlds)) {
           setWorlds(data.worlds);
           saveWorlds(data.worlds);
         }
-        if (data.books) {
+        if (data.books && Array.isArray(data.books)) {
           setBooks(data.books);
           saveBooks(data.books);
         }
-        alert('Import zakończony sukcesem! ✅');
+        alert('✅ Import zakończony sukcesem!');
       } catch (error) {
-        alert('Błąd importu: ' + error.message);
+        alert('❌ Błąd importu: ' + error.message);
       }
     };
     reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const generateHTMLExport = () => {
+    const html = `
+<!-- ETERNIVERSE - Automatycznie wygenerowane dane -->
+<script>
+window.ETERNIVERSE_DATA = ${JSON.stringify({ worlds, books }, null, 2)};
+
+// Automatyczne ładowanie danych do strony
+document.addEventListener('DOMContentLoaded', function() {
+  if (typeof eterniverseApp !== 'undefined') {
+    eterniverseApp.loadFromCMS(window.ETERNIVERSE_DATA);
+  }
+});
+</script>
+    `.trim();
+    
+    setExportCode(html);
+    setShowExportModal(true);
+  };
+
+  const copyToClipboard = () => {
+    navigator.clipboard.writeText(exportCode);
+    alert('✅ Skopiowano do schowka!');
   };
 
   const getBooksByWorld = (worldId) => books.filter(b => b.worldId === worldId);
@@ -177,8 +216,7 @@ export default function EterniverseCMS() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 text-white">
-      {/* Header */}
-      <header className="bg-slate-900/50 backdrop-blur border-b border-white/10">
+      <header className="bg-slate-900/50 backdrop-blur border-b border-white/10 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
@@ -190,15 +228,30 @@ export default function EterniverseCMS() {
             </div>
             <div className="flex gap-2">
               <button
+                onClick={() => loadData()}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg transition"
+                title="Odśwież dane"
+              >
+                <RefreshCw size={18} />
+                <span className="hidden md:inline">Odśwież</span>
+              </button>
+              <button
+                onClick={generateHTMLExport}
+                className="flex items-center gap-2 px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition"
+              >
+                <Code size={18} />
+                <span className="hidden md:inline">Eksport HTML</span>
+              </button>
+              <button
                 onClick={exportData}
                 className="flex items-center gap-2 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition"
               >
                 <Download size={18} />
-                Export
+                <span className="hidden md:inline">Export JSON</span>
               </button>
               <label className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition cursor-pointer">
                 <Upload size={18} />
-                Import
+                <span className="hidden md:inline">Import</span>
                 <input type="file" accept=".json" onChange={importData} className="hidden" />
               </label>
             </div>
@@ -206,10 +259,9 @@ export default function EterniverseCMS() {
         </div>
       </header>
 
-      {/* Navigation */}
-      <nav className="bg-slate-900/30 border-b border-white/10">
+      <nav className="bg-slate-900/30 border-b border-white/10 sticky top-[73px] z-30">
         <div className="max-w-7xl mx-auto px-6">
-          <div className="flex gap-6">
+          <div className="flex gap-2 md:gap-6 overflow-x-auto">
             {[
               { id: 'dashboard', label: 'Dashboard', icon: <Layers size={18} /> },
               { id: 'worlds', label: 'Światy', icon: <Globe size={18} /> },
@@ -219,63 +271,60 @@ export default function EterniverseCMS() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex items-center gap-2 px-4 py-3 border-b-2 transition ${
+                className={`flex items-center gap-2 px-4 py-3 border-b-2 transition whitespace-nowrap ${
                   activeTab === tab.id
                     ? 'border-blue-500 text-blue-400'
                     : 'border-transparent text-slate-400 hover:text-white'
                 }`}
               >
                 {tab.icon}
-                {tab.label}
+                <span className="hidden sm:inline">{tab.label}</span>
               </button>
             ))}
           </div>
         </div>
       </nav>
 
-      <main className="max-w-7xl mx-auto px-6 py-8">
-        {/* Dashboard */}
+      <main className="max-w-7xl mx-auto px-4 md:px-6 py-8">
         {activeTab === 'dashboard' && (
           <div className="space-y-6">
             <h2 className="text-3xl font-bold">Dashboard</h2>
             
-            {/* Stats */}
-            <div className="grid grid-cols-5 gap-4">
-              <div className="bg-slate-800/50 backdrop-blur rounded-xl p-6 border border-white/10">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+              <div className="bg-slate-800/50 backdrop-blur rounded-xl p-4 md:p-6 border border-white/10">
                 <div className="text-4xl mb-2">🌍</div>
-                <div className="text-3xl font-bold">{stats.totalWorlds}</div>
-                <div className="text-sm text-slate-400">Światów</div>
+                <div className="text-2xl md:text-3xl font-bold">{stats.totalWorlds}</div>
+                <div className="text-xs md:text-sm text-slate-400">Światów</div>
               </div>
-              <div className="bg-slate-800/50 backdrop-blur rounded-xl p-6 border border-white/10">
+              <div className="bg-slate-800/50 backdrop-blur rounded-xl p-4 md:p-6 border border-white/10">
                 <div className="text-4xl mb-2">📚</div>
-                <div className="text-3xl font-bold">{stats.totalBooks}</div>
-                <div className="text-sm text-slate-400">Książek Ogółem</div>
+                <div className="text-2xl md:text-3xl font-bold">{stats.totalBooks}</div>
+                <div className="text-xs md:text-sm text-slate-400">Książek</div>
               </div>
-              <div className="bg-green-800/30 backdrop-blur rounded-xl p-6 border border-green-500/30">
+              <div className="bg-green-800/30 backdrop-blur rounded-xl p-4 md:p-6 border border-green-500/30">
                 <div className="text-4xl mb-2">✅</div>
-                <div className="text-3xl font-bold">{stats.publishedBooks}</div>
-                <div className="text-sm text-slate-400">Opublikowanych</div>
+                <div className="text-2xl md:text-3xl font-bold">{stats.publishedBooks}</div>
+                <div className="text-xs md:text-sm text-slate-400">Opublikowanych</div>
               </div>
-              <div className="bg-yellow-800/30 backdrop-blur rounded-xl p-6 border border-yellow-500/30">
+              <div className="bg-yellow-800/30 backdrop-blur rounded-xl p-4 md:p-6 border border-yellow-500/30">
                 <div className="text-4xl mb-2">⏳</div>
-                <div className="text-3xl font-bold">{stats.inProgressBooks}</div>
-                <div className="text-sm text-slate-400">W Trakcie</div>
+                <div className="text-2xl md:text-3xl font-bold">{stats.inProgressBooks}</div>
+                <div className="text-xs md:text-sm text-slate-400">W Trakcie</div>
               </div>
-              <div className="bg-blue-800/30 backdrop-blur rounded-xl p-6 border border-blue-500/30">
+              <div className="bg-blue-800/30 backdrop-blur rounded-xl p-4 md:p-6 border border-blue-500/30">
                 <div className="text-4xl mb-2">📝</div>
-                <div className="text-3xl font-bold">{stats.plannedBooks}</div>
-                <div className="text-sm text-slate-400">Planowanych</div>
+                <div className="text-2xl md:text-3xl font-bold">{stats.plannedBooks}</div>
+                <div className="text-xs md:text-sm text-slate-400">Planowanych</div>
               </div>
             </div>
 
-            {/* Worlds Overview */}
             <div className="bg-slate-800/50 backdrop-blur rounded-xl p-6 border border-white/10">
               <h3 className="text-xl font-bold mb-4">Przegląd Światów</h3>
               <div className="space-y-3">
                 {worlds.map(world => {
                   const worldBooks = getBooksByWorld(world.id);
                   return (
-                    <div key={world.id} className="flex items-center justify-between p-4 bg-slate-900/50 rounded-lg">
+                    <div key={world.id} className="flex flex-col md:flex-row md:items-center justify-between p-4 bg-slate-900/50 rounded-lg gap-4">
                       <div className="flex items-center gap-4">
                         <span className="text-4xl">{world.icon}</span>
                         <div>
@@ -283,16 +332,14 @@ export default function EterniverseCMS() {
                           <p className="text-sm text-slate-400">{worldBooks.length} książek w {world.parts} częściach</p>
                         </div>
                       </div>
-                      <div className="flex gap-2">
-                        {[...Array(10)].map((_, i) => {
+                      <div className="flex gap-1 md:gap-2 overflow-x-auto">
+                        {[...Array(world.parts)].map((_, i) => {
                           const partBooks = getBooksByPart(world.id, i + 1);
                           return (
                             <div
                               key={i}
-                              className={`w-8 h-8 rounded flex items-center justify-center text-xs font-bold ${
-                                partBooks.length > 0
-                                  ? 'bg-blue-600'
-                                  : 'bg-slate-700'
+                              className={`w-7 h-7 md:w-8 md:h-8 rounded flex items-center justify-center text-xs font-bold flex-shrink-0 ${
+                                partBooks.length > 0 ? 'bg-blue-600' : 'bg-slate-700'
                               }`}
                               title={`Część ${i + 1}: ${partBooks.length} książek`}
                             >
@@ -309,21 +356,20 @@ export default function EterniverseCMS() {
           </div>
         )}
 
-        {/* Worlds Tab */}
         {activeTab === 'worlds' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-3xl font-bold">Zarządzanie Światami</h2>
+              <h2 className="text-2xl md:text-3xl font-bold">Zarządzanie Światami</h2>
               <button
                 onClick={addWorld}
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition"
               >
                 <Plus size={18} />
-                Dodaj Świat
+                <span className="hidden sm:inline">Dodaj Świat</span>
               </button>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {worlds.map(world => (
                 <div
                   key={world.id}
@@ -366,21 +412,20 @@ export default function EterniverseCMS() {
           </div>
         )}
 
-        {/* Books Tab */}
         {activeTab === 'books' && (
           <div className="space-y-6">
             <div className="flex items-center justify-between">
-              <h2 className="text-3xl font-bold">Zarządzanie Książkami</h2>
+              <h2 className="text-2xl md:text-3xl font-bold">Zarządzanie Książkami</h2>
               <button
                 onClick={addBook}
                 className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-lg transition"
               >
                 <Plus size={18} />
-                Dodaj Książkę
+                <span className="hidden sm:inline">Dodaj Książkę</span>
               </button>
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {books.map(book => {
                 const world = worlds.find(w => w.id === book.worldId);
                 return (
@@ -393,8 +438,8 @@ export default function EterniverseCMS() {
                         <span className="text-lg">{world?.icon}</span>
                         <span className="text-xs text-slate-400">{world?.name} • Część {book.part}</span>
                       </div>
-                      <h3 className="font-bold text-lg mb-2">{book.title}</h3>
-                      <p className="text-sm text-slate-400 mb-3">{book.description}</p>
+                      <h3 className="font-bold text-lg mb-2 line-clamp-2">{book.title}</h3>
+                      <p className="text-sm text-slate-400 mb-3 line-clamp-2">{book.description}</p>
                       <div className="flex items-center justify-between mb-3">
                         <span className={`px-2 py-1 rounded text-xs font-bold ${
                           book.status === 'published' ? 'bg-green-600' :
@@ -432,7 +477,6 @@ export default function EterniverseCMS() {
           </div>
         )}
 
-        {/* Preview Tab */}
         {activeTab === 'preview' && (
           <div className="space-y-6">
             <h2 className="text-3xl font-bold">Podgląd Struktury</h2>
@@ -459,7 +503,7 @@ export default function EterniverseCMS() {
                             <span className="text-sm text-slate-400">{partBooks.length} książek</span>
                           </h4>
                           {partBooks.length > 0 ? (
-                            <div className="grid grid-cols-4 gap-3">
+                            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                               {partBooks.map(book => (
                                 <div key={book.id} className="bg-slate-800 rounded-lg p-3 text-sm">
                                   <div className="text-3xl mb-2">{book.cover}</div>
@@ -484,10 +528,9 @@ export default function EterniverseCMS() {
         )}
       </main>
 
-      {/* World Modal */}
       {showWorldModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50 p-6">
-          <div className="bg-slate-800 rounded-xl p-6 max-w-md w-full border border-white/10">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50 p-4 md:p-6">
+          <div className="bg-slate-800 rounded-xl p-6 max-w-md w-full border border-white/10 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold">
                 {editingWorld?.name ? 'Edytuj Świat' : 'Nowy Świat'}
@@ -504,7 +547,7 @@ export default function EterniverseCMS() {
                   type="text"
                   value={editingWorld?.name || ''}
                   onChange={(e) => setEditingWorld({...editingWorld, name: e.target.value})}
-                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
+                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
                   placeholder="np. ETERNIVERSE CORE"
                 />
               </div>
@@ -537,7 +580,7 @@ export default function EterniverseCMS() {
                   type="number"
                   value={editingWorld?.parts || 10}
                   onChange={(e) => setEditingWorld({...editingWorld, parts: parseInt(e.target.value)})}
-                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
+                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
                   min="1"
                   max="20"
                 />
@@ -548,7 +591,7 @@ export default function EterniverseCMS() {
                 <textarea
                   value={editingWorld?.description || ''}
                   onChange={(e) => setEditingWorld({...editingWorld, description: e.target.value})}
-                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
+                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
                   rows="3"
                   placeholder="Krótki opis świata..."
                 />
@@ -566,101 +609,106 @@ export default function EterniverseCMS() {
         </div>
       )}
 
-      {/* Book Modal */}
       {showBookModal && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50 p-6">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50 p-4 md:p-6">
           <div className="bg-slate-800 rounded-xl p-6 max-w-md w-full border border-white/10 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold">
+                {editingBook?.title ? 'Edytuj
+                  <invoke name="artifacts">
+<parameter name="command">update</parameter>
+<parameter name="id">eterniverse-cms-complete</parameter>
+<parameter name="old_str">              <h3 className="text-xl font-bold">
+                {editingBook?.title ? 'Edytuj</parameter>
+<parameter name="new_str">              <h3 className="text-xl font-bold">
                 {editingBook?.title ? 'Edytuj Książkę' : 'Nowa Książka'}
               </h3>
               <button onClick={() => setShowBookModal(false)} className="p-2 hover:bg-slate-700 rounded">
                 <X size={20} />
               </button>
             </div>
+                  <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-bold mb-2">Tytuł</label>
+            <input
+              type="text"
+              value={editingBook?.title || ''}
+              onChange={(e) => setEditingBook({...editingBook, title: e.target.value})}
+              className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
+              placeholder="np. INTERSEEKER: Geneza"
+            />
+          </div>
 
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-bold mb-2">Tytuł</label>
-                <input
-                  type="text"
-                  value={editingBook?.title || ''}
-                  onChange={(e) => setEditingBook({...editingBook, title: e.target.value})}
-                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
-                  placeholder="np. INTERSEEKER: Geneza"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold mb-2">Świat</label>
-                  <select
-                    value={editingBook?.worldId || worlds[0]?.id}
-                    onChange={(e) => setEditingBook({...editingBook, worldId: parseInt(e.target.value)})}
-                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
-                  >
-                    {worlds.map(world => (
-                      <option key={world.id} value={world.id}>
-                        {world.icon} {world.name}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-bold mb-2">Część</label>
-                  <input
-                    type="number"
-                    value={editingBook?.part || 1}
-                    onChange={(e) => setEditingBook({...editingBook, part: parseInt(e.target.value)})}
-                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
-                    min="1"
-                    max="10"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-bold mb-2">Okładka (emoji)</label>
-                  <input
-                    type="text"
-                    value={editingBook?.cover || ''}
-                    onChange={(e) => setEditingBook({...editingBook, cover: e.target.value})}
-                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-center text-3xl"
-                    placeholder="📖"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-bold mb-2">Rozdziały</label>
-                  <input
-                    type="number"
-                    value={editingBook?.chapters || 0}
-                    onChange={(e) => setEditingBook({...editingBook, chapters: parseInt(e.target.value)})}
-                    className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
-                    min="0"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-bold mb-2">Status</label>
-                <select
-                  value={editingBook?.status || 'planned'}
-                  onChange={(e) => setEditingBook({...editingBook, status: e.target.value})}
-                  className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
-                >
-                 <option value="published">✅ Op</parameter>
-<parameter name="new_str">                  <option value="published">✅ Opublikowana</option>
-                  <option value="in-progress">⏳ W trakcie pisania</option>
-                  <option value="planned">📝 Planowana</option>
-                </select>
-              </div>
+          <div className="grid grid-cols-2 gap-4">
             <div>
+              <label className="block text-sm font-bold mb-2">Świat</label>
+              <select
+                value={editingBook?.worldId || worlds[0]?.id}
+                onChange={(e) => setEditingBook({...editingBook, worldId: parseInt(e.target.value)})}
+                className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
+              >
+                {worlds.map(world => (
+                  <option key={world.id} value={world.id}>
+                    {world.icon} {world.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="block text-sm font-bold mb-2">Część</label>
+              <input
+                type="number"
+                value={editingBook?.part || 1}
+                onChange={(e) => setEditingBook({...editingBook, part: parseInt(e.target.value)})}
+                className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
+                min="1"
+                max="20"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-bold mb-2">Okładka (emoji)</label>
+              <input
+                type="text"
+                value={editingBook?.cover || ''}
+                onChange={(e) => setEditingBook({...editingBook, cover: e.target.value})}
+                className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-center text-3xl"
+                placeholder="📖"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-bold mb-2">Rozdziały</label>
+              <input
+                type="number"
+                value={editingBook?.chapters || 0}
+                onChange={(e) => setEditingBook({...editingBook, chapters: parseInt(e.target.value)})}
+                className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
+                min="0"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold mb-2">Status</label>
+            <select
+              value={editingBook?.status || 'planned'}
+              onChange={(e) => setEditingBook({...editingBook, status: e.target.value})}
+              className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
+            >
+              <option value="published">✅ Opublikowana</option>
+              <option value="in-progress">⏳ W trakcie pisania</option>
+              <option value="planned">📝 Planowana</option>
+            </select>
+          </div>
+
+          <div>
             <label className="block text-sm font-bold mb-2">Opis</label>
             <textarea
               value={editingBook?.description || ''}
               onChange={(e) => setEditingBook({...editingBook, description: e.target.value})}
-              className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg"
+              className="w-full px-4 py-2 bg-slate-900 border border-white/10 rounded-lg text-white"
               rows="3"
               placeholder="Krótki opis książki..."
             />
@@ -673,6 +721,46 @@ export default function EterniverseCMS() {
             <Save size={20} />
             Zapisz Książkę
           </button>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {showExportModal && (
+    <div className="fixed inset-0 bg-black/50 backdrop-blur flex items-center justify-center z-50 p-4 md:p-6">
+      <div className="bg-slate-800 rounded-xl p-6 max-w-2xl w-full border border-white/10 max-h-[90vh] overflow-y-auto">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-xl font-bold">Eksport do HTML</h3>
+          <button onClick={() => setShowExportModal(false)} className="p-2 hover:bg-slate-700 rounded">
+            <X size={20} />
+          </button>
+        </div>
+
+        <p className="text-slate-400 mb-4">
+          Skopiuj poniższy kod i wklej go przed zamknięciem tagu <code className="bg-slate-900 px-2 py-1 rounded">&lt;/body&gt;</code> w pliku <strong>index.html</strong>
+        </p>
+
+        <div className="bg-slate-900 rounded-lg p-4 mb-4 relative">
+          <pre className="text-sm text-green-400 overflow-x-auto">
+            <code>{exportCode}</code>
+          </pre>
+          <button
+            onClick={copyToClipboard}
+            className="absolute top-2 right-2 px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-sm"
+          >
+            Kopiuj
+          </button>
+        </div>
+
+        <div className="bg-blue-900/30 border border-blue-500/50 rounded-lg p-4">
+          <h4 className="font-bold mb-2">📝 Instrukcja:</h4>
+          <ol className="list-decimal list-inside space-y-1 text-sm text-slate-300">
+            <li>Skopiuj powyższy kod (przycisk "Kopiuj")</li>
+            <li>Otwórz plik <code className="bg-slate-900 px-2 py-1 rounded">index.html</code></li>
+            <li>Znajdź tag <code className="bg-slate-900 px-2 py-1 rounded">&lt;/body&gt;</code> na końcu pliku</li>
+            <li>Wklej skopiowany kod PRZED tym tagiem</li>
+            <li>Zapisz plik i odśwież stronę</li>
+          </ol>
         </div>
       </div>
     </div>
