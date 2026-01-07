@@ -1,15 +1,19 @@
 {
+  "version": "1.0",
+  "lastUpdated": "2025-01-08",
+  "author": "Maciej Maciuszek",
   "worlds": [
     {
       "id": 1,
       "name": "ETERNIVERSE CORE",
       "icon": "🌌",
       "color": "#3b82f6",
+      "description": "Psychika, Wola, Architektura Świadomości",
       "gates": [
         {
           "id": 1,
           "name": "BRAMA I — INTERSEEKER",
-          "subtitle": "Psychika · Cień · Trauma",
+          "subtitle": "Psychika · Cień · Trauma · Tożsamość",
           "tag": "CORE / PSYCHE",
           "color": "#8b5cf6",
           "books": [
@@ -17,15 +21,349 @@
               "id": 1,
               "title": "INTERSEEKER: Geneza",
               "cover": "https://raw.githubusercontent.com/laciatyplas-bot/eteuniverse/main/covers/interseeker.jpg",
+              "coverEmoji": "📘",
               "status": "published",
               "isPremium": false,
               "chapters": 12,
               "wordCount": 85000,
-              "desc": "Atlas Wewnętrzny Ludzkiej Psychiki"
+              "images": 8,
+              "desc": "Atlas Wewnętrzny Ludzkiej Psychiki",
+              "stats": {
+                "reads": 45230,
+                "likes": 8920,
+                "comments": 2340,
+                "revenue": 0
+              },
+              "lastUpdated": "2024-01-15"
+            },
+            {
+              "id": 2,
+              "title": "ShadowSeeker – Anatomia Cienia",
+              "cover": "https://raw.githubusercontent.com/laciatyplas-bot/eteuniverse/main/covers/shadowseeker.jpg",
+              "coverEmoji": "🌑",
+              "status": "published",
+              "isPremium": false,
+              "chapters": 10,
+              "wordCount": 68000,
+              "images": 6,
+              "desc": "Eksploracja ludzkiego cienia i nieświadomości",
+              "stats": {
+                "reads": 25670,
+                "likes": 5430,
+                "comments": 1120,
+                "revenue": 0
+              },
+              "lastUpdated": "2024-01-12"
+            }
+          ]
+        },
+        {
+          "id": 3,
+          "name": "BRAMA III — ETERSEEKER",
+          "subtitle": "Wola · Pole · Architektura",
+          "tag": "CORE / FIELD",
+          "color": "#f59e0b",
+          "books": [
+            {
+              "id": 3,
+              "title": "WolaSeeker – Kwant Woli",
+              "cover": "https://raw.githubusercontent.com/laciatyplas-bot/eteuniverse/main/covers/kwant-woli.jpg",
+              "coverEmoji": "⚡",
+              "status": "published",
+              "isPremium": false,
+              "chapters": 10,
+              "wordCount": 68000,
+              "images": 6,
+              "desc": "Kwantowa natura ludzkiej woli",
+              "stats": {
+                "reads": 38450,
+                "likes": 7340,
+                "comments": 1920,
+                "revenue": 0
+              },
+              "lastUpdated": "2024-01-10"
+            },
+            {
+              "id": 4,
+              "title": "EterSeeker – Architektura Woli",
+              "cover": "https://raw.githubusercontent.com/laciatyplas-bot/eteuniverse/main/covers/eterseeker.jpg",
+              "coverEmoji": "🌀",
+              "status": "draft",
+              "isPremium": false,
+              "chapters": 5,
+              "wordCount": 32000,
+              "images": 3,
+              "desc": "System architektury ludzkiej woli",
+              "stats": {
+                "reads": 0,
+                "likes": 0,
+                "comments": 0,
+                "revenue": 0
+              },
+              "lastUpdated": "2024-01-18"
+            }
+          ]
+        },
+        {
+          "id": 4,
+          "name": "BRAMA IV — ARCHETYPY",
+          "subtitle": "Role · Archetyp · Konstrukcja",
+          "tag": "CORE / WILL",
+          "color": "#7c3aed",
+          "books": [
+            {
+              "id": 5,
+              "title": "ARCHETYP SEEKER",
+              "cover": "https://raw.githubusercontent.com/laciatyplas-bot/eteuniverse/main/covers/archetyp.jpg",
+              "coverEmoji": "👑",
+              "status": "published",
+              "isPremium": true,
+              "chapters": 15,
+              "wordCount": 92000,
+              "images": 13,
+              "desc": "System Archetypów Eteru",
+              "stats": {
+                "reads": 12340,
+                "likes": 2840,
+                "comments": 890,
+                "revenue": 2840
+              },
+              "lastUpdated": "2024-01-18"
+            }
+          ]
+        },
+        {
+          "id": 5,
+          "name": "BRAMA V — OBFITOSEEKER",
+          "subtitle": "Materia · Przepływ · Manifestacja",
+          "tag": "EMBODIED / FLOW",
+          "color": "#10b981",
+          "books": [
+            {
+              "id": 6,
+              "title": "ObfitoSeeker – Kod Obfitości",
+              "cover": "https://raw.githubusercontent.com/laciatyplas-bot/eteuniverse/main/covers/obfitoseeker.jpg",
+              "coverEmoji": "💎",
+              "status": "published",
+              "isPremium": false,
+              "chapters": 11,
+              "wordCount": 75000,
+              "images": 9,
+              "desc": "Przepływ, manifestacja, nieograniczona obfitość",
+              "stats": {
+                "reads": 32100,
+                "likes": 6780,
+                "comments": 1560,
+                "revenue": 0
+              },
+              "lastUpdated": "2024-01-08"
+            }
+          ]
+        },
+        {
+          "id": 6,
+          "name": "BRAMA VI — BIOSEEKER",
+          "subtitle": "Ciało · Biologia · Regulacja",
+          "tag": "EMBODIED / BIO",
+          "color": "#22c55e",
+          "books": [
+            {
+              "id": 7,
+              "title": "BioSeeker – Biologia Pola",
+              "cover": "https://raw.githubusercontent.com/laciatyplas-bot/eteuniverse/main/covers/bioseeker.jpg",
+              "coverEmoji": "🧬",
+              "status": "draft",
+              "isPremium": true,
+              "chapters": 5,
+              "wordCount": 32000,
+              "images": 3,
+              "desc": "Sekret Biologii Pola",
+              "stats": {
+                "reads": 0,
+                "likes": 0,
+                "comments": 0,
+                "revenue": 0
+              },
+              "lastUpdated": "2024-01-20"
+            }
+          ]
+        },
+        {
+          "id": 7,
+          "name": "BRAMA VII — SPLĄTANIE / AI",
+          "subtitle": "Obserwator · Technologia · Meta",
+          "tag": "META / TECH",
+          "color": "#06b6d4",
+          "books": [
+            {
+              "id": 8,
+              "title": "SYSTEM SEEKER",
+              "cover": "https://raw.githubusercontent.com/laciatyplas-bot/eteuniverse/main/covers/system-seeker.jpg",
+              "coverEmoji": "🤖",
+              "status": "published",
+              "isPremium": false,
+              "chapters": 14,
+              "wordCount": 88000,
+              "images": 11,
+              "desc": "System jest nieświadomy wrogiem, który brzmi rozsądnie",
+              "stats": {
+                "reads": 28900,
+                "likes": 5920,
+                "comments": 1450,
+                "revenue": 0
+              },
+              "lastUpdated": "2024-01-16"
+            },
+            {
+              "id": 9,
+              "title": "KRONIKA OBSERWATORA",
+              "cover": "https://raw.githubusercontent.com/laciatyplas-bot/eteuniverse/main/covers/kronika-obserwatora.jpg",
+              "coverEmoji": "👁️",
+              "status": "published",
+              "isPremium": false,
+              "chapters": 9,
+              "wordCount": 62000,
+              "images": 7,
+              "desc": "Protokół Obserwatora",
+              "stats": {
+                "reads": 19450,
+                "likes": 4120,
+                "comments": 980,
+                "revenue": 0
+              },
+              "lastUpdated": "2024-01-14"
+            }
+          ]
+        },
+        {
+          "id": 8,
+          "name": "BRAMA VIII — TRAJEKTORIE",
+          "subtitle": "Czas · Linie · Przyszłość",
+          "tag": "META / TIME",
+          "color": "#a855f7",
+          "books": [
+            {
+              "id": 10,
+              "title": "CHRONIK DER VERFLECHTUNG",
+              "cover": "https://raw.githubusercontent.com/laciatyplas-bot/eteuniverse/main/covers/chronik.jpg",
+              "coverEmoji": "⏳",
+              "status": "published",
+              "isPremium": true,
+              "chapters": 13,
+              "wordCount": 82000,
+              "images": 10,
+              "desc": "Mapa linii życia i przeplatania się czasów",
+              "stats": {
+                "reads": 15670,
+                "likes": 3890,
+                "comments": 720,
+                "revenue": 1890
+              },
+              "lastUpdated": "2024-01-17"
+            }
+          ]
+        },
+        {
+          "id": 9,
+          "name": "BRAMA IX — ETERNIONY",
+          "subtitle": "Kolektyw · Relacje · Sieć",
+          "tag": "COLLECTIVE",
+          "color": "#ec4899",
+          "books": [
+            {
+              "id": 11,
+              "title": "ESKER – Cząstka która patrzy z powrotem",
+              "cover": "https://raw.githubusercontent.com/laciatyplas-bot/eteuniverse/main/covers/esker.jpg",
+              "coverEmoji": "🔮",
+              "status": "published",
+              "isPremium": false,
+              "chapters": 12,
+              "wordCount": 79000,
+              "images": 8,
+              "desc": "Cząstka, która widzi Cię z drugiej strony Wszechświata",
+              "stats": {
+                "reads": 22340,
+                "likes": 4560,
+                "comments": 1120,
+                "revenue": 0
+              },
+              "lastUpdated": "2024-01-11"
+            }
+          ]
+        },
+        {
+          "id": 10,
+          "name": "BRAMA X — ETERUNIVERSE",
+          "subtitle": "Integracja · Architekt · Jedność",
+          "tag": "INTEGRATION",
+          "color": "#f59e0b",
+          "books": [
+            {
+              "id": 12,
+              "title": "RELIGIOSEEKER",
+              "cover": "https://raw.githubusercontent.com/laciatyplas-bot/eteuniverse/main/covers/religioseeker.jpg",
+              "coverEmoji": "✝️",
+              "status": "draft",
+              "isPremium": false,
+              "chapters": 3,
+              "wordCount": 18000,
+              "images": 2,
+              "desc": "Architektura woli, Atlas wiary",
+              "stats": {
+                "reads": 0,
+                "likes": 0,
+                "comments": 0,
+                "revenue": 0
+              },
+              "lastUpdated": "2024-01-19"
             }
           ]
         }
       ]
+    },
+    {
+      "id": 2,
+      "name": "POLARIS",
+      "icon": "⭐",
+      "color": "#8b5cf6",
+      "description": "Wewnętrzny świat za lodowcem",
+      "gates": []
+    },
+    {
+      "id": 3,
+      "name": "COSMOS EXPLORERS",
+      "icon": "🚀",
+      "color": "#10b981",
+      "description": "Kosmiczna eksploracja",
+      "gates": []
     }
   ]
 }
+```
+
+---
+
+## 📥 Jak to użyć:
+
+### 1. **Skopiuj ten JSON**
+Stwórz plik `books-data.json` w repo i wklej
+
+### 2. **Upload okładek do GitHub**
+```
+/covers/
+  ├── interseeker.jpg
+  ├── kwant-woli.jpg
+  ├── archetyp.jpg
+  ├── obfitoseeker.jpg
+  ├── bioseeker.jpg
+  ├── system-seeker.jpg
+  ├── kronika-obserwatora.jpg
+  ├── chronik.jpg
+  ├── esker.jpg
+  └── religioseeker.jpg
+```
+
+### 3. **Linki w JSON już gotowe!**
+Wszystkie `cover` URL-e wskazują na:
+```
+https://raw.githubusercontent.com/laciatyplas-bot/eteuniverse/main/covers/[nazwa].jpg
